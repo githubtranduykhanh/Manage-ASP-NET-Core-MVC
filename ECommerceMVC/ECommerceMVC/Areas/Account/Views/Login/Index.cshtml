@@ -1,0 +1,188 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    Layout = "_LayoutAccount";
+}
+
+<div id="container" class="container container-fluid">
+    <!-- FORM SECTION -->
+    <div class="row">
+        <!-- SIGN UP -->
+        <form class="col align-items-center flex-col sign-up" id="js-form-sign-up">
+            <div class="form-wrapper align-items-center">
+                <div class="form sign-up">
+                    <div class="input-group">
+                        <i class='bx bxs-user'></i>
+                        <input type="text" placeholder="Username" name="Name">
+                    </div>
+                    <div class="input-group">
+                        <i class='bx bx-mail-send'></i>
+                        <input type="email" placeholder="Email" name="Email">
+                    </div>
+                    <div class="input-group">
+                        <i class='bx bxs-lock-alt'></i>
+                        <input type="number" placeholder="Phone" name="Phone">
+                    </div>
+                    <div class="input-group">
+                        <i class='bx bxs-lock-alt'></i>
+                        <input type="password" placeholder="Password" name="Password">
+                    </div>
+                    <div class="input-group">
+                        <select class="form-control form-control-lg" name="Sex">
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option selected value="other">Other</option>
+                        </select>
+                    </div>
+                    <input type="text" hidden name="LoginType" value="normally">
+
+                    <button type="button" class="btn btn-success" style="background-color: var(--primary-color);" id="js-btn-sign-up">
+                        Sign up
+                    </button>
+                    <p>
+                        <span>
+                            Already have an account?
+                        </span>
+                        <b class="pointer js-display-form-toggle">
+                            Sign in here
+                        </b>
+                    </p>
+                </div>
+            </div>
+
+        </form>
+        <!-- END SIGN UP -->
+        <!-- SIGN IN WITH PHONE -->
+        <form class="col align-items-center flex-col sign-up close" id="js-form-sign-in-otp">
+            <div class="form-wrapper align-items-center">
+                <div class="form sign-up">
+                    <div class="input-group">
+                        <i class='bx bxs-user'></i>
+                        <input type="text" placeholder="Your Phone">
+                    </div>
+                    <div id="recaptcha-container"></div>
+                    <button type="button" class="btn btn-success" style="background-color: var(--primary-color);" id="js-btn-send-phone">
+                        Send Phone
+                    </button>
+                    <p>
+                        <span>
+                            Already have an account?
+                        </span>
+                        <b class="pointer js-display-form-toggle">
+                            Sign in here
+                        </b>
+                    </p>
+                </div>
+            </div>
+        </form>
+        <!-- END SIGN IN WITH PHONE -->
+        <!-- SIGN IN WITH PHONE -->
+        <form class="col align-items-center flex-col sign-up close" id="js-form-sign-in-phone">
+            <div class="form-wrapper align-items-center">
+                <div class="form sign-up">
+                    <div class="input-group">
+                        <i class='bx bxs-user'></i>
+                        <input type="text" placeholder="OTP">
+                    </div>
+                    <button type="button" class="btn btn-success mb-2" style="background-color: var(--primary-color);" id="js-btn-send-otp">
+                        Send OTP
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary" id="js-btn-back-to-phone">
+                        Back to Phone
+                    </button>
+                    <p>
+                        <span>
+                            Already have an account?
+                        </span>
+                        <b class="pointer js-display-form-toggle">
+                            Sign in here
+                        </b>
+                    </p>
+                </div>
+            </div>
+        </form>
+        <!-- END SIGN IN WITH PHONE -->
+        <!-- SIGN IN -->
+        <form class="col align-items-center flex-col sign-in" id="js-form-sign-in">
+            <div class="form-wrapper align-items-center">
+                <div class="form sign-in">
+                    <div class="input-group">
+                        <i class='bx bxs-user'></i>
+                        <input type="text" placeholder="Your email or phone" id="js-input-sign-in-email-or-phone" required>
+                        <div class="invalid-feedback">
+                            Please provide a valid email or phone.
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <i class='bx bxs-lock-alt'></i>
+                        <input type="password" placeholder="Password" id="js-input-sign-in-password" required>
+                        <div class="invalid-feedback">
+                            Please provide a valid Password.
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-success" style="background-color: var(--primary-color);" id="js-btn-sign-in">
+                        Sign in
+                    </button>
+                    <span class="d-block text-center my-3 text-muted">&mdash; or &mdash;</span>
+                    <div class="social-login">
+                        <button type="button" id="js-btn-facebook-now" class="facebook btn btn-primary mb-2">
+                            <i class="bi bi-facebook mr-3"></i>Login with Facebook
+                        </button>
+                        <button type="button" id="js-btn-show-phone-form-login" class="twitter btn btn-success  mb-2">
+                            <i class="bi bi-telephone-fill mr-3"></i>Login with  Phone
+                        </button>
+                        <button type="button" id="js-btn-google-now" class="google btn btn-danger  mb-2">
+                            <i class="bi bi-google mr-3"></i>Login with  Google
+                        </button>
+                    </div>
+                    <p>
+                        <b>
+                            Forgot password?
+                        </b>
+                    </p>
+                    <p>
+                        <span>
+                            Don't have an account?
+                        </span>
+                        <b class="pointer js-display-form-toggle">
+                            Sign up here
+                        </b>
+                    </p>
+                </div>
+            </div>
+            <div class="form-wrapper">
+            </div>
+        </form>
+        <!-- END SIGN IN -->
+    </div>
+    <!-- END FORM SECTION -->
+    <!-- CONTENT SECTION -->
+    <div class="row content-row">
+        <!-- SIGN IN CONTENT -->
+        <div class="col align-items-center flex-col">
+            <div class="text sign-in">
+                <h2>
+                    Welcome
+                </h2>
+
+            </div>
+            <div class="img sign-in">
+            </div>
+        </div>
+        <!-- END SIGN IN CONTENT -->
+        <!-- SIGN UP CONTENT -->
+        <div class="col align-items-center flex-col">
+            <div class="img sign-up">
+            </div>
+            <div class="text sign-up">
+                <h2 id="js-text-sign-up-or-phone">
+                    Join with us
+                </h2>
+
+            </div>
+        </div>
+        <!-- END SIGN UP CONTENT -->
+    </div>
+    <!-- END CONTENT SECTION -->
+</div>
