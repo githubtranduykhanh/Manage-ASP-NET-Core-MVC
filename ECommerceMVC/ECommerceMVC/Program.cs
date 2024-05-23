@@ -1,10 +1,11 @@
-﻿using ECommerceMVC.Config;
+﻿using ECommerceMVC.AutoMapperProfile;
+using ECommerceMVC.Config;
 using ECommerceMVC.Data;
 using ECommerceMVC.Helper.Excel;
 using ECommerceMVC.Helper.Jwts;
 using ECommerceMVC.Helper.Responses;
 using ECommerceMVC.Repositorys.User;
-using ECommerceMVC.Services;
+using ECommerceMVC.Services.User;
 using ECommerceMVC.ViewModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -30,6 +31,8 @@ builder.Services.AddScoped<IServiceUser<DbUser, UserVM>, ServiceUser>();
 builder.Services.AddScoped<IExcel<DbUser>, UserExcel>();
 builder.Services.AddScoped<JwtAuthenticationManager>();
 
+builder.Services.AddAutoMapper(typeof(UserRegisterProfile));
+
 // Đọc giá trị CORS từ cấu hình
 var corsSettings = builder.Configuration.GetSection("CorsSettings").Get<CorsSettings>();
 // Đọc giá trị Jwt từ cấu hình
@@ -48,9 +51,10 @@ builder.Services.AddCors(options =>
     //Cấu hình cho bất kỳ req nào 
     options.AddPolicy("CorsPolicy", policy =>
     {
-        policy.AllowAnyOrigin()
-              .AllowAnyHeader()
-              .AllowAnyMethod();
+        policy.WithOrigins(corsSettings.AllowedOrigins.ToArray())
+               .AllowAnyHeader()
+               .AllowAnyMethod()
+               .AllowCredentials();
     });
 });
 
@@ -73,44 +77,54 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = jwtSettings?.Audience,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtSettings?.SecretKey ?? ""))
     };
+
     options.Events = new JwtBearerEvents
     {
         OnAuthenticationFailed = context =>
         {
             if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
             {
-               
-                 context.Response.WriteJsonResponseAsync(
-                   new AuthenticationFailedResponse()
-                   {
-                       mes = "Token expired"
-                   },
-                   StatusCodes.Status401Unauthorized,
-                   "Token expired"
-                 ).Wait();
+                if (!context.Response.HasStarted)
+                {
+                    context.Response.WriteJsonResponseAsync(
+                      new AuthenticationFailedResponse()
+                      {
+                          mes = "Token expired"
+                      },
+                      StatusCodes.Status401Unauthorized,
+                      "Token expired"
+                    ).Wait();
+                }
             }
             else if (context.Exception.GetType() == typeof(SecurityTokenInvalidSignatureException))
             {
-                // Token has invalid signature
-                  context.Response.WriteJsonResponseAsync(
-                    new AuthenticationFailedResponse()
-                    {
-                        mes = "Token has invalid signature"
-                    },
-                    StatusCodes.Status401Unauthorized,
-                    "Token has invalid signature"
-                  ).Wait();
+                if (!context.Response.HasStarted)
+                {
+                    // Token has invalid signature
+                    context.Response.WriteJsonResponseAsync(
+                      new AuthenticationFailedResponse()
+                      {
+                          mes = "Token has invalid signature"
+                      },
+                      StatusCodes.Status401Unauthorized,
+                      "Token has invalid signature"
+                    ).Wait();
+                }               
             }
             else
             {
-                // Token invalid
-                 context.Response.WriteJsonResponseAsync(
-                    new AuthenticationFailedResponse() 
-                    { 
-                        mes = "Token invalid" 
-                    },
-                    StatusCodes.Status401Unauthorized, "Token invalid"
-                 ).Wait();
+                if (!context.Response.HasStarted)
+                {
+                    // Token invalid
+                    context.Response.WriteJsonResponseAsync(
+                       new AuthenticationFailedResponse()
+                       {
+                           mes = "Token invalid"
+                       },
+                       StatusCodes.Status401Unauthorized, "Token invalid"
+                    ).Wait();
+                }
+                
             }
             return Task.CompletedTask;
         },
@@ -123,7 +137,7 @@ builder.Services.AddAuthentication(options =>
         {
             context.HandleResponse();
             return Task.CompletedTask;
-        } 
+        }
     };
 });
 

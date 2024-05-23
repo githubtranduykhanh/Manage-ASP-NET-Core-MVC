@@ -1,7 +1,7 @@
 ﻿using ECommerceMVC.Data;
 using ECommerceMVC.ViewModels;
 
-namespace ECommerceMVC.Services
+namespace ECommerceMVC.Services.User
 {
     public interface IServiceUser<TServiceEntity, TReturnEntity>
     {
@@ -20,5 +20,7 @@ namespace ECommerceMVC.Services
         Task<IEnumerable<TServiceEntity>?> GetListByListID(List<int> listID);
 
         Task<List<TServiceEntity>> ImportRangeUserFormExcel(List<TServiceEntity> users);
+
+        Task<TServiceEntity?> IsRegisterAsync(TServiceEntity user);
     }
 }

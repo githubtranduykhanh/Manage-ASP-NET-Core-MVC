@@ -2,7 +2,7 @@
 using ECommerceMVC.Helper.Excel;
 using ECommerceMVC.Helper.Jwts;
 using ECommerceMVC.Helper.Responses;
-using ECommerceMVC.Services;
+using ECommerceMVC.Services.User;
 using ECommerceMVC.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

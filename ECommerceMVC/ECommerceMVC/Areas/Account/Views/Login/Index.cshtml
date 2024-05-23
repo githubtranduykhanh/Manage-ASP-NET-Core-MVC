@@ -14,26 +14,41 @@
                 <div class="form sign-up">
                     <div class="input-group">
                         <i class='bx bxs-user'></i>
-                        <input type="text" placeholder="Username" name="Name">
+                        <input type="text" placeholder="Username" name="Name" required>
+                        <div class="invalid-feedback">
+                            Please provide a valid name.
+                        </div>
                     </div>
                     <div class="input-group">
                         <i class='bx bx-mail-send'></i>
-                        <input type="email" placeholder="Email" name="Email">
+                        <input type="email" placeholder="Email" name="Email" required>
+                        <div class="invalid-feedback">
+                            Please provide a valid email.
+                        </div>
                     </div>
                     <div class="input-group">
                         <i class='bx bxs-lock-alt'></i>
-                        <input type="number" placeholder="Phone" name="Phone">
+                        <input type="number" placeholder="Phone" name="Phone" required>
+                        <div class="invalid-feedback">
+                            Please provide a valid phone.
+                        </div>
                     </div>
                     <div class="input-group">
                         <i class='bx bxs-lock-alt'></i>
-                        <input type="password" placeholder="Password" name="Password">
+                        <input type="password" placeholder="Password" name="Password" required>
+                        <div class="invalid-feedback">
+                            Please provide a valid password.
+                        </div>
                     </div>
                     <div class="input-group">
-                        <select class="form-control form-control-lg" name="Sex">
+                        <select class="form-control form-control-lg" name="Sex" required>
                             <option value="male">Male</option>
                             <option value="female">Female</option>
                             <option selected value="other">Other</option>
                         </select>
+                        <div class="invalid-feedback">
+                            Please provide a valid sex.
+                        </div>
                     </div>
                     <input type="text" hidden name="LoginType" value="normally">
 

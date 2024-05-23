@@ -22,5 +22,8 @@ namespace ECommerceMVC.Repositorys.User
         Task<IEnumerable<DbUser>> GetListByListID(List<int> listID);
 
         Task<DbUser?> GetUserWithRoleAsync(int id);
+
+
+        Task<DbUser?> IsRegisterAsync(DbUser user);
     }
 }

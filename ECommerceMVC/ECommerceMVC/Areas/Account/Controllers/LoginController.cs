@@ -1,8 +1,9 @@
-﻿using ECommerceMVC.Config;
+﻿using AutoMapper;
+using ECommerceMVC.Config;
 using ECommerceMVC.Data;
 using ECommerceMVC.Helper.Jwts;
 using ECommerceMVC.Helper.Responses;
-using ECommerceMVC.Services;
+using ECommerceMVC.Services.User;
 using ECommerceMVC.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -19,12 +20,14 @@ namespace ECommerceMVC.Areas.Account.Controllers
         private readonly ECommerceContext _context;
         private readonly JwtSettings _jwtSettings;
         private readonly IServiceUser<DbUser, UserVM> _userService;
-        public LoginController(ECommerceContext context, IServiceUser<DbUser, UserVM> userService, IOptions<JwtSettings> jwtSettings, JwtAuthenticationManager jwtAuthenticationManager)
+        private readonly IMapper _mapper;
+        public LoginController(ECommerceContext context, IServiceUser<DbUser, UserVM> userService, IOptions<JwtSettings> jwtSettings, JwtAuthenticationManager jwtAuthenticationManager, IMapper mapper)
         {
             _context = context;
             _jwtSettings = jwtSettings.Value;
             _jwtAuthenticationManager = jwtAuthenticationManager;
             _userService = userService;
+            _mapper = mapper;
         }
 
         [HttpGet("Login")]
@@ -35,7 +38,7 @@ namespace ECommerceMVC.Areas.Account.Controllers
         }
         //POST: Account/Login
         [HttpPost("Login")]
-        public async Task<IActionResult> Login([FromBody]LoginBaseVM formData)
+        public async Task<IActionResult> Login([FromBody] LoginBaseVM formData)
         {
             // Kiểm tra thông tin đăng nhập và tạo JWT nếu hợp lệ
             if (!ModelState.IsValid) return Json(new ResponseData()
@@ -76,21 +79,29 @@ namespace ECommerceMVC.Areas.Account.Controllers
                 data = new
                 {
                     accessToken,
-                    refreshToken
+                    refreshToken,
+                    role = user.roleName,
                 }
             });
         }
 
         // POST Account/Register
         [HttpPost("Register")]              
-        public async Task<IActionResult> Register([FromBody] DbUser user)
+        public async Task<IActionResult> Register([FromBody] RegisterVM userRegister)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                // Log hoặc trả về chi tiết các lỗi
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+                return BadRequest(new { Errors = errors });
             }
-            user.IdRole = 2;
-            user.CreatedAt = DateTime.Now;
+            var user = _mapper.Map<DbUser>(userRegister);
+            var isRegister = await _userService.IsRegisterAsync(user);
+            if(isRegister != null) return Json(new ResponseData()
+            {
+                mes = "Email or Phone Number already exists"
+            });
+            
             await _userService.CreateAsync(user);
             // Lưu sản phẩm vào cơ sở dữ liệu
             // Trả về 201 Created và URL của sản phẩm mới

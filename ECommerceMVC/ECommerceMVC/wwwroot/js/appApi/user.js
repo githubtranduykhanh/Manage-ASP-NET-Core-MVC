@@ -46,7 +46,7 @@ export const apiLoginUser = (data) => axios({
     url: '/Account/Login',
     method: 'post',
     data,
-    withCredentials: true //Lưu cookie trên trình duyệt cùng với cấu hình credentials:true server
+    withCredentials: true, //Lưu cookie trên trình duyệt cùng với cấu hình credentials:true server
 })
 
 

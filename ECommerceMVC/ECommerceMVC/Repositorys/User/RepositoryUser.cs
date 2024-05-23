@@ -47,8 +47,7 @@ namespace ECommerceMVC.Repositorys.User
 
         public async Task<DbUser?> AuthenticateAsync(LoginBaseVM formData)
         {
-            return await _dbContext.DbUsers.FirstOrDefaultAsync(item => (item.Email == formData.emailorphone || item.Phone == formData.emailorphone) && item.Password == formData.passwordlogin);
-            
+            return await _dbContext.DbUsers.Include(u => u.IdRoleNavigation).FirstOrDefaultAsync(item => (item.Email == formData.emailorphone || item.Phone == formData.emailorphone) && item.Password == formData.passwordlogin);          
         }
 
         public async Task<DbUser?> GetRefreshToken(string refreshToken)
@@ -75,6 +74,11 @@ namespace ECommerceMVC.Repositorys.User
             return await _dbContext.DbUsers
                 .Include(d => d.IdRoleNavigation)
                 .FirstOrDefaultAsync(m => m.Id == id);
+        }
+
+        public async Task<DbUser?> IsRegisterAsync(DbUser user)
+        {
+            return await _dbContext.DbUsers.FirstOrDefaultAsync(item => item.Email.Equals(user.Email) || item.Phone.Equals(user.Phone));
         }
     }
 }

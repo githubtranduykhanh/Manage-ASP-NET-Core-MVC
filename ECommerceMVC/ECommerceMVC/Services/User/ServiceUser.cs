@@ -4,7 +4,7 @@ using ECommerceMVC.Repositorys.User;
 using ECommerceMVC.ViewModels;
 using NuGet.Protocol.Core.Types;
 
-namespace ECommerceMVC.Services
+namespace ECommerceMVC.Services.User
 {
     public class ServiceUser : IServiceUser<DbUser, UserVM>
     {
@@ -32,7 +32,7 @@ namespace ECommerceMVC.Services
             {
                 id = item.Id,
                 idRole = item.IdRole,
-                roleName = item.IdRoleNavigation.Name,               
+                roleName = item.IdRoleNavigation.Name,
                 loginType = item.LoginType,
                 name = item.Name,
                 phone = item.Phone,
@@ -88,7 +88,7 @@ namespace ECommerceMVC.Services
             {
                 id = item.Id,
                 idRole = item.IdRole,
-                roleName = "User",
+                roleName = item.IdRoleNavigation?.Name ?? "User",
                 loginType = item.LoginType,
                 name = item.Name,
                 phone = item.Phone,
@@ -156,6 +156,11 @@ namespace ECommerceMVC.Services
 
             // Trả về danh sách người dùng sau khi đã hoàn thành tất cả các tác vụ
             return users;
+        }
+
+        public async Task<DbUser?> IsRegisterAsync(DbUser user)
+        {
+            return await _userRepository.IsRegisterAsync(user);
         }
     }
 }

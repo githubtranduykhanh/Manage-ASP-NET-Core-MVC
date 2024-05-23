@@ -1,17 +1,19 @@
 ﻿import axios from 'https://cdn.skypack.dev/axios';
 // Tạo một instance Axios
-const axiosInstance = axios.create({ baseURL:"https://localhost:7069/"});
+const axiosInstance = axios.create({ baseURL:"https://localhost:7069"});
 
 
 // Tạo một interceptor cho Axios
 axiosInstance.interceptors.request.use(
     (config) => {
-        // Kiểm tra xem token có tồn tại trong cookie không
-        const token = getItem('accessToken');
-        // Nếu có, gắn token vào header Authorization
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
-        }
+        //// Kiểm tra xem token có tồn tại trong cookie không
+        //const token = getItem('accessToken');
+        //// Nếu có, gắn token vào header Authorization
+        //if (token) {
+            
+        //    config.headers.Authorization = `Bearer ${token}`;
+
+        //}
         return config;
     },
     (error) => {

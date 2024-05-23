@@ -46,23 +46,30 @@ document.addEventListener("DOMContentLoaded", () => {
                     textSingUpOrPhone.innerText = "Eeceive OTP from Phone"
                 })
                 btnSignIn.addEventListener("click", async () => {
-                    if (formSignIn.checkValidity()) {
-                        this.btnSetting(btnSignIn, 'Loading...', true, true)
-                        const res = await apiLoginUser({ emailorphone: inputSignInEmailOrPhone.value, passwordlogin: inputSignInPassword.value })
-                        this.btnSetting(btnSignIn, 'Sign in', false, false)
-                        console.log("Login res :", res)
-                        if (res?.status) {
-                            localStorage.removeItem('accessToken')
-                            localStorage.setItem('accessToken', res?.data?.accessToken)
-                            toastr.success(res?.mes)
-                        } else {
-                            toastr.error(res?.mes)
-                        }
+                    if (this.checkValidityFrom(formSignIn)) {
+                        try {
+                            this.btnSetting(btnSignIn, 'Loading...', true, true)
+                            const res = await apiLoginUser({ emailorphone: inputSignInEmailOrPhone.value, passwordlogin: inputSignInPassword.value })
+                            this.btnSetting(btnSignIn, 'Sign in', false, false)
+                            console.log("Login res :", res)
+                            if (res?.status) {
+                                localStorage.removeItem('accessToken')
+                                localStorage.setItem('accessToken', res?.data?.accessToken)
+                                toastr.success(res?.mes)
+                                this.resetInputInForm(formSignIn)
+                                location.href = "/Member"
+                            } else {
+                                toastr.error(res?.mes)
+                            }
+                        } catch (e) {
+                            console.error(e)
+                            this.btnSetting(btnSignIn, 'Sign in', false, false)
+                        }    
                     }
-                    formSignIn.classList.add('was-validated');                   
+                                                                                      
                 })
                 btnSignUp.addEventListener("click", async () => {
-                    if (formSingUp.checkValidity()) {
+                    if (this.checkValidityFrom(formSingUp)) {
                         try {
                             const formSingUpData = document.getElementById("js-form-sign-up")
                             var formData = new FormData(formSingUpData);
@@ -78,27 +85,35 @@ document.addEventListener("DOMContentLoaded", () => {
                             this.btnSetting(btnSignUp, 'Loading...', true, true)
                             const res = await apiRegisterUser(formDataObj)
                             this.btnSetting(btnSignUp, 'Sign up', false, false)
-                            console.log("Login res :", res)
+                            console.log("Register res :", res)
                             if (res?.status) {
                                 toastr.success(res?.mes)
+                                this.resetInputInForm(formSingUp)
                             } else {
                                 toastr.error(res?.mes)
                             }
                         } catch (e) {
                             console.error(e)
+                            this.btnSetting(btnSignUp, 'Sign up', false, false)
                         }                      
                     }
-                    formSingUp.classList.add('was-validated');
+                    
                 })
                 setTimeout(() => {
                     container.classList.add('sign-in')
                 }, 200)
             },
+            checkValidityFrom(form) {
+                !form.checkValidity() && form.classList.add('was-validated') 
+                return form.checkValidity()
+            },
             resetInputInForm(form) {
                 const inputs = form.querySelectorAll('input')
                 Array.from(inputs).forEach(input => {
-                    if (input.name != 'loginType') input.value = ''          
+                    if (input.name != 'LoginType') input.value = ''          
                 })
+                console.log(form)
+                form.classList.remove("was-validated")
             },
             resetFormDefault() {
                 console.log("resetFormDefault")
