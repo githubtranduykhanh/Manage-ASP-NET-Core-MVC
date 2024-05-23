@@ -38,25 +38,6 @@ namespace ECommerceMVC.Helper.Jwts
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }
-        public string GenerateTokenNew(string id, string role)
-        {
-            var key = Encoding.ASCII.GetBytes(_jwtSettings.SecretKey);
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Audience = _jwtSettings.Audience,
-                Issuer = _jwtSettings.Issuer,
-                Subject = new ClaimsIdentity(new Claim[]
-                {
-                new Claim(ClaimTypes.NameIdentifier, id),
-                new Claim(ClaimTypes.Role, role),
-                }),
-                Expires = DateTime.UtcNow.AddDays(_jwtSettings.TokenLifetimeDayAccessToken),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            return tokenHandler.WriteToken(token);
-        }
         public string RefreshToken(string id, string role)
         {
             var key = Encoding.ASCII.GetBytes(_jwtSettings.SecretKey);
@@ -101,5 +82,26 @@ namespace ECommerceMVC.Helper.Jwts
                 return null;
             }
         }
+
+        public bool IsTokenExpired(string token)
+        {
+            var principal = GetPrincipal(token);
+            if (principal == null)
+            {
+
+                return false;
+            }
+
+            var jwtHandler = new JwtSecurityTokenHandler();
+            var jwtToken = jwtHandler.ReadToken(token) as JwtSecurityToken;
+            if (jwtToken == null || jwtToken.ValidTo == null)
+            {
+                return false;
+            }
+
+
+            return jwtToken.ValidTo > DateTime.UtcNow;
+        }
+
     }
 }

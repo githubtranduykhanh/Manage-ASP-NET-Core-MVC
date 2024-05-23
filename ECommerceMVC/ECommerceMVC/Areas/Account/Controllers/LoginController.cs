@@ -38,6 +38,7 @@ namespace ECommerceMVC.Areas.Account.Controllers
         }
         //POST: Account/Login
         [HttpPost("Login")]
+        [Authorize]
         public async Task<IActionResult> Login([FromBody] LoginBaseVM formData)
         {
             // Kiểm tra thông tin đăng nhập và tạo JWT nếu hợp lệ
@@ -112,6 +113,42 @@ namespace ECommerceMVC.Areas.Account.Controllers
                 data = user
             });
             //return CreatedAtRoute("GetUser", new { id = user.id },user);
+        }
+
+
+        // POST Account/Register
+        [HttpGet("RefreshToken")]
+        public async Task<IActionResult> RefreshToken()
+        {
+            // Lấy giá trị của cookie với tên cụ thể (ví dụ: "refreshToken")
+            if (Request.Cookies.ContainsKey("refreshToken"))
+            {
+                var refreshTokenCookie = Request.Cookies["refreshToken"];
+
+                // Sử dụng giá trị của refresh token từ cookie
+                var refreshTokenUser = await _userService.GetRefreshToken(refreshTokenCookie);
+                if (refreshTokenUser == null) {
+                    return BadRequest(new { message = "Refresh token not found" });
+                }
+
+                var isTokenExp = _jwtAuthenticationManager.IsTokenExpired(refreshTokenCookie);
+                if (!isTokenExp)
+                {
+                    return Unauthorized(new { message = "Refresh token expired" });
+                }
+
+                var newAccessToken = _jwtAuthenticationManager.GenerateToken(refreshTokenUser.Id.ToString(), refreshTokenUser.IdRoleNavigation?.Name ?? "User");
+
+                if (newAccessToken != null)
+                {
+                    return Ok(new { newAccessToken });
+                }
+                else
+                {
+                    return Unauthorized(new { message = "Invalid refresh token" });
+                }
+            }
+            return BadRequest(new { message = "Refresh token not found" });
         }
     }
 }

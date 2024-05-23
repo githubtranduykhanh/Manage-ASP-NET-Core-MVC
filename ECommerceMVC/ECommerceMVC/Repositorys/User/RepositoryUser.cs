@@ -52,7 +52,7 @@ namespace ECommerceMVC.Repositorys.User
 
         public async Task<DbUser?> GetRefreshToken(string refreshToken)
         {
-            return await _dbContext.DbUsers.FirstOrDefaultAsync(item => item.RefreshToken == refreshToken);
+            return await _dbContext.DbUsers.Include(u => u.IdRoleNavigation).FirstOrDefaultAsync(item => item.RefreshToken == refreshToken);
         }
 
         public async Task<DbUser?> AddRefreshToken(int id, string refreshToken)

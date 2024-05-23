@@ -39,7 +39,7 @@ namespace ECommerceMVC.Controllers
         }
 
         // GET api/v1/user/list
-        [HttpGet("list")]
+        [HttpGet("list")]       
         public async Task<IActionResult> GetListUsers()
         {
             var entities = await _userService.GetAllAsync();

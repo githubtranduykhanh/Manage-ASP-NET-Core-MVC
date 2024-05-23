@@ -75,70 +75,70 @@ builder.Services.AddAuthentication(options =>
         ClockSkew = TimeSpan.Zero,
         ValidIssuer = jwtSettings?.Issuer,
         ValidAudience = jwtSettings?.Audience,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtSettings?.SecretKey ?? ""))
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtSettings?.SecretKey ?? "ECommerceAuthorizationInformationWarningGETPOSTPUTPUT"))
     };
 
-    options.Events = new JwtBearerEvents
-    {
-        OnAuthenticationFailed = context =>
-        {
-            if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
-            {
-                if (!context.Response.HasStarted)
-                {
-                    context.Response.WriteJsonResponseAsync(
-                      new AuthenticationFailedResponse()
-                      {
-                          mes = "Token expired"
-                      },
-                      StatusCodes.Status401Unauthorized,
-                      "Token expired"
-                    ).Wait();
-                }
-            }
-            else if (context.Exception.GetType() == typeof(SecurityTokenInvalidSignatureException))
-            {
-                if (!context.Response.HasStarted)
-                {
-                    // Token has invalid signature
-                    context.Response.WriteJsonResponseAsync(
-                      new AuthenticationFailedResponse()
-                      {
-                          mes = "Token has invalid signature"
-                      },
-                      StatusCodes.Status401Unauthorized,
-                      "Token has invalid signature"
-                    ).Wait();
-                }               
-            }
-            else
-            {
-                if (!context.Response.HasStarted)
-                {
-                    // Token invalid
-                    context.Response.WriteJsonResponseAsync(
-                       new AuthenticationFailedResponse()
-                       {
-                           mes = "Token invalid"
-                       },
-                       StatusCodes.Status401Unauthorized, "Token invalid"
-                    ).Wait();
-                }
+    //options.Events = new JwtBearerEvents
+    //{
+    //    OnAuthenticationFailed = context =>
+    //    {
+    //        if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
+    //        {
+    //            if (!context.Response.HasStarted)
+    //            {
+    //                context.Response.WriteJsonResponseAsync(
+    //                  new AuthenticationFailedResponse()
+    //                  {
+    //                      mes = "Token expired"
+    //                  },
+    //                  StatusCodes.Status401Unauthorized,
+    //                  "Token expired"
+    //                ).Wait();
+    //            }
+    //        }
+    //        else if (context.Exception.GetType() == typeof(SecurityTokenInvalidSignatureException))
+    //        {
+    //            if (!context.Response.HasStarted)
+    //            {
+    //                // Token has invalid signature
+    //                context.Response.WriteJsonResponseAsync(
+    //                  new AuthenticationFailedResponse()
+    //                  {
+    //                      mes = "Token has invalid signature"
+    //                  },
+    //                  StatusCodes.Status401Unauthorized,
+    //                  "Token has invalid signature"
+    //                ).Wait();
+    //            }               
+    //        }
+    //        else
+    //        {
+    //            if (!context.Response.HasStarted)
+    //            {
+    //                // Token invalid
+    //                context.Response.WriteJsonResponseAsync(
+    //                   new AuthenticationFailedResponse()
+    //                   {
+    //                       mes = "Token invalid"
+    //                   },
+    //                   StatusCodes.Status401Unauthorized, "Token invalid"
+    //                ).Wait();
+    //            }
                 
-            }
-            return Task.CompletedTask;
-        },
-        OnTokenValidated = context =>
-        {
-            Console.WriteLine("Token validated successfully");
-            return Task.CompletedTask;
-        },
-        OnChallenge = context =>
-        {
-            context.HandleResponse();
-            return Task.CompletedTask;
-        }
-    };
+    //        }
+    //        return Task.CompletedTask;
+    //    },
+    //    OnTokenValidated = context =>
+    //    {
+    //        Console.WriteLine("Token validated successfully");
+    //        return Task.CompletedTask;
+    //    },
+    //    OnChallenge = context =>
+    //    {
+    //        context.HandleResponse();
+    //        return Task.CompletedTask;
+    //    }
+    //};
 });
 
 
