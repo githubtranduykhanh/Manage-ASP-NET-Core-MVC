@@ -1,5 +1,6 @@
 ﻿import { apiLoginUser, apiRegisterUser } from "./appApi/user.js"
-import store from "./redux/store.js"
+import store from "./reduxToolkit/store.js"
+import { getAllUserAsync } from "./reduxToolkit/features/user/userActions.js"
 
 document.addEventListener("DOMContentLoaded", () => {
     const accout = (() => {
@@ -58,8 +59,9 @@ document.addEventListener("DOMContentLoaded", () => {
                                 localStorage.removeItem('accessToken')
                                 localStorage.setItem('accessToken', res?.data?.accessToken)
                                 toastr.success(res?.mes)
-                                this.resetInputInForm(formSignIn)                              
-                                //location.href = "/Member"
+                                this.resetInputInForm(formSignIn)
+                                store.dispatch(getAllUserAsync())
+                                location.href = "/Member"
                             } else {
                                 toastr.error(res?.mes)
                             }
