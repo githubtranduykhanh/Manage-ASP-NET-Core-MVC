@@ -10,7 +10,7 @@ export const apiRegister = (data) => axios({
 
 
 export const apiGetUsers = () => axios({
-    url: '/user',
+    url: 'api/v1/user/list',
     method: 'get',
 })
 

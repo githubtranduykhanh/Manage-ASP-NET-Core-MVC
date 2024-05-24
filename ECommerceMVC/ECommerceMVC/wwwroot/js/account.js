@@ -1,4 +1,5 @@
-﻿import { apiLoginUser,apiRegisterUser } from "./appApi/user.js"
+﻿import { apiLoginUser, apiRegisterUser } from "./appApi/user.js"
+import store from "./redux/store.js"
 
 document.addEventListener("DOMContentLoaded", () => {
     const accout = (() => {
@@ -21,6 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const textSingUpOrPhone = document.getElementById("js-text-sign-up-or-phone")
         const accoutStore = {
             addEventDisplayForm() {
+                store.subscribe(this.render)
                 Array.from(btns).forEach(btn => {
                     btn.addEventListener("click", () => {
                         container.classList.toggle('sign-in')
@@ -56,8 +58,8 @@ document.addEventListener("DOMContentLoaded", () => {
                                 localStorage.removeItem('accessToken')
                                 localStorage.setItem('accessToken', res?.data?.accessToken)
                                 toastr.success(res?.mes)
-                                this.resetInputInForm(formSignIn)
-                                location.href = "/Member"
+                                this.resetInputInForm(formSignIn)                              
+                                //location.href = "/Member"
                             } else {
                                 toastr.error(res?.mes)
                             }
@@ -102,6 +104,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 setTimeout(() => {
                     container.classList.add('sign-in')
                 }, 200)
+            },
+            render() {
+                console.log(store.getState())
             },
             checkValidityFrom(form) {
                 !form.checkValidity() && form.classList.add('was-validated') 
@@ -165,6 +170,7 @@ document.addEventListener("DOMContentLoaded", () => {
             innit() {
                 this.configToastr()
                 this.addEventDisplayForm()
+                this.render()
             },
         }
         return accoutStore
