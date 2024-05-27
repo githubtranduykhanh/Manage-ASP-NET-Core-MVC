@@ -44,15 +44,15 @@ namespace ECommerceMVC.Controllers
                 status = false,
                 mes = "User does not exist !!",
             });
-            var refreshToken = _jwtAuthenticationManager.RefreshToken(user.id.ToString(), user.roleName);
-            var isAddRefreshToken = await _userService.AddRefreshToken(user.id, refreshToken);
+            var refreshToken = _jwtAuthenticationManager.RefreshToken(user.Id.ToString(), user.RoleName);
+            var isAddRefreshToken = await _userService.AddRefreshToken(user.Id, refreshToken);
             if (isAddRefreshToken == null) return Json(new ResponseData()
             {
                 status = false,
                 mes = "Adding Refresh Token Failed !!",
             });
 
-            var accessToken = _jwtAuthenticationManager.GenerateToken(user.id.ToString(), user.roleName);        
+            var accessToken = _jwtAuthenticationManager.GenerateToken(user.Id.ToString(), user.RoleName);        
             // Tạo một cookie
             var cookieOptions = new CookieOptions
             {

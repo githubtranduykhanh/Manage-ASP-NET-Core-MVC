@@ -3,6 +3,8 @@ using ECommerceMVC.Config;
 using ECommerceMVC.Data;
 using ECommerceMVC.Helper.Jwts;
 using ECommerceMVC.Helper.Responses;
+using ECommerceMVC.Models;
+using ECommerceMVC.Services.Store;
 using ECommerceMVC.Services.User;
 using ECommerceMVC.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -21,13 +23,15 @@ namespace ECommerceMVC.Areas.Account.Controllers
         private readonly JwtSettings _jwtSettings;
         private readonly IServiceUser<DbUser, UserVM> _userService;
         private readonly IMapper _mapper;
-        public LoginController(ECommerceContext context, IServiceUser<DbUser, UserVM> userService, IOptions<JwtSettings> jwtSettings, JwtAuthenticationManager jwtAuthenticationManager, IMapper mapper)
+        private readonly IServiceStore _serviceStore;
+        public LoginController(ECommerceContext context,IServiceStore serviceStore ,IServiceUser<DbUser, UserVM> userService, IOptions<JwtSettings> jwtSettings, JwtAuthenticationManager jwtAuthenticationManager, IMapper mapper)
         {
             _context = context;
             _jwtSettings = jwtSettings.Value;
             _jwtAuthenticationManager = jwtAuthenticationManager;
             _userService = userService;
             _mapper = mapper;
+            _serviceStore = serviceStore;
         }
 
         [HttpGet("Login")]
@@ -38,7 +42,6 @@ namespace ECommerceMVC.Areas.Account.Controllers
         }
         //POST: Account/Login
         [HttpPost("Login")]
-        [Authorize]
         public async Task<IActionResult> Login([FromBody] LoginBaseVM formData)
         {
             // Kiểm tra thông tin đăng nhập và tạo JWT nếu hợp lệ
@@ -54,15 +57,20 @@ namespace ECommerceMVC.Areas.Account.Controllers
                 status = false,
                 mes = "User does not exist !!",
             });
-            var refreshToken = _jwtAuthenticationManager.RefreshToken(user.id.ToString(), user.roleName);
-            var isAddRefreshToken = await _userService.AddRefreshToken(user.id, refreshToken);
+            var refreshToken = _jwtAuthenticationManager.RefreshToken(user.Id.ToString(), user.RoleName);
+            var isAddRefreshToken = await _userService.AddRefreshToken(user.Id, refreshToken);
             if (isAddRefreshToken == null) return Json(new ResponseData()
             {
                 status = false,
                 mes = "Adding Refresh Token Failed !!",
             });
 
-            var accessToken = _jwtAuthenticationManager.GenerateToken(user.id.ToString(), user.roleName);
+            var accessToken = _jwtAuthenticationManager.GenerateToken(user.Id.ToString(), user.RoleName);
+
+
+            //Set Store Singleton
+            _serviceStore.SetUserStore(user);
+            
             // Tạo một cookie
             var cookieOptions = new CookieOptions
             {
@@ -81,7 +89,7 @@ namespace ECommerceMVC.Areas.Account.Controllers
                 {
                     accessToken,
                     refreshToken,
-                    role = user.roleName,
+                    role = user.RoleName,
                 }
             });
         }

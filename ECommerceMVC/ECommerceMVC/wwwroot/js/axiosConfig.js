@@ -45,7 +45,7 @@ axiosInstance.interceptors.response.use(
                         }).catch((errorRefreshTokenPromise) => {
                             // Làm mới token không thành công, xử lý lỗi và từ chối promise
                             destroyTokenLocalStorage();
-                            //window.location.href = "/Account/Login"
+                            window.location.href = "/Account/Login"
                             reject(errorRefreshTokenPromise);
                         }).finally(() => {
                             refreshTokenPromise = null // Đặt lại promise sau khi hoàn thành
@@ -64,16 +64,16 @@ axiosInstance.interceptors.response.use(
             }
             if (wwwAuthenticateHeader && wwwAuthenticateHeader.includes('invalid_token')) {
                 destroyTokenLocalStorage();
-                //window.location.href = "/Account/Login"
+                window.location.href = "/Account/Login"
                 return Promise.reject(error)
             }
             if (wwwAuthenticateHeader && wwwAuthenticateHeader.includes('Bearer')) {
                 destroyTokenLocalStorage();
-                //window.location.href = "/Account/Login"
+                window.location.href = "/Account/Login"
                 return Promise.reject(error)
             }
             destroyTokenLocalStorage();
-            //window.location.href = "/Account/Login"
+            window.location.href = "/Account/Login"
             return Promise.reject(error);
         }
 

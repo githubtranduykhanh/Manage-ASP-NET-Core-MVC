@@ -22,5 +22,8 @@ namespace ECommerceMVC.Services.User
         Task<List<TServiceEntity>> ImportRangeUserFormExcel(List<TServiceEntity> users);
 
         Task<TServiceEntity?> IsRegisterAsync(TServiceEntity user);
+
+
+        Task<IEnumerable<DbRole>?> GetRolesAsync();
     }
 }

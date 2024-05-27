@@ -25,5 +25,7 @@ namespace ECommerceMVC.Repositorys.User
 
 
         Task<DbUser?> IsRegisterAsync(DbUser user);
+
+        Task<IEnumerable<DbRole>?> GetRolesAsync();
     }
 }

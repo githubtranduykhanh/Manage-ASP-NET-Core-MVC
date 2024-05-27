@@ -1,17 +1,21 @@
-﻿using ECommerceMVC.Data;
+﻿using AutoMapper;
+using ECommerceMVC.Data;
 using ECommerceMVC.Repositorys;
 using ECommerceMVC.Repositorys.User;
 using ECommerceMVC.ViewModels;
 using NuGet.Protocol.Core.Types;
+using System.Collections.Generic;
 
 namespace ECommerceMVC.Services.User
 {
     public class ServiceUser : IServiceUser<DbUser, UserVM>
     {
         private readonly IRepositoryUser _userRepository;
-        public ServiceUser(IRepositoryUser userRepository)
+        private readonly IMapper _mapper;
+        public ServiceUser(IRepositoryUser userRepository , IMapper mapper)
         {
             _userRepository = userRepository;
+            _mapper = mapper;
         }
 
         public async Task CreateAsync(DbUser user)
@@ -27,47 +31,53 @@ namespace ECommerceMVC.Services.User
         public async Task<IEnumerable<UserVM>?> GetAllAsync()
         {
             IEnumerable<DbUser> list = await _userRepository.GetAllAsync();
+
             if (list == null) return null;
-            return list.Select(item => new UserVM()
-            {
-                id = item.Id,
-                idRole = item.IdRole,
-                roleName = item.IdRoleNavigation.Name,
-                loginType = item.LoginType,
-                name = item.Name,
-                phone = item.Phone,
-                refreshToken = item.RefreshToken ?? "",
-                address = item.Address ?? "",
-                avatar = item.Avatar ?? "",
-                createdAt = item.CreatedAt,
-                email = item.Email,
-                sex = item.Sex,
-                status = item.Status,
-                securityQuestion = item.SecurityQuestion ?? ""
-            });
+            return _mapper.Map<List<UserVM>>(list);
+
+           
+            //return list.Select(item => new UserFirstVM()
+            //{
+            //    id = item.Id,
+            //    idRole = item.IdRole,
+            //    roleName = item.IdRoleNavigation.Name,
+            //    loginType = item.LoginType,
+            //    name = item.Name,
+            //    phone = item.Phone,
+            //    refreshToken = item.RefreshToken ?? "",
+            //    address = item.Address ?? "",
+            //    avatar = item.Avatar ?? "",
+            //    createdAt = item.CreatedAt,
+            //    email = item.Email,
+            //    sex = item.Sex,
+            //    status = item.Status,
+            //    securityQuestion = item.SecurityQuestion ?? ""
+            //});
         }
 
         public async Task<UserVM?> GetByIdAsync(int id)
         {
             var item = await _userRepository.GetByIdAsync(id);
             if (item == null) return null;
-            return new UserVM()
-            {
-                id = item.Id,
-                idRole = item.IdRole,
-                roleName = item.IdRoleNavigation.Name,
-                loginType = item.LoginType,
-                name = item.Name,
-                phone = item.Phone,
-                refreshToken = item.RefreshToken ?? "",
-                address = item.Address ?? "",
-                avatar = item.Avatar ?? "",
-                createdAt = item.CreatedAt,
-                email = item.Email ?? "",
-                sex = item.Sex,
-                status = item.Status,
-                securityQuestion = item.SecurityQuestion ?? ""
-            };
+
+            return _mapper.Map<UserVM>(item);
+            //return new UserFirstVM()
+            //{
+            //    id = item.Id,
+            //    idRole = item.IdRole,
+            //    roleName = item.IdRoleNavigation.Name,
+            //    loginType = item.LoginType,
+            //    name = item.Name,
+            //    phone = item.Phone,
+            //    refreshToken = item.RefreshToken ?? "",
+            //    address = item.Address ?? "",
+            //    avatar = item.Avatar ?? "",
+            //    createdAt = item.CreatedAt,
+            //    email = item.Email ?? "",
+            //    sex = item.Sex,
+            //    status = item.Status,
+            //    securityQuestion = item.SecurityQuestion ?? ""
+            //};
         }
 
 
@@ -84,23 +94,25 @@ namespace ECommerceMVC.Services.User
         {
             var item = await _userRepository.AuthenticateAsync(formFata);
             if (item == null) return null;
-            return new UserVM()
-            {
-                id = item.Id,
-                idRole = item.IdRole,
-                roleName = item.IdRoleNavigation?.Name ?? "User",
-                loginType = item.LoginType,
-                name = item.Name,
-                phone = item.Phone,
-                refreshToken = item.RefreshToken ?? "",
-                address = item.Address ?? "",
-                avatar = item.Avatar ?? "",
-                createdAt = item.CreatedAt,
-                email = item.Email ?? "",
-                sex = item.Sex,
-                status = item.Status,
-                securityQuestion = item.SecurityQuestion ?? ""
-            };
+
+            return _mapper.Map<UserVM>(item);
+            //return new UserFirstVM()
+            //{
+            //    id = item.Id,
+            //    idRole = item.IdRole,
+            //    roleName = item.IdRoleNavigation?.Name ?? "User",
+            //    loginType = item.LoginType,
+            //    name = item.Name,
+            //    phone = item.Phone,
+            //    refreshToken = item.RefreshToken ?? "",
+            //    address = item.Address ?? "",
+            //    avatar = item.Avatar ?? "",
+            //    createdAt = item.CreatedAt,
+            //    email = item.Email ?? "",
+            //    sex = item.Sex,
+            //    status = item.Status,
+            //    securityQuestion = item.SecurityQuestion ?? ""
+            //};
         }
 
 
@@ -161,6 +173,11 @@ namespace ECommerceMVC.Services.User
         public async Task<DbUser?> IsRegisterAsync(DbUser user)
         {
             return await _userRepository.IsRegisterAsync(user);
+        }
+
+        public async Task<IEnumerable<DbRole>?> GetRolesAsync()
+        {
+            return await _userRepository.GetRolesAsync();
         }
     }
 }

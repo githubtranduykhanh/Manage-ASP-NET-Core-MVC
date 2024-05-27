@@ -80,5 +80,10 @@ namespace ECommerceMVC.Repositorys.User
         {
             return await _dbContext.DbUsers.FirstOrDefaultAsync(item => item.Email.Equals(user.Email) || item.Phone.Equals(user.Phone));
         }
+
+        public async Task<IEnumerable<DbRole>?> GetRolesAsync()
+        {
+            return await _dbContext.DbRoles.ToListAsync();
+        }
     }
 }

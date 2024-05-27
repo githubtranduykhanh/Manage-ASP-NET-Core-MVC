@@ -31,7 +31,7 @@ namespace ECommerceMVC.Helper.Jwts
                     new Claim(ClaimTypes.NameIdentifier, id),                  
                     new Claim(ClaimTypes.Role, role),
                 }),
-                Expires = DateTime.UtcNow.AddSeconds(_jwtSettings.TokenLifetimeDayAccessToken),
+                Expires = DateTime.UtcNow.AddDays(_jwtSettings.TokenLifetimeDayAccessToken),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             var tokenHandler = new JwtSecurityTokenHandler();

@@ -1,50 +1,59 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿
+using System.ComponentModel.DataAnnotations;
 
 namespace ECommerceMVC.ViewModels
 {
     public class UserVM
     {
-        public int id { get; set; }
+        public int Id { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Name is required")]
         [StringLength(50)]
-        public string name { get; set; }
+        [Display(Name = "Full Name")]
+        public string Name { get; set; } = string.Empty;
 
         [StringLength(100)]
-        public string address { get; set; }
+        [Display(Name = "Address")]
+        public string Address { get; set; } = string.Empty;
 
-        [Required]
-        [StringLength(15)]
-        public string phone { get; set; }
+        [Required(ErrorMessage = "Phone is required")]
+        [StringLength(12, ErrorMessage = "Phone cannot be longer than 12 characters")]
+        [Display(Name = "Phone Number")]
+        public string Phone { get; set; } = string.Empty;
 
-        [Required]
-        [StringLength(50)]
-        public string email { get; set; }
+        [Required(ErrorMessage = "Email is required")]
+        [EmailAddress(ErrorMessage = "Invalid Email Address")]
+        [Display(Name = "Email Address")]
+        public string Email { get; set; } = string.Empty;
 
-        [Required]
-        public string password { get; set; }
+        [Required(ErrorMessage = "Password is required")]
+        [Display(Name = "Password")]
+        public string Password { get; set; } = "123456";
 
-        public int idRole { get; set; }
+        public int IdRole { get; set; } = 2;
 
-
-        public string roleName { get; set; }
-
-        [Required]
+        [Required(ErrorMessage = "Sex is required")]
         [StringLength(10)]
-        public string sex { get; set; }
+        [Display(Name = "Sex")] 
+        public string Sex { get; set; } = "other";
 
-        public DateTime createdAt { get; set; }
+        public DateTime CreatedAt { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "LoginType is required")]
         [StringLength(50)]
-        public string loginType { get; set; }
+        [Display(Name = "Login Type")]
+        public string LoginType { get; set; } = "normally";
 
-        public string refreshToken { get; set; }
+        public string RefreshToken { get; set; }
 
-        public string avatar { get; set; }
+        public string Avatar { get; set; } = "avatadefaul.png";
 
-        public string securityQuestion { get; set; }
+        [Display(Name = "Security Question")]
+        public string SecurityQuestion { get; set; }
 
-        public bool status { get; set; }
+        public bool Status { get; set; }
+
+        [Display(Name = "Role Name")]
+        public string RoleName { get; set; }
     }
 }

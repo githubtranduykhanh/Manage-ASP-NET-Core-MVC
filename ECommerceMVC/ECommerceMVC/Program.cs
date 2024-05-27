@@ -5,6 +5,7 @@ using ECommerceMVC.Helper.Excel;
 using ECommerceMVC.Helper.Jwts;
 using ECommerceMVC.Helper.Responses;
 using ECommerceMVC.Repositorys.User;
+using ECommerceMVC.Services.Store;
 using ECommerceMVC.Services.User;
 using ECommerceMVC.ViewModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -28,10 +29,15 @@ builder.Services.AddDbContext<ECommerceContext>(options =>
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 builder.Services.AddScoped<IRepositoryUser, RepositoryUser>();
 builder.Services.AddScoped<IServiceUser<DbUser, UserVM>, ServiceUser>();
+builder.Services.AddScoped<IServiceUser<DbUser, UserFirstVM>, ServiceUserFirst>();
+builder.Services.AddSingleton<IServiceStore, ServiceStore>();
 builder.Services.AddScoped<IExcel<DbUser>, UserExcel>();
+
 builder.Services.AddScoped<JwtAuthenticationManager>();
 
 builder.Services.AddAutoMapper(typeof(UserRegisterProfile));
+
+builder.Services.AddAutoMapper(typeof(UserVMDbUserProfile));
 
 // Đọc giá trị CORS từ cấu hình
 var corsSettings = builder.Configuration.GetSection("CorsSettings").Get<CorsSettings>();
