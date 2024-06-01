@@ -43,12 +43,12 @@
     <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
     <script src="~/assets/js/config.js"></script>
     <!-- dataTables CSS -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/2.0.7/css/dataTables.dataTables.css" />
+    @await RenderSectionAsync("cssAdminPage", required: false)
 
-   
+    <link rel="stylesheet" href="https://demos.themeselection.com/sneat-bootstrap-html-admin-template/assets/vendor/css/rtl/theme-default.css" />
 
 
-    <link rel="stylesheet" href="~/assets/css/style.css" />
+    <link rel="stylesheet" href="~/assets/css/style.css" asp-append-version="true" />
 </head>
 <body>
     <!-- Layout wrapper -->
@@ -290,8 +290,7 @@
    
     <!-- Place this tag in your head or just before your close body tag. -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
-    <!-- dataTables JS -->
-    <script src="https://cdn.datatables.net/2.0.7/js/dataTables.js"></script>
+   
     <!-- main.js -->
     <script type="module" src="~/js/main.js" asp-append-version="true"></script>
 </body>

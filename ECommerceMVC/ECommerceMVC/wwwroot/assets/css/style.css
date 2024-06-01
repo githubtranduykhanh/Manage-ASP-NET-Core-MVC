@@ -2,3 +2,30 @@
     width:100%;
     object-fit:contain;
 }
+
+button.dt-button, div.dt-button, a.dt-button, input.dt-button {
+    color: #696cff;
+    border-color: rgba(0, 0, 0, 0);
+    background: #e7e7ff;
+}
+
+.create-new.btn.btn-primary {
+    background: #696cff;
+    color: #fff;
+}
+
+.input-group.has-validation > .input-group-text:first-child {
+     border-top-right-radius: 0; 
+     border-bottom-right-radius: 0; 
+}
+
+.card-header.flex-column.flex-md-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dt-export td input, .dt-export td select {
+    border: none;
+    outline: none;
+}
