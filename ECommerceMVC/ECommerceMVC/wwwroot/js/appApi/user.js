@@ -35,6 +35,12 @@ export const apiDeleteUser = (uid) => axios({
 })
 
 
+export const apiGetCurrentUser = () => axios({
+    url: 'Account/CurrentUser',
+    method: 'get',
+})
+
+
 export const apiRegisterUser = (data) => axios({
     url: '/Account/Register',
     method: 'post',

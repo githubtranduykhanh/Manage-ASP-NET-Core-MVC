@@ -1,4 +1,5 @@
 ﻿using ECommerceMVC.AutoMapperProfile;
+using ECommerceMVC.AutoMapperProfile.User;
 using ECommerceMVC.Config;
 using ECommerceMVC.Data;
 using ECommerceMVC.Helper.Excel;
@@ -38,6 +39,8 @@ builder.Services.AddScoped<JwtAuthenticationManager>();
 builder.Services.AddAutoMapper(typeof(UserRegisterProfile));
 
 builder.Services.AddAutoMapper(typeof(UserVMDbUserProfile));
+
+builder.Services.AddAutoMapper(typeof(UserInformationcClient));
 
 // Đọc giá trị CORS từ cấu hình
 var corsSettings = builder.Configuration.GetSection("CorsSettings").Get<CorsSettings>();
