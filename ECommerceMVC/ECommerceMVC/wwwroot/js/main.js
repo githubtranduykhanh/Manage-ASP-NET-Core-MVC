@@ -4,17 +4,17 @@ import managerUser from "./adminPages/managerUsers.js"
 
 document.addEventListener("DOMContentLoaded", async () => {
 
-    try {
-        const res = await apiGetCurrentUser()
-        if (res && res?.status) {
-            console.log(res?.data)
-        } else {
-            window.location.href = "/Account/Login"
-        }
-    } catch (e) {
-        console.error(e)
-        window.location.href = "/Account/Login"
-    }
+    //try {
+    //    const res = await apiGetCurrentUser()
+    //    if (res && res?.status) {
+    //        console.log(res?.data)
+    //    } else {
+    //        window.location.href = "/Account/Login"
+    //    }
+    //} catch (e) {
+    //    console.error(e)
+    //    window.location.href = "/Account/Login"
+    //}
     // Lấy URL hiện tại
     var currentUrl = window.location.href;
 

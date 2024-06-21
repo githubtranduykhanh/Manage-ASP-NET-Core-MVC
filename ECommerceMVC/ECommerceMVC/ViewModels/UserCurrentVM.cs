@@ -4,7 +4,7 @@ namespace ECommerceMVC.ViewModels
 {
     public class UserCurrentVM
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
 
         [Required(ErrorMessage = "Name is required")]
         [StringLength(50)]

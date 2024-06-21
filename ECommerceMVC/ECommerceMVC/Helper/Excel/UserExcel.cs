@@ -33,16 +33,16 @@ namespace ECommerceMVC.Helper.Excel
                 int row = 2;
                 foreach (var item in items)
                 {
-                    worksheet.Cells[row, 1].Value = item.Id;
-                    worksheet.Cells[row, 2].Value = item.Name;
-                    worksheet.Cells[row, 3].Value = item.Email;
-                    worksheet.Cells[row, 4].Value = item.Phone;
-                    worksheet.Cells[row, 5].Value = item.Address;
-                    worksheet.Cells[row, 6].Value = item.Sex;
-                    worksheet.Cells[row, 7].Value = item.IdRoleNavigation?.Name;
-                    worksheet.Cells[row, 8].Value = item.Status;
-                    worksheet.Cells[row, 9].Value = item.LoginType;
-                    worksheet.Cells[row, 10].Value = item.CreatedAt;
+                    //worksheet.Cells[row, 1].Value = item.Id;
+                    //worksheet.Cells[row, 2].Value = item.Name;
+                    //worksheet.Cells[row, 3].Value = item.Email;
+                    //worksheet.Cells[row, 4].Value = item.Phone;
+                    //worksheet.Cells[row, 5].Value = item.Address;
+                    //worksheet.Cells[row, 6].Value = item.Sex;
+                    //worksheet.Cells[row, 7].Value = item.IdRoleNavigation?.Name;
+                    //worksheet.Cells[row, 8].Value = item.Status;
+                    //worksheet.Cells[row, 9].Value = item.LoginType;
+                    //worksheet.Cells[row, 10].Value = item.CreatedAt;
                     row++;
                 }
 
@@ -63,16 +63,16 @@ namespace ECommerceMVC.Helper.Excel
                 {
                     var user = new DbUser
                     {
-                        Id = int.Parse(worksheet.Cells[row, 1]?.Value?.ToString() ?? ""),
-                        Name = worksheet.Cells[row, 2]?.Value?.ToString() ?? "",
-                        Email = worksheet.Cells[row, 3]?.Value?.ToString() ?? "",
-                        Phone = worksheet.Cells[row, 4]?.Value?.ToString() ?? "",
-                        Address = worksheet.Cells[row, 5]?.Value?.ToString() ?? "",
-                        Sex = worksheet.Cells[row, 6]?.Value?.ToString() ?? "",
-                        IdRole = GetRole(worksheet.Cells[row, 7]?.Value?.ToString() ?? ""),
-                        Status = bool.Parse(worksheet.Cells[row, 8]?.Value?.ToString() ?? ""),
-                        LoginType = worksheet.Cells[row, 9]?.Value?.ToString() ?? "",
-                        CreatedAt = DateTime.Parse(worksheet.Cells[row, 10]?.Value?.ToString() ?? ""),
+                        //Id = worksheet.Cells[row, 1]?.Value?.ToString() ?? "",
+                        //Name = worksheet.Cells[row, 2]?.Value?.ToString() ?? "",
+                        //Email = worksheet.Cells[row, 3]?.Value?.ToString() ?? "",
+                        //Phone = worksheet.Cells[row, 4]?.Value?.ToString() ?? "",
+                        //Address = worksheet.Cells[row, 5]?.Value?.ToString() ?? "",
+                        //Sex = worksheet.Cells[row, 6]?.Value?.ToString() ?? "",
+                        //IdRole = GetRole(worksheet.Cells[row, 7]?.Value?.ToString() ?? ""),
+                        //Status = bool.Parse(worksheet.Cells[row, 8]?.Value?.ToString() ?? ""),
+                        //LoginType = worksheet.Cells[row, 9]?.Value?.ToString() ?? "",
+                        //CreatedAt = DateTime.Parse(worksheet.Cells[row, 10]?.Value?.ToString() ?? ""),
                     };
                     users.Add(user);
                 }
@@ -81,10 +81,10 @@ namespace ECommerceMVC.Helper.Excel
             return users;
         }
 
-        public int GetRole(string name)
-        {
-            var role = _dbContext.DbRoles.FirstOrDefault(item => item.Name == name);
-            return role != null ? role.Id : 2;
-        }
+        //public int GetRole(string name)
+        //{
+        //    var role = _dbContext.DbRoles.FirstOrDefault(item => item.Name == name);
+        //    return role != null ? role.Id : 2;
+        //}
     }
 }

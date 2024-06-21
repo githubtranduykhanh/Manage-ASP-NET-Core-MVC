@@ -37,9 +37,9 @@
                         <th>
                             @Html.DisplayNameFor(model => model.Users.FirstOrDefault().Status)
                         </th>
-                        <th>
+                       @*  <th>
                             @Html.DisplayNameFor(model => model.Users.FirstOrDefault().RoleName)
-                        </th>
+                        </th> *@
                         <th>
                             @Html.DisplayNameFor(model => model.Users.FirstOrDefault().CreatedAt)
                         </th>
@@ -76,10 +76,10 @@
                             <td>
                                 <input type="checkbox" asp-for="@user.Status" class="form-check-input" />
                             </td>
-                            <td>
+                           @*  <td>
                                 <select class="form-control" asp-for="@user.IdRole" asp-items="@(new SelectList(Model.Roles, "Id", "Name", user.IdRole))">
                                 </select>
-                            </td>
+                            </td> *@
                             
                             <td>
                                 <input type="datetime-local" class="form-control" asp-for="@user.CreatedAt" value="@user.CreatedAt.ToString("yyyy-MM-ddTHH:mm")" />
