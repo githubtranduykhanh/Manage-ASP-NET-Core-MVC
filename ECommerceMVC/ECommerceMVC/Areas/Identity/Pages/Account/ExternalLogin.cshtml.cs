@@ -18,6 +18,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using ECommerceMVC.Helper.Strings;
+using Microsoft.EntityFrameworkCore;
 
 namespace ECommerceMVC.Areas.Identity.Pages.Account
 {
@@ -111,6 +113,15 @@ namespace ECommerceMVC.Areas.Identity.Pages.Account
                 ErrorMessage = "Error loading external login information.";
                 return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
             }
+            // Log specific properties of the external login information
+            _logger.LogInformation("Login Provider: {LoginProvider}", info.LoginProvider);
+            _logger.LogInformation("Provider Key: {ProviderKey}", info.ProviderKey);
+            _logger.LogInformation("Display Name: {DisplayName}", info.ProviderDisplayName);
+            _logger.LogInformation("Principal Identity Name: {IdentityName}", info.Principal.Identity.Name);
+
+
+
+
 
             // Sign in the user with this external login provider if the user already has a login.
             var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
@@ -125,6 +136,64 @@ namespace ECommerceMVC.Areas.Identity.Pages.Account
             }
             else
             {
+                // Người dùng chưa có tài khoản trong hệ thống, cần liên kết tài khoản
+                var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+                var phoneNumber = info.Principal.FindFirstValue(ClaimTypes.MobilePhone);
+                var userName = info.Principal.FindFirstValue(ClaimTypes.Name);
+                _logger.LogInformation("Login Provider: {userName}", StringHelper.NormalizeUsername(userName) + info.ProviderKey);
+                DbUser user = null;
+
+                if (!string.IsNullOrEmpty(email))
+                {
+                    user = await _userManager.FindByEmailAsync(email);
+                }
+                else if (!string.IsNullOrEmpty(phoneNumber))
+                {
+                    // Kiểm tra người dùng dựa trên số điện thoại
+                    user = await _userManager.Users.FirstOrDefaultAsync(u => u.PhoneNumber == phoneNumber);
+                }
+                else
+                {
+                    user = await _userManager.FindByNameAsync(StringHelper.NormalizeUsername(userName) + info.ProviderKey);
+                }
+
+
+                if (user == null && info.LoginProvider.Equals("Facebook", StringComparison.OrdinalIgnoreCase))
+                {
+
+                    user = CreateUser();
+                    await _userStore.SetUserNameAsync(user, StringHelper.NormalizeUsername(userName) + info.ProviderKey, CancellationToken.None);
+
+                    await _emailStore.SetEmailAsync(user, info.ProviderKey + "facebook@example.com", CancellationToken.None);
+                    await _emailStore.SetEmailConfirmedAsync(user, true, CancellationToken.None);
+                    var resultNewUser = await _userManager.CreateAsync(user);
+                    if (!resultNewUser.Succeeded)
+                    {
+                        // Handle errors if create new user fails
+                        var errors = resultNewUser.Errors.Select(e => e.Description);
+                        ErrorMessage = string.Join(Environment.NewLine, errors);
+                        return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
+                    }
+                }
+
+                if (user != null)
+                {
+                    // Liên kết tài khoản với thông tin đăng nhập bên ngoài
+                    var addLoginResult = await _userManager.AddLoginAsync(user, info);
+                    if (!addLoginResult.Succeeded)
+                    {
+                        // Handle errors if adding login fails
+                        var errors = addLoginResult.Errors.Select(e => e.Description);
+                        ErrorMessage = string.Join(Environment.NewLine, errors);
+                        return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
+                    }
+                    // Đăng nhập sau khi đã liên kết tài khoản thành công
+                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    _logger.LogInformation("{Name} logged in with {LoginProvider} provider.", info.Principal.Identity.Name, info.LoginProvider);
+                    return LocalRedirect(returnUrl);
+                }
+
+
                 // If the user does not have an account, then ask the user to create an account.
                 ReturnUrl = returnUrl;
                 ProviderDisplayName = info.ProviderDisplayName;
@@ -138,6 +207,7 @@ namespace ECommerceMVC.Areas.Identity.Pages.Account
                 return Page();
             }
         }
+
 
         public async Task<IActionResult> OnPostConfirmationAsync(string returnUrl = null)
         {

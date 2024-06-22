@@ -11,15 +11,26 @@ using ECommerceMVC.Services.Store;
 using ECommerceMVC.Services.User;
 using ECommerceMVC.ViewModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using System.Configuration;
 using System.Text;
 using System.Text.Json;
+using static Microsoft.IO.RecyclableMemoryStreamManager;
 
 var builder = WebApplication.CreateBuilder(args);
+
+
+builder.Configuration
+    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true) // Đọc từ appsettings.json
+    .AddJsonFile("appsettingsLoca.json", optional: true, reloadOnChange: true) // Đọc từ appsettingsLoca.json
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true) // Đọc từ appsettings.{EnvironmentName}.json
+    .AddEnvironmentVariables(); // Đưa các biến môi trường vào cấu hình
+
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -35,6 +46,8 @@ builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSet
 // Add services to the container.
 builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
 builder.Services.AddTransient<IEmailSender, EmailSender>();
+
+builder.Services.Configure<AuthenticationSettings>(builder.Configuration.GetSection("AuthenticationSettings"));
 
 //builder.Services.AddScoped<IRepositoryUser, RepositoryUser>();
 //builder.Services.AddScoped<IServiceUser<DbUser, UserVM>, ServiceUser>();
@@ -55,6 +68,8 @@ builder.Services.AddAutoMapper(typeof(UserInformationcClient));
 var corsSettings = builder.Configuration.GetSection("CorsSettings").Get<CorsSettings>();
 // Đọc giá trị Jwt từ cấu hình
 var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
+// Đọc giá trị AuthenticationSettings từ cấu hình
+var authenticationSettings = builder.Configuration.GetSection("AuthenticationSettings").Get<AuthenticationSettings>();
 
 
 //Cấu hình Cors
@@ -117,12 +132,39 @@ builder.Services.Configure<IdentityOptions>(options => {
     options.SignIn.RequireConfirmedAccount = true;  // Email phải được xác thực trước khi đăng nhặp
 });
 
+
+//Khai báo path
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Identity/Account/Login";
     options.LogoutPath = "/Identity/Account/Logout";
     options.AccessDeniedPath = "/Identity/Account/AccessDenied";
 });
+
+builder.Services.AddAuthentication()
+    .AddGoogle(googleOptions =>
+    {
+        // Thiết lập ClientID và ClientSecret để truy cập API google
+        googleOptions.ClientId = authenticationSettings.Google.ClientId;
+        googleOptions.ClientSecret = authenticationSettings.Google.ClientSecret;
+        // Cấu hình Url callback lại từ Google (không thiết lập thì mặc định là /signin-google)
+        googleOptions.CallbackPath = authenticationSettings.Google.CallbackPath;
+        googleOptions.Events = new OAuthEvents()
+        {
+            OnRedirectToAuthorizationEndpoint = c =>
+            {
+                c.RedirectUri += "&prompt=consent";
+                c.Response.Redirect(c.RedirectUri);
+                return Task.CompletedTask;
+            }
+        };
+    })
+    .AddFacebook(facebookOptions => {
+        facebookOptions.AppId = authenticationSettings.Facebook.AppId;
+        facebookOptions.AppSecret = authenticationSettings.Facebook.AppSecret;
+        // Thiết lập đường dẫn Facebook chuyển hướng đến
+        facebookOptions.CallbackPath = authenticationSettings.Facebook.CallbackPath;
+    });
 
 builder.Services.AddControllersWithViews();
 
@@ -151,67 +193,67 @@ builder.Services.AddControllersWithViews();
 //        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtSettings?.SecretKey ?? "ECommerceAuthorizationInformationWarningGETPOSTPUTPUT"))
 //    };
 
-    //options.Events = new JwtBearerEvents
-    //{
-    //    OnAuthenticationFailed = context =>
-    //    {
-    //        if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
-    //        {
-    //            if (!context.Response.HasStarted)
-    //            {
-    //                context.Response.WriteJsonResponseAsync(
-    //                  new AuthenticationFailedResponse()
-    //                  {
-    //                      mes = "Token expired"
-    //                  },
-    //                  StatusCodes.Status401Unauthorized,
-    //                  "Token expired"
-    //                ).Wait();
-    //            }
-    //        }
-    //        else if (context.Exception.GetType() == typeof(SecurityTokenInvalidSignatureException))
-    //        {
-    //            if (!context.Response.HasStarted)
-    //            {
-    //                // Token has invalid signature
-    //                context.Response.WriteJsonResponseAsync(
-    //                  new AuthenticationFailedResponse()
-    //                  {
-    //                      mes = "Token has invalid signature"
-    //                  },
-    //                  StatusCodes.Status401Unauthorized,
-    //                  "Token has invalid signature"
-    //                ).Wait();
-    //            }               
-    //        }
-    //        else
-    //        {
-    //            if (!context.Response.HasStarted)
-    //            {
-    //                // Token invalid
-    //                context.Response.WriteJsonResponseAsync(
-    //                   new AuthenticationFailedResponse()
-    //                   {
-    //                       mes = "Token invalid"
-    //                   },
-    //                   StatusCodes.Status401Unauthorized, "Token invalid"
-    //                ).Wait();
-    //            }
-                
-    //        }
-    //        return Task.CompletedTask;
-    //    },
-    //    OnTokenValidated = context =>
-    //    {
-    //        Console.WriteLine("Token validated successfully");
-    //        return Task.CompletedTask;
-    //    },
-    //    OnChallenge = context =>
-    //    {
-    //        context.HandleResponse();
-    //        return Task.CompletedTask;
-    //    }
-    //};
+//options.Events = new JwtBearerEvents
+//{
+//    OnAuthenticationFailed = context =>
+//    {
+//        if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
+//        {
+//            if (!context.Response.HasStarted)
+//            {
+//                context.Response.WriteJsonResponseAsync(
+//                  new AuthenticationFailedResponse()
+//                  {
+//                      mes = "Token expired"
+//                  },
+//                  StatusCodes.Status401Unauthorized,
+//                  "Token expired"
+//                ).Wait();
+//            }
+//        }
+//        else if (context.Exception.GetType() == typeof(SecurityTokenInvalidSignatureException))
+//        {
+//            if (!context.Response.HasStarted)
+//            {
+//                // Token has invalid signature
+//                context.Response.WriteJsonResponseAsync(
+//                  new AuthenticationFailedResponse()
+//                  {
+//                      mes = "Token has invalid signature"
+//                  },
+//                  StatusCodes.Status401Unauthorized,
+//                  "Token has invalid signature"
+//                ).Wait();
+//            }               
+//        }
+//        else
+//        {
+//            if (!context.Response.HasStarted)
+//            {
+//                // Token invalid
+//                context.Response.WriteJsonResponseAsync(
+//                   new AuthenticationFailedResponse()
+//                   {
+//                       mes = "Token invalid"
+//                   },
+//                   StatusCodes.Status401Unauthorized, "Token invalid"
+//                ).Wait();
+//            }
+
+//        }
+//        return Task.CompletedTask;
+//    },
+//    OnTokenValidated = context =>
+//    {
+//        Console.WriteLine("Token validated successfully");
+//        return Task.CompletedTask;
+//    },
+//    OnChallenge = context =>
+//    {
+//        context.HandleResponse();
+//        return Task.CompletedTask;
+//    }
+//};
 //});
 
 
@@ -220,7 +262,7 @@ var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
-{ 
+{
     app.UseExceptionHandler("/Home/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
@@ -269,3 +311,5 @@ app.MapRazorPages();
 
 
 app.Run();
+
+
