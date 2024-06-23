@@ -26,8 +26,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 
 builder.Configuration
-    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true) // Đọc từ appsettings.json
-    .AddJsonFile("appsettingsLoca.json", optional: true, reloadOnChange: true) // Đọc từ appsettingsLoca.json
+    //.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true) // Đọc từ appsettings.json
+    .AddJsonFile("appsettingsLocal.json", optional: true, reloadOnChange: true) // Đọc từ appsettingsLoca.json
     .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true) // Đọc từ appsettings.{EnvironmentName}.json
     .AddEnvironmentVariables(); // Đưa các biến môi trường vào cấu hình
 
