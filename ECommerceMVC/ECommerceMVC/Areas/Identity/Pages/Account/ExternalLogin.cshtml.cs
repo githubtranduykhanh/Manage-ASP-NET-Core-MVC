@@ -20,6 +20,10 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using ECommerceMVC.Helper.Strings;
 using Microsoft.EntityFrameworkCore;
+using ECommerceMVC.ViewModels;
+using Microsoft.AspNetCore.Authentication;
+using Newtonsoft.Json.Linq;
+using ECommerceMVC.Helper.Facebooks;
 
 namespace ECommerceMVC.Areas.Identity.Pages.Account
 {
@@ -113,14 +117,6 @@ namespace ECommerceMVC.Areas.Identity.Pages.Account
                 ErrorMessage = "Error loading external login information.";
                 return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
             }
-            // Log specific properties of the external login information
-            _logger.LogInformation("Login Provider: {LoginProvider}", info.LoginProvider);
-            _logger.LogInformation("Provider Key: {ProviderKey}", info.ProviderKey);
-            _logger.LogInformation("Display Name: {DisplayName}", info.ProviderDisplayName);
-            _logger.LogInformation("Principal Identity Name: {IdentityName}", info.Principal.Identity.Name);
-
-
-
 
 
             // Sign in the user with this external login provider if the user already has a login.
@@ -140,7 +136,6 @@ namespace ECommerceMVC.Areas.Identity.Pages.Account
                 var email = info.Principal.FindFirstValue(ClaimTypes.Email);
                 var phoneNumber = info.Principal.FindFirstValue(ClaimTypes.MobilePhone);
                 var userName = info.Principal.FindFirstValue(ClaimTypes.Name);
-                _logger.LogInformation("Login Provider: {userName}", StringHelper.NormalizeUsername(userName) + info.ProviderKey);
                 DbUser user = null;
 
                 if (!string.IsNullOrEmpty(email))
@@ -160,12 +155,40 @@ namespace ECommerceMVC.Areas.Identity.Pages.Account
 
                 if (user == null && info.LoginProvider.Equals("Facebook", StringComparison.OrdinalIgnoreCase))
                 {
+                    user = CreateUser();
+                    await _userStore.SetUserNameAsync(user, StringHelper.NormalizeUsername(userName) + info.ProviderKey, CancellationToken.None);                  
+                    await _emailStore.SetEmailAsync(user, info.ProviderKey + "facebook@example.com", CancellationToken.None);
+                    await _emailStore.SetEmailConfirmedAsync(user, true, CancellationToken.None);                 
+                    var identifier = info.Principal.FindFirstValue(ClaimTypes.NameIdentifier);                                    
+                    var accessToken = info.AuthenticationProperties.GetTokenValue("access_token");
+                    user.DisplayName = userName;
+                    user.Avatar = await FacebookHelper.GetPicture(identifier, accessToken);
+                    var resultNewUser = await _userManager.CreateAsync(user);
+                    if (!resultNewUser.Succeeded)
+                    {
+                        // Handle errors if create new user fails
+                        var errors = resultNewUser.Errors.Select(e => e.Description);
+                        ErrorMessage = string.Join(Environment.NewLine, errors);
+                        return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
+                    }
+                }
+
+                if (user == null && info.LoginProvider.Equals("Google", StringComparison.OrdinalIgnoreCase))
+                {
 
                     user = CreateUser();
                     await _userStore.SetUserNameAsync(user, StringHelper.NormalizeUsername(userName) + info.ProviderKey, CancellationToken.None);
-
-                    await _emailStore.SetEmailAsync(user, info.ProviderKey + "facebook@example.com", CancellationToken.None);
+                    await _emailStore.SetEmailAsync(user, info.ProviderKey + "google@example.com", CancellationToken.None);
                     await _emailStore.SetEmailConfirmedAsync(user, true, CancellationToken.None);
+                    user.DisplayName = userName;
+                    if (info.Principal.HasClaim(c => c.Type == "urn:google:picture"))
+                    {
+                        user.Avatar = info.Principal.FindFirstValue("urn:google:picture");
+                    }
+                    else
+                    {
+                        user.Avatar = "https://i.pinimg.com/originals/f1/0f/f7/f10ff70a7155e5ab666bcdd1b45b726d.jpg";
+                    }
                     var resultNewUser = await _userManager.CreateAsync(user);
                     if (!resultNewUser.Succeeded)
                     {

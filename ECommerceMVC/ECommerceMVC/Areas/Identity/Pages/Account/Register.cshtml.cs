@@ -124,6 +124,8 @@ namespace ECommerceMVC.Areas.Identity.Pages.Account
 
                 await _userStore.SetUserNameAsync(user, Input.UserName, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+                user.DisplayName = Input.UserName;
+                user.Avatar = "https://i.pinimg.com/originals/f1/0f/f7/f10ff70a7155e5ab666bcdd1b45b726d.jpg";
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
                 if (result.Succeeded)

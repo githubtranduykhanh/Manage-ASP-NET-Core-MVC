@@ -10,6 +10,7 @@ using ECommerceMVC.Repositorys.User;
 using ECommerceMVC.Services.Store;
 using ECommerceMVC.Services.User;
 using ECommerceMVC.ViewModels;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Identity;
@@ -18,6 +19,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Configuration;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 using static Microsoft.IO.RecyclableMemoryStreamManager;
@@ -149,6 +151,8 @@ builder.Services.AddAuthentication()
         googleOptions.ClientSecret = authenticationSettings.Google.ClientSecret;
         // Cấu hình Url callback lại từ Google (không thiết lập thì mặc định là /signin-google)
         googleOptions.CallbackPath = authenticationSettings.Google.CallbackPath;
+        googleOptions.Scope.Add("profile");
+        googleOptions.ClaimActions.MapJsonKey("urn:google:picture", "picture");
         googleOptions.Events = new OAuthEvents()
         {
             OnRedirectToAuthorizationEndpoint = c =>
@@ -164,6 +168,7 @@ builder.Services.AddAuthentication()
         facebookOptions.AppSecret = authenticationSettings.Facebook.AppSecret;
         // Thiết lập đường dẫn Facebook chuyển hướng đến
         facebookOptions.CallbackPath = authenticationSettings.Facebook.CallbackPath;
+        facebookOptions.SaveTokens = true;
     });
 
 builder.Services.AddControllersWithViews();

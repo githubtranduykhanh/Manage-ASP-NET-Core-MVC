@@ -6,7 +6,7 @@ namespace ECommerceMVC.Data;
 
 public partial class DbUser : IdentityUser
 {
-
+    public string? DisplayName { get; set; }
     public string? Address { get; set; }
 
     public string? Avatar { get; set; }

@@ -1,28 +1,147 @@
 ﻿@{
-    if (ViewData.TryGetValue("ParentLayout", out var parentLayout) && parentLayout !=  null)
-    {
-        Layout = parentLayout.ToString();
-    }
-    else
-    {
-        Layout = "/Areas/Identity/Pages/_Layout.cshtml";
-    }
+    // if (ViewData.TryGetValue("_LayoutManage", out var parentLayout) && parentLayout !=  null)
+    // {
+    //     Layout = parentLayout.ToString();
+    // }
+    // else
+    // {
+    //     Layout = "/Areas/Identity/Pages/_Layout.cshtml";
+    // }
+    Layout = "/Areas/Identity/Views/Shared/_LayoutManage.cshtml";
 }
 
-<h1>Manage your account</h1>
+ <!-- Layout wrapper -->
+    <div class="layout-wrapper layout-content-navbar">
+        <div class="layout-container">
+            <!-- Menu -->
 
-<div>
-    <h2>Change your account settings</h2>
-    <hr />
-    <div class="row">
-        <div class="col-md-3">
-            <partial name="_ManageNav" />
+            <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+                <div class="app-brand demo">
+                    <a href="index.html" class="app-brand-link">
+                        <img src="https://i.ytimg.com/vi/qnWJokbBla4/maxresdefault.jpg" alt="Logo Image" class="logo-image"/>
+                    </a>
+
+                    <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
+                        <i class="bx bx-chevron-left bx-sm align-middle"></i>
+                    </a>
+                </div>
+
+                <div class="menu-inner-shadow"></div>
+                 <ul class="menu-inner py-1">
+                      <partial name="_ManageNav" />
+                 </ul>
+               
+            </aside>
+            <!-- / Menu -->
+            <!-- Layout container -->
+            <div class="layout-page">
+                <!-- Navbar -->
+
+                <nav class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme"
+                     id="layout-navbar">
+                    <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
+                        <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
+                            <i class="bx bx-menu bx-sm"></i>
+                        </a>
+                    </div>
+
+                    <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
+                        <!-- Search -->
+                        <div class="navbar-nav align-items-center">
+                            <div class="nav-item d-flex align-items-center">
+                                <i class="bx bx-search fs-4 lh-0"></i>
+                                <input type="text"
+                                       class="form-control border-0 shadow-none ps-1 ps-sm-2"
+                                       placeholder="Search..."
+                                       aria-label="Search..." />
+                            </div>
+                        </div>
+                        <!-- /Search -->
+
+                        <ul class="navbar-nav flex-row align-items-center ms-auto">
+                            <!-- Place this tag where you want the button to render. -->
+                            <li class="nav-item lh-1 me-3">
+                                <a class="github-button"
+                                   href="https://github.com/themeselection/sneat-html-admin-template-free"
+                                   data-icon="octicon-star"
+                                   data-size="large"
+                                   data-show-count="true"
+                                   aria-label="Star themeselection/sneat-html-admin-template-free on GitHub">Star</a>
+                            </li>
+
+                            <!-- User -->
+                            <partial name="_LoginManagePartial" />
+                            @* @await Component.InvokeAsync("AdminUserInformation") *@
+                            <!--/ User -->
+                        </ul>
+                    </div>
+                </nav>
+
+                <!-- / Navbar -->
+                <!-- Content wrapper -->
+                <div class="content-wrapper">
+                    <!-- Content -->
+                    <div class="container-xxl flex-grow-1 container-p-y">
+                         <h4 class="py-3 mb-4"><span class="text-muted fw-light">Account Settings /</span>@ViewData["Title"]</h4>
+                         <div class="card">
+                             <div class="card-body">
+                                  @RenderBody()
+                             </div>
+                             
+                         </div>
+                        
+                    </div>
+                   
+                    <!-- / Content -->
+                    <!-- Footer -->
+                    <footer class="footer bg-light">
+                        <div class="container-fluid d-flex flex-md-row flex-column justify-content-between align-items-md-center gap-1 container-p-x py-3">
+                            <div>
+                                <a href="https://demos.themeselection.com/sneat-bootstrap-html-admin-template/html/vertical-menu-template/"
+                                   target="_blank"
+                                   class="footer-text fw-bold">Indivisys</a>
+                                ©
+                            </div>
+                            <div>
+                                <div class="form-check form-control-sm footer-link me-3">
+                                    <input class="form-check-input" type="checkbox" value="" id="customCheck2" checked />
+                                    <label class="form-check-label" for="customCheck2"> Show </label>
+                                </div>
+                                <div class="dropdown dropup footer-link me-3">
+                                    <button type="button"
+                                            class="btn btn-sm btn-outline-secondary dropdown-toggle"
+                                            data-bs-toggle="dropdown"
+                                            aria-haspopup="true"
+                                            aria-expanded="false">
+                                        Currency
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-end">
+                                        <a class="dropdown-item" href="javascript:void(0);"><i class="bx bx-dollar"></i> USD</a>
+                                        <a class="dropdown-item" href="javascript:void(0);"><i class="bx bx-euro"></i> Euro</a>
+                                        <a class="dropdown-item" href="javascript:void(0);"><i class="bx bx-pound"></i> Pound</a>
+                                        <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item" href="javascript:void(0);"><i class="bx bx-bitcoin"></i> Bitcoin</a>
+                                    </div>
+                                </div>
+                                <a href="javascript:void(0)" class="btn btn-sm btn-outline-danger"><i class="bx bx-log-out-circle me-1"></i>Logout</a>
+                            </div>
+                        </div>
+                    </footer>
+                    <!-- / Footer -->
+
+                    <div class="content-backdrop fade"></div>
+                </div>
+                <!-- Content wrapper -->
+            </div>
+            <!-- / Layout page -->
         </div>
-        <div class="col-md-9">
-            @RenderBody()
-        </div>
+
+        <!-- Overlay -->
+        <div class="layout-overlay layout-menu-toggle"></div>
     </div>
-</div>
+    <!-- / Layout wrapper -->
+    
+
 
 @section Scripts {
     @RenderSection("Scripts", required: false)
