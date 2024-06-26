@@ -1,26 +1,25 @@
-﻿
-using ECommerceMVC.Data;
+﻿using ECommerceMVC.Data;
 using ECommerceMVC.Services.Store;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
-namespace ECommerceMVC.Areas.Admin.Components.AdminUserInformation
+namespace ECommerceMVC.Areas.Identity.Components.IdentityUserInformation
 {
     [ViewComponent]
-    public class AdminUserInformation : ViewComponent
+    public class IdentityUserInformation : ViewComponent
     {
-
+        
         private readonly SignInManager<DbUser> _signInManager;
         private readonly UserManager<DbUser> _userManager;
+        
 
-
-        public AdminUserInformation(SignInManager<DbUser> signInManager, UserManager<DbUser> userManager)
+        public IdentityUserInformation(SignInManager<DbUser> signInManager, UserManager<DbUser> userManager)
         {
-            _signInManager = signInManager;
+            _signInManager = signInManager;          
             _userManager = userManager;
         }
-
+      
 
         public async Task<IViewComponentResult> InvokeAsync()
         {
@@ -52,7 +51,7 @@ namespace ECommerceMVC.Areas.Admin.Components.AdminUserInformation
     {
         public bool Status { get; set; } = false;
         public DbUser? User { get; set; } = null!;
-
+        
     }
 
 }

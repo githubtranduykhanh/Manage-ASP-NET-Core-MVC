@@ -7,6 +7,7 @@ using ECommerceMVC.Helper.Excel;
 using ECommerceMVC.Helper.Jwts;
 using ECommerceMVC.Helper.Responses;
 using ECommerceMVC.Repositorys.User;
+using ECommerceMVC.Services.Cloudinary;
 using ECommerceMVC.Services.Store;
 using ECommerceMVC.Services.User;
 using ECommerceMVC.ViewModels;
@@ -47,6 +48,7 @@ builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSet
 
 // Add services to the container.
 builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
+builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 
 builder.Services.Configure<AuthenticationSettings>(builder.Configuration.GetSection("AuthenticationSettings"));
@@ -56,6 +58,7 @@ builder.Services.Configure<AuthenticationSettings>(builder.Configuration.GetSect
 //builder.Services.AddScoped<IServiceUser<DbUser, UserFirstVM>, ServiceUserFirst>();
 builder.Services.AddSingleton<IServiceStore, ServiceStore>();
 builder.Services.AddScoped<IExcel<DbUser>, UserExcel>();
+builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
 
 builder.Services.AddScoped<JwtAuthenticationManager>();
 

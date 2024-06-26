@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ECommerceMVC.Areas.Admin.Controllers
 {
-    [Authorize]
+    
     [Area("Admin")]
     [Route("Admin/[controller]/[action]")]
     public class AccountSettingsController : Controller

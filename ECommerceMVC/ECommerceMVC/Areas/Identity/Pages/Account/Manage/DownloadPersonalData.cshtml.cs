@@ -9,6 +9,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using ECommerceMVC.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -16,6 +17,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ECommerceMVC.Areas.Identity.Pages.Account.Manage
 {
+    [Authorize]
     public class DownloadPersonalDataModel : PageModel
     {
         private readonly UserManager<DbUser> _userManager;

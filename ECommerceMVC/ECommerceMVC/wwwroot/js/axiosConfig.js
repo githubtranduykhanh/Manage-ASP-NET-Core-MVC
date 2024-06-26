@@ -6,12 +6,12 @@ let refreshTokenPromise = null;
 // Tạo một interceptor cho Axios
 axiosInstance.interceptors.request.use(
     (config) => {
-        // Kiểm tra xem token có tồn tại trong cookie không
-        const token = getItemLocalStorage('accessToken');
-        // Nếu có, gắn token vào header Authorization
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
-        }
+        //// Kiểm tra xem token có tồn tại trong cookie không
+        //const token = getItemLocalStorage('accessToken');
+        //// Nếu có, gắn token vào header Authorization
+        //if (token) {
+        //    config.headers.Authorization = `Bearer ${token}`;
+        //}
         return config;
     },
     (error) => {

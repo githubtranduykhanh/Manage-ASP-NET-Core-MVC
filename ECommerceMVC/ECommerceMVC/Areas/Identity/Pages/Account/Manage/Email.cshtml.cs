@@ -8,6 +8,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using ECommerceMVC.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -16,6 +17,7 @@ using Microsoft.AspNetCore.WebUtilities;
 
 namespace ECommerceMVC.Areas.Identity.Pages.Account.Manage
 {
+    [Authorize]
     public class EmailModel : PageModel
     {
         private readonly UserManager<DbUser> _userManager;

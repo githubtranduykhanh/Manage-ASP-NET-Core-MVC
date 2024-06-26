@@ -10,6 +10,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using ECommerceMVC.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -17,6 +18,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ECommerceMVC.Areas.Identity.Pages.Account.Manage
 {
+    [Authorize]
     public class EnableAuthenticatorModel : PageModel
     {
         private readonly UserManager<DbUser> _userManager;

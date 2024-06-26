@@ -1,13 +1,22 @@
-﻿
-
+﻿import { apiGetUserById } from "../appApi/user.js"
+import { ConsoleErrorCatch, ConsoleErrorStatus } from "../helper/HelperError.js"
 
 
 const managerUser = (() => {
-    let tableUsers, offCanvasEl
-    
-    const managerUserStore = {
+    let tableUsers, offCanvasEl, toastPlacement
+    const toastPlacementExample = document.querySelector('.toast-placement-ex')
+    const btnTableEdits = document.querySelectorAll(".js-action-edit")
+    const btnTableDeletes = document.querySelectorAll(".js-action-delete")
+    const btnModalEdit = document.querySelector("#js-btn-model-edit")
+    const upload = document.querySelector("#upload")
+    const uploadedAvatar = document.querySelector("#uploadedAvatar")
+    const displayExLarge = document.querySelector("#displayExLarge")
+    const genderExLarge = document.querySelector("#genderExLarge")
 
+    const managerUserStore = {
         init() {
+            
+            toastPlacement = new bootstrap.Toast(toastPlacementExample);
             tableUsers = new DataTable('#js-table-users', {
                 responsive: true,
                 dom: '<"card-header flex-column flex-md-row"<"head-label text-center"><"dt-action-buttons text-end pt-3 pt-md-0"B>><"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6 d-flex justify-content-center justify-content-md-end"f>>t<"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>', // B: Buttons, f: Filter input, r: Processing, t: Table, i: Table information, p: Pagination
@@ -161,6 +170,7 @@ const managerUser = (() => {
                     text: '<i class="bx bx-plus me-sm-1"></i> <span class="d-none d-sm-inline-block">Add New Record</span>',
                     className: "create-new btn btn-primary"
                 }],
+                
                 columnDefs: [{
                     targets: 4, // index của cột "Address"
                     render: function (data, type, row) {
@@ -178,21 +188,12 @@ const managerUser = (() => {
                         return data;
                     }   
                 }]
+                              
             })
             const headLabel = document.querySelector('div.head-label')
             headLabel.innerHTML = '<h5 class="card-title mb-0">DataTable User</h5>'
             setTimeout(() => {
-                const e = document.querySelector(".create-new")
-                    , t = document.querySelector("#add-new-record");
-                e && e.addEventListener("click", function () {
-                    offCanvasEl = new bootstrap.Offcanvas(t),
-                        t.querySelector(".dt-full-name").value = "",
-                        t.querySelector(".dt-post").value = "",
-                        t.querySelector(".dt-email").value = "",
-                        t.querySelector(".dt-date").value = "",
-                        t.querySelector(".dt-salary").value = "",
-                        offCanvasEl.show()
-                })
+                this.resetCreateNew()
             }, 200) 
             const dataTimeInputs = document.querySelectorAll(".dt-date")
             Array.from(dataTimeInputs).forEach(input => { 
@@ -204,6 +205,65 @@ const managerUser = (() => {
                     altInput: true,
                     altFormat: "F j, Y",
                 });
+            })
+            this.addEvents()
+        },
+        resetCreateNew() {
+            const e = document.querySelector(".create-new")
+                , t = document.querySelector("#add-new-record");
+            e && e.addEventListener("click", function () {
+                offCanvasEl = new bootstrap.Offcanvas(t),
+                    t.querySelector(".dt-full-name").value = "",
+                    t.querySelector(".dt-post").value = "",
+                    t.querySelector(".dt-email").value = "",
+                    t.querySelector(".dt-date").value = "",
+                    t.querySelector(".dt-salary").value = "",
+                    offCanvasEl.show()
+            })
+        },
+        addEvents() {
+            Array.from(btnTableDeletes).forEach(btn => {
+                btn.addEventListener("click", (e) => {
+                    console.log(e.currentTarget.dataset.id)
+                })
+            })
+            Array.from(btnTableEdits).forEach(btn => {
+                btn.addEventListener("click", async (e) => {
+                    console.log(e.currentTarget.dataset.id)
+                    try {
+                        const res = await apiGetUserById(e.currentTarget.dataset.id)
+                        if (res?.status) {
+                            console.log(res?.data)
+                            const { avatar, displayName, gender, id } = res?.data
+                            btnModalEdit.dataset.id = id
+                            uploadedAvatar.src = avatar
+                            displayExLarge.value = displayName
+                            genderExLarge.value = gender ?? "other"
+                        } else {
+                            ConsoleErrorStatus(res?.errors)
+                        }
+                    } catch (error) {
+                        ConsoleErrorCatch(error)
+                    }
+                })
+            })
+
+            btnModalEdit.addEventListener("click", () => {
+                if (displayExLarge.value === '' || genderExLarge.value === '') {
+                    toastPlacement.show()
+                    return
+                }
+                const formData = new FormData()
+                formData.append('id', '123'); // Ví dụ: id của người dùng
+                formData.append('displayName', 'John Doe');
+                formData.append('gender', 'Male');
+                formData.append('avatar', upload.files[0]); // avatarFile là file hình ảnh
+                console.log(btnModalEdit.dataset.id)
+                console.log(uploadedAvatar.src)
+                console.log(displayExLarge.value)
+                console.log(genderExLarge.value)
+                console.log(upload.files[0])
+                toastPlacement.show()
             })
         }
     }
