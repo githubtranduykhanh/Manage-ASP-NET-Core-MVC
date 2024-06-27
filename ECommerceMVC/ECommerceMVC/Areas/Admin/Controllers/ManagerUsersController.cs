@@ -79,24 +79,26 @@ namespace ECommerceMVC.Areas.Admin.Controllers
         {
             if (string.IsNullOrEmpty(userId))
             {
-                return BadRequest(new { status = false, message = "Validation errors", errors = new object[] { "User Id Empty" } });
+                return BadRequest(new { status = false, mes = "Validation errors", errors = new object[] { "User Id Empty" } });
             }
 
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {
-                return BadRequest(new { status = false, message = "Validation errors", errors = new object[] { "Error: User not found." } });
+                return BadRequest(new { status = false, mes = "Validation errors", errors = new object[] { "Error: User not found." } });
             }
 
             return Ok(new ResponseData
             {
                 status = true,
                 mes = "Successfully",
-                data = new { 
+                data = new
+                {                   
                     user.Id,
                     user.DisplayName,
-                    user.Gender,
-                    user.Avatar
+                    Birthday = user.Birthday ?? DateTime.Now,
+                    Gender = user?.Gender?.Trim() ?? "other",
+                    Avatar = user.Avatar ?? "https://i.pinimg.com/originals/f1/0f/f7/f10ff70a7155e5ab666bcdd1b45b726d.jpg"
                 }
             });
         }
@@ -152,6 +154,7 @@ namespace ECommerceMVC.Areas.Admin.Controllers
             var id = model.Id;
             var displayName = model.DisplayName;
             var gender = model.Gender;
+            var birthday = model.Birthday;
             var avatarFile = model.Avatar;
 
             var user = await _userManager.FindByIdAsync(id);
@@ -162,7 +165,7 @@ namespace ECommerceMVC.Areas.Admin.Controllers
 
             user.DisplayName = displayName;
             user.Gender = gender;
-
+            user.Birthday = birthday;
 
 
 

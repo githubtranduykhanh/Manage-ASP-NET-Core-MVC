@@ -1,10 +1,12 @@
-﻿import { apiGetUserById } from "../appApi/user.js"
+﻿import { apiGetUserById,apiEditUser } from "../appApi/user.js"
 import { ConsoleErrorCatch, ConsoleErrorStatus } from "../helper/HelperError.js"
+import { ToastBody } from "../helper/HelperToasts.js"
 
+import { formatDatatime } from "../helper/HelperString.js"
 
 const managerUser = (() => {
-    let tableUsers, offCanvasEl, toastPlacement
-    const toastPlacementExample = document.querySelector('.toast-placement-ex')
+    let tableUsers, toast, modelEdit, offCanvasEl, inputBirthday
+    const modalEditElement = document.querySelector("#exLargeModalEdit")
     const btnTableEdits = document.querySelectorAll(".js-action-edit")
     const btnTableDeletes = document.querySelectorAll(".js-action-delete")
     const btnModalEdit = document.querySelector("#js-btn-model-edit")
@@ -12,11 +14,11 @@ const managerUser = (() => {
     const uploadedAvatar = document.querySelector("#uploadedAvatar")
     const displayExLarge = document.querySelector("#displayExLarge")
     const genderExLarge = document.querySelector("#genderExLarge")
-
+    const birthdayExLarge = document.querySelector("#birthdayExLarge")
     const managerUserStore = {
         init() {
-            
-            toastPlacement = new bootstrap.Toast(toastPlacementExample);
+            modelEdit = new bootstrap.Modal(modalEditElement)
+            toast = new ToastBody({ placement: 'top-0 end-0', title: 'E Commerce', icon:'<i class="bx bx-bell me-2"></i>', toastOptions: { delay: 2000, autohide: true } })
             tableUsers = new DataTable('#js-table-users', {
                 responsive: true,
                 dom: '<"card-header flex-column flex-md-row"<"head-label text-center"><"dt-action-buttons text-end pt-3 pt-md-0"B>><"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6 d-flex justify-content-center justify-content-md-end"f>>t<"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>', // B: Buttons, f: Filter input, r: Processing, t: Table, i: Table information, p: Pagination
@@ -199,13 +201,25 @@ const managerUser = (() => {
             Array.from(dataTimeInputs).forEach(input => { 
                 flatpickr(input, {
                     enableTime: true,
-                    dateFormat: "m/d/Y H:i",
+                    dateFormat: "Y-m-d H:i",
                     time_24hr: false, // Sử dụng định dạng 12 giờ (AM/PM), đổi thành true nếu muốn 24 giờ
-                    monthSelectorType: "static",
+                    /*monthSelectorType: "static",*/
+                    defaultDate: "2024-06-28 02:34",
                     altInput: true,
                     altFormat: "F j, Y",
                 });
             })
+
+
+            inputBirthday = flatpickr(birthdayExLarge, {
+                enableTime: true,
+                dateFormat: "Z", // Định dạng phù hợp với ISO 8601
+                altInput: true,
+                altFormat: "F j, Y h:i K",
+                time_24hr: false
+            });
+            
+
             this.addEvents()
         },
         resetCreateNew() {
@@ -234,11 +248,17 @@ const managerUser = (() => {
                         const res = await apiGetUserById(e.currentTarget.dataset.id)
                         if (res?.status) {
                             console.log(res?.data)
-                            const { avatar, displayName, gender, id } = res?.data
+                            const { avatar, displayName, gender, id, birthday } = res?.data
                             btnModalEdit.dataset.id = id
                             uploadedAvatar.src = avatar
                             displayExLarge.value = displayName
                             genderExLarge.value = gender ?? "other"
+                            
+
+                            inputBirthday.setDate(birthday, true);
+
+                            console.log(formatDatatime(birthday))
+                            modelEdit.show()
                         } else {
                             ConsoleErrorStatus(res?.errors)
                         }
@@ -248,22 +268,42 @@ const managerUser = (() => {
                 })
             })
 
-            btnModalEdit.addEventListener("click", () => {
+            btnModalEdit.addEventListener("click", async () => {
                 if (displayExLarge.value === '' || genderExLarge.value === '') {
-                    toastPlacement.show()
+                    toast.warning('Missing input !!');
                     return
                 }
                 const formData = new FormData()
-                formData.append('id', '123'); // Ví dụ: id của người dùng
-                formData.append('displayName', 'John Doe');
-                formData.append('gender', 'Male');
-                formData.append('avatar', upload.files[0]); // avatarFile là file hình ảnh
+                formData.append('id', btnModalEdit.dataset.id); // Ví dụ: id của người dùng
+                formData.append('displayName', displayExLarge.value);
+                formData.append('gender', genderExLarge.value);
+                formData.append('birthday', inputBirthday.input.value);
+                if (upload.files[0]) {
+                    formData.append('avatar', upload.files[0]); // avatarFile là file hình ảnh
+                } else {
+                    console.log(upload.files[0])
+                }
+                
                 console.log(btnModalEdit.dataset.id)
                 console.log(uploadedAvatar.src)
                 console.log(displayExLarge.value)
                 console.log(genderExLarge.value)
+                console.log(inputBirthday.input.value)
                 console.log(upload.files[0])
-                toastPlacement.show()
+
+                try {
+                    const res = await apiEditUser(formData, btnModalEdit.dataset.id)
+                    if (res?.status) {
+                        toast.success(res?.message);
+                        location.reload();
+                    } else {
+                        ConsoleErrorStatus(res?.errors)
+                        toast.danger(res?.message);                       
+                    }
+                } catch (error) {
+                    ConsoleErrorCatch(error)
+                    toast.danger(error?.message);
+                }
             })
         }
     }

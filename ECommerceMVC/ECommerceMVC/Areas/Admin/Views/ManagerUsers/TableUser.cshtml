@@ -70,9 +70,9 @@
                             <td data-original-value="@user.Address">@user.Address</td>
                             <td>
                                 <select class="form-control" name="Gender">
-                                    <option value="male" selected='@(user.Gender == "male" ? "selected" : "")'>Male</option>
-                                    <option value="memale" selected='@(user.Gender == "memale" ? "selected" : "")'>Female</option>
-                                    <option value="other" selected='@(user.Gender == "other" ? "selected" : "")'>Other</option>
+                                    <option value="male" selected='@(user?.Gender?.Trim() == "male")'>Male</option>
+                                    <option value="memale" selected='@(user?.Gender?.Trim() == "memale")'>Female</option>
+                                    <option value="other" selected='@(user?.Gender?.Trim() == "other")'>Other</option>
                                 </select>
                             </td>
                            @*  <td>
@@ -114,7 +114,15 @@
                                                 {
                                                     @foreach (var provider in user.LoginProviders)
                                                     {
-                                                        @provider.ProviderDisplayName
+                                                       
+                                                        @if (provider.ProviderDisplayName == "Facebook")
+                                                        {
+                                                            <span class="badge bg-info">@provider.ProviderDisplayName</span>
+                                                        }
+                                                        else if (provider.ProviderDisplayName == "Google")
+                                                        {
+                                                            <span class="badge bg-success">@provider.ProviderDisplayName</span>
+                                                        }
                                                     }
                                                 }
                                                 else
@@ -141,12 +149,12 @@
                             <td>
                                 <div class="dropdown">
                                    @*  <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"> *@
-                                    <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                                    <button type="button" class="p-0 btn btn-primary btn-icon rounded-pill dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
                                         <i class="bx bx-dots-vertical-rounded"></i>
                                     </button>
                                     <div class="dropdown-menu">
-                                        <button class="dropdown-item js-action-edit" type="button" data-id="@user.Id" data-bs-toggle="modal"
-                                                data-bs-target="#exLargeModalEdit">
+                                        <button class="dropdown-item js-action-edit" type="button" data-id="@user.Id" 
+                                                >
                                             <i class="bx bx-edit-alt me-1"></i> Edit
                                         </button>
                                         <form asp-area="Admin" asp-controller="ManagerUsers" asp-action="DeleteUser" method="post">
@@ -275,6 +283,7 @@
                                class="form-control"
                                placeholder="Trần Duy Khánh" />
                     </div>
+
                     <div class="col mb-0">
                         <label for="genderExLarge" class="form-label">Gender</label>
                         <select id="genderExLarge" class="select2 form-select">
@@ -282,6 +291,14 @@
                             <option value="male">Male</option>
                             <option value="memale">Female</option>
                         </select>
+                    </div>
+
+                    <div class="col mb-0">
+                        <label for="birthdayExLarge" class="form-label">Birthday</label>
+                        <div class="input-group input-group-merge has-validation">
+                            <span id="birthdayExLarge2" class="input-group-text"><i class="bx bx-calendar"></i></span>
+                            <input type="text" class="form-control dt-date flatpickr-input" id="birthdayExLarge" name="birthdayExLarge" aria-describedby="birthdayExLarge2" placeholder="MM/DD/YYYY" aria-label="MM/DD/YYYY" readonly="readonly" fdprocessedid="ds5hpd">
+                        </div><div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
                     </div>
                 </div>
             </div>

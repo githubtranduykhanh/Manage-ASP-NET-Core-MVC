@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+using System.ComponentModel.DataAnnotations;
 
 namespace ECommerceMVC.Models.User
 {
@@ -12,6 +13,9 @@ namespace ECommerceMVC.Models.User
 
         [Required(ErrorMessage = "Gender is required")]
         public string Gender { get; set; }
-        public IFormFile Avatar { get; set; }
+
+        [Required(ErrorMessage = "Birthday is required")]
+        public DateTime Birthday { get; set; }
+        public IFormFile? Avatar { get; set; } = null!;
     }
 }

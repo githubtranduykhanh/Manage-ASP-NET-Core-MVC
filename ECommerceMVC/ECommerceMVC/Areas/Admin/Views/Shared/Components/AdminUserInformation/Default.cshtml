@@ -53,7 +53,7 @@
                 <div class="dropdown-divider"></div>
             </li>
             <li>
-                <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/Index", new { area = "" })">
+                <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("", new { area = "Admin" })">
                     <button class="dropdown-item" type="submit" class="nav-link btn btn-link text-dark border-0">
                         <i class="bx bx-power-off me-2"></i>
                         <span class="align-middle">Log Out</span>

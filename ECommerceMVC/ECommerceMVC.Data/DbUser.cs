@@ -13,6 +13,8 @@ public partial class DbUser : IdentityUser
 
     public string? Gender { get; set; }
 
+    public DateTime? Birthday { get; set; }
+
     public virtual ICollection<DbAuctionRound> DbAuctionRounds { get; set; } = new List<DbAuctionRound>();
 
     public virtual ICollection<DbComment> DbComments { get; set; } = new List<DbComment>();

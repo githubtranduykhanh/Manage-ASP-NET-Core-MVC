@@ -63,7 +63,7 @@ export const apiGetUserById = (uid) => axios({
 
 
 export const apiEditUser = (data, uid) => axios({
-    url: '/Admin/ManagerUsers/EditUser' + uid,
+    url: '/Admin/ManagerUsers/EditUser/' + uid,
     method: 'post',
     data
 })

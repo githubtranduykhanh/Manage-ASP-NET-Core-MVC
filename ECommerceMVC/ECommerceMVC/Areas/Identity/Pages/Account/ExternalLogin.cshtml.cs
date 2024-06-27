@@ -178,7 +178,7 @@ namespace ECommerceMVC.Areas.Identity.Pages.Account
 
                     user = CreateUser();
                     await _userStore.SetUserNameAsync(user, StringHelper.NormalizeUsername(userName) + info.ProviderKey, CancellationToken.None);
-                    await _emailStore.SetEmailAsync(user, info.ProviderKey + "google@example.com", CancellationToken.None);
+                    await _emailStore.SetEmailAsync(user, email, CancellationToken.None);
                     await _emailStore.SetEmailConfirmedAsync(user, true, CancellationToken.None);
                     user.DisplayName = userName;
                     if (info.Principal.HasClaim(c => c.Type == "urn:google:picture"))
