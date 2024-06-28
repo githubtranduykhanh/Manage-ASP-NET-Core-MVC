@@ -3,6 +3,7 @@ using ECommerceMVC.Config;
 using ECommerceMVC.Data;
 using ECommerceMVC.Helper.Jwts;
 using ECommerceMVC.Helper.Responses;
+using ECommerceMVC.Models.Role;
 using ECommerceMVC.Models.User;
 using ECommerceMVC.Services.Cloudinary;
 using ECommerceMVC.Services.Store;
@@ -27,11 +28,13 @@ namespace ECommerceMVC.Areas.Admin.Controllers
         private readonly SignInManager<DbUser> _signInManager;
         private readonly UserManager<DbUser> _userManager;
         private readonly ICloudinaryService _cloudinaryService;
-        public ManagerUsersController(SignInManager<DbUser> signInManager,  UserManager<DbUser> userManager, ICloudinaryService cloudinaryService)
+        private readonly RoleManager<IdentityRole> _roleManager;
+        public ManagerUsersController(SignInManager<DbUser> signInManager,  UserManager<DbUser> userManager, ICloudinaryService cloudinaryService, RoleManager<IdentityRole> roleManager)
         {       
             _signInManager = signInManager;       
             _userManager = userManager;
             _cloudinaryService = cloudinaryService;
+            _roleManager = roleManager;
         }
 
 
@@ -196,7 +199,120 @@ namespace ECommerceMVC.Areas.Admin.Controllers
 
         }
 
+
+        [HttpGet]
+        public async Task<IActionResult> TableUserRole()
+        {
+            var roles = await _roleManager.Roles.ToListAsync();
+           
+        
+            return View(roles);
+        }
+
+
+
+        [HttpPost]
+        public async Task<IActionResult> CreateRole([FromBody] ModelCreateRole model)
+        {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+                return Ok(new { status = false, message = "Validation errors", errors });
+            }
+
+            // Kiểm tra xem vai trò đã tồn tại chưa
+            if (await _roleManager.RoleExistsAsync(model.RoleName))
+            {
+                return Ok(new { status = false, message = "Role Name already exists.", errors = new object[] { "Role Name already exists." } });
+            }
+            
+            // Nếu chưa tồn tại, tạo mới
+            var role = new IdentityRole(model.RoleName);
+            await _roleManager.CreateAsync(role);
+            // Xử lý sau khi tạo xong
+            return Ok(new { status = true, message = "Create role successfully.", errors = new object[] { } });
+        }
+
+
+        [HttpGet("{roleId}")]
+        public async Task<IActionResult> GetRoleById(string roleId)
+        {
+            if (string.IsNullOrEmpty(roleId))
+            {              
+                return Ok(new { status = false, message = "Role Name required.", errors = new object[] { "Role Name required." } });
+            }
+            var role = await _roleManager.FindByIdAsync(roleId);
+            if(role == null)
+            {
+                return Ok(new { status = false, message = "Role Name already exists.", errors = new object[] { "Role Name already exists." } });
+            }
+
+            
+            return Ok(new { status = true, message = "Get role by id successfully.", data = new { role.Id,role.Name } });
+        }
+
+
+        [HttpPost("{roleId}")]
+        public async Task<IActionResult> EditRole(string roleId, [FromBody] ModelEditRole model)
+        {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+                return Ok(new { status = false, message = "Validation errors", errors });
+            }
+
+            var role = await _roleManager.FindByIdAsync(roleId);
+            if (role == null)
+            {
+                return Ok(new { status = false, message = "Role not found.", errors = new object[] { "Role not found." } });
+            }
+
+
+            role.Name = model.RoleName;
+
+            var result = await _roleManager.UpdateAsync(role);
+            if (!result.Succeeded)
+            {
+                return Ok(new { status = false, message = "Failed to update role.", errors = result.Errors.Select(e => e.Description).ToArray() });                
+            }
+            return Ok(new { status = true, message = "Role updated successfully.", errors = new object[] { } });
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteRole(string roleId)
+        {
+            if (string.IsNullOrEmpty(roleId))
+            {
+                StatusMessage = "Error: Role ID is required.";
+                return RedirectToAction(nameof(TableUserRole));
+            }
+
+            var role = await _roleManager.FindByIdAsync(roleId);
+            if (role == null)
+            {
+                StatusMessage = "Error: Role not found.";
+                return RedirectToAction(nameof(TableUserRole));
+            }
+
+            var result = await _roleManager.DeleteAsync(role);
+            if (result.Succeeded)
+            {
+                StatusMessage = "Role deleted successfully.";
+            }
+            else
+            {
+                StatusMessage = "Error: Failed to delete role.";
+            }
+
+            return RedirectToAction(nameof(TableUserRole));
+        }
+
     }
+
+
+
+
 
     public class UserDetailViewModel : DbUser
     {

@@ -1,0 +1,172 @@
+﻿
+@model List<IdentityRole>
+
+
+@{
+    ViewData["Title"] = "User Management Role";
+    var statusMessage = TempData["StatusMessage"] as string;
+}
+
+
+
+
+<div class="container-xxl flex-grow-1 container-p-y">
+    <h4 class="py-3 mb-4"><span class="text-muted fw-light">Tables /</span> Role Tables</h4>
+
+    <!-- Basic Bootstrap Table -->
+    <div class="card">
+        <partial name="_StatusMessagePartial" model="statusMessage" />
+        <div class="table-responsive text-nowrap p-4 pt-0">
+
+            <table class="table table-striped" id="js-table-users">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.FirstOrDefault().Id)
+                        </th>   
+                        <th>
+                            @Html.DisplayNameFor(model => model.FirstOrDefault().Name)
+                        </th>
+                        <th>
+                            Actions
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="table-border-bottom-0">
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                          
+                           
+                            <td data-original-value="@item.Id">@item.Id</td>
+                            <td data-original-value="@item.Name">@item.Name</td>
+                           
+                            <td>
+                                <div class="dropdown">
+                                    @*  <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"> *@
+                                    <button type="button" class="p-0 btn btn-primary btn-icon rounded-pill dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                                        <i class="bx bx-dots-vertical-rounded"></i>
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        <button class="dropdown-item js-action-edit" type="button" data-id="@item.Id">
+                                            <i class="bx bx-edit-alt me-1"></i> Edit
+                                        </button>
+                                        <button class="dropdown-item js-action-delete" type="submit" data-id="@item.Id"><i class="bx bx-trash me-1"></i> Delete</button>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <hr class="my-5" />
+</div>
+
+
+
+<!--/ Offcanvas Add User -->
+
+<div class="offcanvas offcanvas-end" id="add-new-record" aria-modal="true" role="dialog">
+    <div class="offcanvas-header border-bottom">
+        <h5 class="offcanvas-title" id="exampleModalLabel">New Record</h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body flex-grow-1">
+        
+            <div class="col-sm-12 fv-plugins-icon-container mb-2">
+                <label class="form-label" for="nameRoleAdd">Role Name</label>
+                <div class="input-group input-group-merge has-validation">
+                    <span id="basicFullname2" class="input-group-text"><i class="bx bx-user"></i></span>
+                    <input type="text" id="nameRoleAdd" class="form-control dt-full-name" name="nameRoleAdd" placeholder="Admin" aria-label="Admin" aria-describedby="basicFullname2" fdprocessedid="3y1myh">
+                </div><div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
+            </div>          
+            <div class="col-sm-12">
+                <button type="button" id="js-btn-offcanvas-create" class="btn btn-primary data-submit me-sm-3 me-1" fdprocessedid="13xitt">Submit</button>
+                <button type="reset" class="btn btn-outline-secondary" data-bs-dismiss="offcanvas" fdprocessedid="mmqxg">Cancel</button>
+            </div>
+            <input type="hidden">
+        
+
+    </div>
+</div>
+
+
+
+<!-- Extra Large Modal Edit-->
+<div class="modal fade" id="exLargeModalEdit" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel4">Edit Role</h5>
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+            </div>
+            <div class="modal-body">              
+                <div class="row g-2">
+                    <div class="col mb-0">
+                        <label for="nameRole" class="form-label">Name Role</label>
+                        <input type="text"
+                               id="nameRole"
+                               class="form-control"
+                               placeholder="Admin" />
+                    </div>                              
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                    Close
+                </button>
+                <button type="button" id="js-btn-model-edit" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Confirmation Delete Modal -->
+<div class="modal fade" id="confirmationDelete" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <form asp-area="Admin" asp-controller="ManagerUsers" asp-action="DeleteRole" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmationDeleteTitle">Delete</h5>
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-0"><strong>Do you want to delete the role ?</strong></p>
+                    <input type="hidden" name="roleId" id="inputIdDelete" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        Close
+                    </button>
+                    <button type="submit" class="btn btn-danger">Oke</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+@section scriptsAdminPage {
+    @{
+        await Html.RenderPartialAsync("_TableScriptsPartial");
+        await Html.RenderPartialAsync("Partials/ManagerUsers/_TableUserRoleScriptsPartial");
+    }
+}
+
+
+@section cssAdminPage {
+    @{
+        await Html.RenderPartialAsync("_TableBasePageCssPartial");
+    }
+}

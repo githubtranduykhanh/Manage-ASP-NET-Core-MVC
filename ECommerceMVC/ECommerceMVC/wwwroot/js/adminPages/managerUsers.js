@@ -5,8 +5,9 @@ import { ToastBody } from "../helper/HelperToasts.js"
 import { formatDatatime } from "../helper/HelperString.js"
 
 const managerUser = (() => {
-    let tableUsers, toast, modelEdit, offCanvasEl, inputBirthday
+    let tableUsers, toast, modelEdit, modelConfirmationDelete, offCanvasEl, inputBirthday
     const modalEditElement = document.querySelector("#exLargeModalEdit")
+    const modalConfirmationDeleteElement = document.querySelector("#confirmationDelete")
     const btnTableEdits = document.querySelectorAll(".js-action-edit")
     const btnTableDeletes = document.querySelectorAll(".js-action-delete")
     const btnModalEdit = document.querySelector("#js-btn-model-edit")
@@ -15,9 +16,13 @@ const managerUser = (() => {
     const displayExLarge = document.querySelector("#displayExLarge")
     const genderExLarge = document.querySelector("#genderExLarge")
     const birthdayExLarge = document.querySelector("#birthdayExLarge")
+    const inputIdUserDelete = modalConfirmationDeleteElement.querySelector("#inputUserIdDelete")
+
+
     const managerUserStore = {
         init() {
             modelEdit = new bootstrap.Modal(modalEditElement)
+            modelConfirmationDelete = new bootstrap.Modal(modalConfirmationDeleteElement)
             toast = new ToastBody({ placement: 'top-0 end-0', title: 'E Commerce', icon:'<i class="bx bx-bell me-2"></i>', toastOptions: { delay: 2000, autohide: true } })
             tableUsers = new DataTable('#js-table-users', {
                 responsive: true,
@@ -239,6 +244,8 @@ const managerUser = (() => {
             Array.from(btnTableDeletes).forEach(btn => {
                 btn.addEventListener("click", (e) => {
                     console.log(e.currentTarget.dataset.id)
+                    inputIdUserDelete.value = e.currentTarget.dataset.id
+                    modelConfirmationDelete.show()
                 })
             })
             Array.from(btnTableEdits).forEach(btn => {
@@ -309,6 +316,9 @@ const managerUser = (() => {
     }
     return managerUserStore
 })()
+
+
+
 
 
 export default managerUser

@@ -107,7 +107,7 @@ builder.Services.AddRazorPages();
 //    .AddDefaultTokenProviders();
 
 
-builder.Services.AddDefaultIdentity<DbUser>()
+builder.Services.AddIdentity<DbUser, IdentityRole>()
     .AddEntityFrameworkStores<ECommerceContext>()
     .AddDefaultTokenProviders();
 

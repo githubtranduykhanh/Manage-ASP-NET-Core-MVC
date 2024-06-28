@@ -157,10 +157,10 @@
                                                 >
                                             <i class="bx bx-edit-alt me-1"></i> Edit
                                         </button>
-                                        <form asp-area="Admin" asp-controller="ManagerUsers" asp-action="DeleteUser" method="post">
-                                            <input type="hidden" name="userId" value="@user.Id" />
-                                            <button class="dropdown-item" type="submit" data-id="@user.Id"><i class="bx bx-trash me-1"></i> Delete</button>
-                                        </form>                                  
+
+
+                                        <button class="dropdown-item js-action-delete" type="submit" data-id="@user.Id"><i class="bx bx-trash me-1"></i> Delete</button>
+                                                                      
                                     </div>
                                 </div>
                             </td>
@@ -175,6 +175,9 @@
     <hr class="my-5" />
 
 </div>
+
+
+<!--/ Offcanvas Add User -->
 
 <div class="offcanvas offcanvas-end" id="add-new-record" aria-modal="true" role="dialog">
     <div class="offcanvas-header border-bottom">
@@ -312,9 +315,47 @@
     </div>
 </div>
 
+
+
+<!-- Confirmation Delete Modal -->
+<div class="modal fade" id="confirmationDelete" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <form asp-area="Admin" asp-controller="ManagerUsers" asp-action="DeleteUser" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmationDeleteTitle">Delete</h5>
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-0"><strong>Do you want to delete the user ?</strong></p>
+                    <input type="hidden" name="userId" id="inputUserIdDelete" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        Close
+                    </button>
+                    <button type="submit" class="btn btn-danger">Oke</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+
+    
+   
+
+
+
 @section scriptsAdminPage {
     @{
-        await Html.RenderPartialAsync("_TableUserScriptsPartial");
+        await Html.RenderPartialAsync("_TableScriptsPartial");
+        await Html.RenderPartialAsync("Partials/ManagerUsers/_TableUserScriptsPartial");
     }
 }
 

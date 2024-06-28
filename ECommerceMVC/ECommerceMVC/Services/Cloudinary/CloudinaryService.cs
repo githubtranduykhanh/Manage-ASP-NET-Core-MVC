@@ -7,7 +7,7 @@ namespace ECommerceMVC.Services.Cloudinary
 {
     public class CloudinaryService : ICloudinaryService
     {
-        private readonly IConfiguration _configuration;
+       
         private readonly CloudinaryDotNet.Cloudinary _cloudinary;
 
         public CloudinaryService(IOptions<CloudinarySettings> cloudinarySettings)

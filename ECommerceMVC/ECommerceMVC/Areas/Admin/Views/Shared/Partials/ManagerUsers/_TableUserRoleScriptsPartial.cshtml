@@ -1,0 +1,8 @@
+﻿@{
+    var managerUserRolesScriptPath = Url.Content("~/js/adminPages/managerUserRoles.js");
+}
+
+<script type="module" asp-append-version="true">
+    import Manager from "@managerUserRolesScriptPath"
+    Manager.init()
+</script>

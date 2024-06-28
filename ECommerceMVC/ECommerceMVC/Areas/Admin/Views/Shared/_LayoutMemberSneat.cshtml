@@ -132,7 +132,7 @@
                     <!-- Managers -->
                     <li class="menu-header small text-uppercase"><span class="menu-header-text"> Managers</span></li>                                  
                     <!--Manager Users -->
-                    <li class="menu-item  @(Html.IsParentActive("ManagerUsers", "TableUser"))">
+                    <li class="menu-item  @(Html.IsParentActive("ManagerUsers", "TableUser,TableUserRole"))">
                         <a href="javascript:void(0)" class="menu-link menu-toggle">
                             <i class="menu-icon tf-icons bx bx-copy"></i>
                             <div data-i18n="Extended UI">Users</div>
@@ -142,7 +142,12 @@
                                 <a asp-area="Admin" asp-controller="ManagerUsers" asp-action="TableUser" class="menu-link">
                                     <div data-i18n="Perfect Scrollbar">Table user</div>
                                 </a>
-                            </li>                          
+                            </li>
+                            <li class="menu-item @(Html.IsActive("ManagerUsers", "TableUserRole"))">
+                                <a asp-area="Admin" asp-controller="ManagerUsers" asp-action="TableUserRole" class="menu-link">
+                                    <div data-i18n="Perfect Scrollbar">Table user role</div>
+                                </a>
+                            </li>
                         </ul>
                     </li>
 
@@ -303,12 +308,19 @@
 
     <!-- Page JS -->
     <script src="~/assets/js/ui-toasts.js"></script>
+
+    @await RenderSectionAsync("scriptsPage", required: false)
+
+
     @await RenderSectionAsync("scriptsAdminPage", required: false)
    
     <!-- Place this tag in your head or just before your close body tag. -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
    
     <!-- main.js -->
-    <script type="module" src="~/js/main.js" asp-append-version="true"></script>
+   @*  <script type="module" src="~/js/main.js" asp-append-version="true"></script> *@
+
+
+
 </body>
 </html>

@@ -22,16 +22,39 @@ document.addEventListener("DOMContentLoaded", async () => {
     var urlParts = currentUrl.split("/");
 
     // Lấy phần tử thứ ba của URL để kiểm tra
-    var targetPart = urlParts[3];
+    var targetPartAreas = urlParts[3];
 
-    console.log(urlParts)
+    console.log(targetPartAreas)
 
     // Sử dụng câu lệnh switch case để kiểm tra phần cuối của URL
-    switch (targetPart) {
-        case "Admin":
-            // Thực hiện các hành động cho trang Admin
-            console.log("Bạn đang ở trang Admin");
-            managerUser.init()
+    switch (targetPartAreas) {
+        case "Admin":          
+            var targetPartController = urlParts[4];
+            switch (targetPartController) {
+                case "ManagerUsers":
+                    var targetPartAction = urlParts[5];
+                    switch (targetPartAction) {
+                        case "TableUserRole":                           
+                            console.log("Bạn đang ở trang Admin/ManagerUsers/TableUserRole");                           
+                            break;
+                        case "TableUser":                       
+                            console.log("Bạn đang ở trang Admin/ManagerUsers/TableUser");
+                            managerUser.init()
+                            break;
+                        default:
+                            // Thực hiện các hành động mặc định
+                            console.log("Bạn đang ở trang Admin/ManagerUsers");
+                            break;
+                    }
+                    break;
+                case "AccountSettings":                   
+                    console.log("Bạn đang ở trang Admin/AccountSettings");
+                    break;
+                default:
+                    // Thực hiện các hành động mặc định
+                    console.log("Bạn đang ở trang Admin");
+                    break;
+            }
             break;
         case "Member":
             // Thực hiện các hành động cho trang Member
