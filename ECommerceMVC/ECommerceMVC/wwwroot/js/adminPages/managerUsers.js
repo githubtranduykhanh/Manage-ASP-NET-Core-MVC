@@ -1,4 +1,6 @@
-﻿import { apiGetUserById,apiEditUser } from "../appApi/user.js"
+﻿import { apiGetUserById, apiEditUser } from "../appApi/user.js"
+import { apiGetRoles } from "../appApi/role.js"
+
 import { ConsoleErrorCatch, ConsoleErrorStatus } from "../helper/HelperError.js"
 import { ToastBody } from "../helper/HelperToasts.js"
 
@@ -17,13 +19,14 @@ const managerUser = (() => {
     const genderExLarge = document.querySelector("#genderExLarge")
     const birthdayExLarge = document.querySelector("#birthdayExLarge")
     const inputIdUserDelete = modalConfirmationDeleteElement.querySelector("#inputUserIdDelete")
-
+    const accordionRoles = document.querySelector("#accordion-roles")
+    const accordionRolesBody = accordionRoles.querySelector(".accordion-body")
 
     const managerUserStore = {
         init() {
             modelEdit = new bootstrap.Modal(modalEditElement)
             modelConfirmationDelete = new bootstrap.Modal(modalConfirmationDeleteElement)
-            toast = new ToastBody({ placement: 'top-0 end-0', title: 'E Commerce', icon:'<i class="bx bx-bell me-2"></i>', toastOptions: { delay: 2000, autohide: true } })
+            toast = new ToastBody({ placement: 'top-0 end-0', title: 'E Commerce', icon: '<i class="bx bx-bell me-2"></i>', toastOptions: { delay: 2000, autohide: true } })
             tableUsers = new DataTable('#js-table-users', {
                 responsive: true,
                 dom: '<"card-header flex-column flex-md-row"<"head-label text-center"><"dt-action-buttons text-end pt-3 pt-md-0"B>><"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6 d-flex justify-content-center justify-content-md-end"f>>t<"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>', // B: Buttons, f: Filter input, r: Processing, t: Table, i: Table information, p: Pagination
@@ -41,7 +44,7 @@ const managerUser = (() => {
                             return 'User List - ' + timestamp;
                         },
                         exportOptions: {
-                            columns: [1,2,3, 4, 5, 6, 7,8,9],
+                            columns: [1, 2, 3, 4, 5, 6, 7, 8, 9],
                             format: {
                                 //body: function (e, t, a) {
                                 //    var s;
@@ -54,9 +57,9 @@ const managerUser = (() => {
                                 //}
                                 body: function (data, row, column, node) {
                                     // Trả về giá trị dữ liệu của cột
-                                    return (column === 3 || column === 1) ? ($(node).attr('data-original-value') || data) : ($(node).find(':input').val() || data)                                                                
+                                    return (column === 3 || column === 1) ? ($(node).attr('data-original-value') || data) : ($(node).find(':input').val() || data)
                                 }
-                                                            
+
                             }
                         },
                         customize: function (e) {
@@ -87,7 +90,7 @@ const managerUser = (() => {
 
                                 body: function (data, row, column, node) {
                                     // Trả về giá trị dữ liệu của cột
-                                    return (column === 3 || column === 1) ? ($(node).attr('data-original-value') || data) : ($(node).find(':input').val() || data)  
+                                    return (column === 3 || column === 1) ? ($(node).attr('data-original-value') || data) : ($(node).find(':input').val() || data)
                                 }
                             }
                         }
@@ -114,7 +117,7 @@ const managerUser = (() => {
                                 //}
                                 body: function (data, row, column, node) {
                                     // Trả về giá trị dữ liệu của cột
-                                    return (column === 3 || column === 1) ? ($(node).attr('data-original-value') || data) : ($(node).find(':input').val() || data)  
+                                    return (column === 3 || column === 1) ? ($(node).attr('data-original-value') || data) : ($(node).find(':input').val() || data)
                                 }
                             }
                         }
@@ -141,7 +144,7 @@ const managerUser = (() => {
                                 //}
                                 body: function (data, row, column, node) {
                                     // Trả về giá trị dữ liệu của cột
-                                    return (column === 3 || column === 1) ? ($(node).attr('data-original-value') || data) : ($(node).find(':input').val() || data)  
+                                    return (column === 3 || column === 1) ? ($(node).attr('data-original-value') || data) : ($(node).find(':input').val() || data)
                                 }
                             }
                         }
@@ -168,7 +171,7 @@ const managerUser = (() => {
                                 //}
                                 body: function (data, row, column, node) {
                                     // Trả về giá trị dữ liệu của cột
-                                    return (column === 3 || column === 1) ? ($(node).attr('data-original-value') || data) : ($(node).find(':input').val() || data)  
+                                    return (column === 3 || column === 1) ? ($(node).attr('data-original-value') || data) : ($(node).find(':input').val() || data)
                                 }
                             }
                         }
@@ -177,7 +180,7 @@ const managerUser = (() => {
                     text: '<i class="bx bx-plus me-sm-1"></i> <span class="d-none d-sm-inline-block">Add New Record</span>',
                     className: "create-new btn btn-primary"
                 }],
-                
+
                 columnDefs: [{
                     targets: 4, // index của cột "Address"
                     render: function (data, type, row) {
@@ -193,17 +196,17 @@ const managerUser = (() => {
                             return data.length > 20 ? data.substr(0, 20) + '...' : data;
                         }
                         return data;
-                    }   
+                    }
                 }]
-                              
+
             })
             const headLabel = document.querySelector('div.head-label')
             headLabel.innerHTML = '<h5 class="card-title mb-0">DataTable User</h5>'
             setTimeout(() => {
                 this.resetCreateNew()
-            }, 200) 
+            }, 200)
             const dataTimeInputs = document.querySelectorAll(".dt-date")
-            Array.from(dataTimeInputs).forEach(input => { 
+            Array.from(dataTimeInputs).forEach(input => {
                 flatpickr(input, {
                     enableTime: true,
                     dateFormat: "Y-m-d H:i",
@@ -223,9 +226,52 @@ const managerUser = (() => {
                 altFormat: "F j, Y h:i K",
                 time_24hr: false
             });
-            
+
+            this.callRolesEdit()
+
 
             this.addEvents()
+        },
+        async callRolesEdit() {
+            try {
+                const res = await apiGetRoles()
+                console.log(res)
+                if (res?.status) {
+                    accordionRolesBody.innerHTML = ""
+                    res?.data?.forEach(role => {
+                        const checkbox = document.createElement('input');
+                        checkbox.type = 'checkbox';
+                        checkbox.name = 'roles';
+                        checkbox.className = 'form-check-input';
+                        checkbox.value = role.name;
+                        checkbox.dataset.name = role.name;
+                        checkbox.id = `role_${role.id}`;
+
+                        const label = document.createElement('label');
+                        label.className = "form-label";
+                        label.htmlFor = `role_${role.id}`;
+                        label.appendChild(document.createTextNode(role.name));
+
+                        accordionRolesBody.appendChild(checkbox);
+                        accordionRolesBody.appendChild(label);
+                        accordionRolesBody.appendChild(document.createElement('br'));
+                    });
+                }
+            } catch (error) {
+                ConsoleErrorCatch(error)
+            }
+        },
+        getCheckedRoles() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"][name="roles"]');
+            const checkedRoles = [];
+
+            checkboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                    checkedRoles.push(checkbox.dataset.name); // Thêm giá trị của checkbox đã chọn vào mảng
+                }
+            });
+
+            return checkedRoles;
         },
         resetCreateNew() {
             const e = document.querySelector(".create-new")
@@ -255,12 +301,22 @@ const managerUser = (() => {
                         const res = await apiGetUserById(e.currentTarget.dataset.id)
                         if (res?.status) {
                             console.log(res?.data)
-                            const { avatar, displayName, gender, id, birthday } = res?.data
+                            const checkboxes = document.querySelectorAll('input[type="checkbox"][name="roles"]');
+                            const { avatar, displayName, gender, id, birthday, roles } = res?.data
                             btnModalEdit.dataset.id = id
                             uploadedAvatar.src = avatar
                             displayExLarge.value = displayName
                             genderExLarge.value = gender ?? "other"
-                            
+
+                            checkboxes.forEach(checkbox => {
+                                if (roles.includes(checkbox.value)) {
+                                    checkbox.checked = true;
+                                } else {
+                                    checkbox.checked = false;
+                                }
+                            });
+
+
 
                             inputBirthday.setDate(birthday, true);
 
@@ -285,12 +341,27 @@ const managerUser = (() => {
                 formData.append('displayName', displayExLarge.value);
                 formData.append('gender', genderExLarge.value);
                 formData.append('birthday', inputBirthday.input.value);
+                const rolesArray = this.getCheckedRoles()
+
+                if (rolesArray.length > 0) {
+                    rolesArray.forEach(role => {
+                        formData.append('roles', role);
+                    })
+                } else {
+                    formData.append('roles', rolesArray);
+                }
+                
+                
+                console.log(this.getCheckedRoles())
                 if (upload.files[0]) {
                     formData.append('avatar', upload.files[0]); // avatarFile là file hình ảnh
                 } else {
                     console.log(upload.files[0])
                 }
-                
+
+
+
+
                 console.log(btnModalEdit.dataset.id)
                 console.log(uploadedAvatar.src)
                 console.log(displayExLarge.value)

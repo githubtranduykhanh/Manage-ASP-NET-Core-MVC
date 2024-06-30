@@ -5,6 +5,8 @@ import { ToastBody } from "../helper/HelperToasts.js"
 import  Loading  from "../helper/HelperLoading.js"
 
 
+import NProgress from 'https://cdn.jsdelivr.net/npm/nprogress@0.2.0/+esm'
+
 
 const managerUserRole = (() => {
     let tableUsers, toast, modelEdit, modelConfirmationDelete, offCanvasEl, loading
@@ -17,9 +19,49 @@ const managerUserRole = (() => {
     const inputIdDelete = modalConfirmationDeleteElement.querySelector("#inputIdDelete")
     const inputNameRoleEdit = modalEditElement.querySelector("#nameRole")
 
+   
+
     const managerStore = {
         init() {
-            loading = new Loading({ color:"text-primary" })
+
+            
+
+            // Configure NProgress
+            NProgress.configure({
+                minimum: 0.1, // Minimum percentage to show
+                easing: 'ease', // CSS easing string
+                speed: 500, // Animation speed in ms
+                trickle: true, // Enable trickling of progress
+                trickleSpeed: 200, // How often to trickle, in ms
+                showSpinner: true, // Show spinner
+                parent: 'body' // Element to append progress bar to
+            });
+
+            // Customizing and creating a Spinner
+           
+
+            loading = new Loading({
+                lines: 13, // The number of lines to draw
+                length: 38, // The length of each line
+                width: 17, // The line thickness
+                radius: 45, // The radius of the inner circle
+                scale: 0.65, // Scales overall size of the spinner
+                corners: 1, // Corner roundness (0..1)
+                speed: 1, // Rounds per second
+                rotate: 0, // The rotation offset
+                animation: 'spinner-line-fade-quick', // The CSS animation name for the lines
+                direction: 1, // 1: clockwise, -1: counterclockwise
+                color: '#5f61e6', // CSS color or array of colors
+                fadeColor: 'white', // CSS color or array of colors
+                top: '50%', // Top position relative to parent
+                left: '50%', // Left position relative to parent
+                shadow: '0 0 1px transparent', // Box-shadow for the lines
+                zIndex: 2000000000, // The z-index (defaults to 2e9)
+                className: 'spinner', // The CSS class to assign to the spinner
+                position: 'absolute', // Element positioning
+            })
+                   
+
             modelEdit = new bootstrap.Modal(modalEditElement)
             modelConfirmationDelete = new bootstrap.Modal(modalConfirmationDeleteElement)
             toast = new ToastBody({ placement: 'top-0 end-0', title: 'E Commerce', icon:'<i class="bx bx-bell me-2"></i>', toastOptions: { delay: 2000, autohide: true } })
@@ -174,6 +216,7 @@ const managerUserRole = (() => {
                     const Id = e.currentTarget.dataset.id
                     console.log(Id)    
                     await loading.show()
+                    NProgress.start()
                     try {
                         const res = await apiGetRoleById(Id)                    
                         if (res?.status) {
@@ -189,7 +232,8 @@ const managerUserRole = (() => {
                         ConsoleErrorCatch(error)
                     } finally {
                         // Ẩn modal sau khi hoàn thành tất cả các xử lý (bất kể thành công hay thất bại)
-                        loading.hide();
+                        loading.hide()
+                        NProgress.done()
                     }            
                 })
             })
@@ -203,7 +247,7 @@ const managerUserRole = (() => {
                 }
                 console.log(inputRoleName.value)
                 await loading.show()
-                
+                NProgress.start()
                 try {
 
                     const res = await apiCreateRole({ roleName: inputRoleName.value })
@@ -220,7 +264,8 @@ const managerUserRole = (() => {
                     ConsoleErrorCatch(error)
                 } finally {
                     // Ẩn modal sau khi hoàn thành tất cả các xử lý (bất kể thành công hay thất bại)
-                    loading.hide();
+                    loading.hide()
+                    NProgress.done()
                 }     
 
             })
@@ -233,6 +278,7 @@ const managerUserRole = (() => {
                     return
                 }
                 await loading.show()
+                NProgress.start()
                 try {
                     const res = await apiEditRole(btnModalEdit.dataset.id, { roleId: btnModalEdit.dataset.id, roleName: inputNameRoleEdit.value })
                     if (res?.status) {
@@ -248,7 +294,8 @@ const managerUserRole = (() => {
                     ConsoleErrorCatch(error)
                 } finally {
                     // Ẩn modal sau khi hoàn thành tất cả các xử lý (bất kể thành công hay thất bại)
-                    loading.hide();
+                    loading.hide()
+                    NProgress.done()
                 }     
 
             })

@@ -42,6 +42,14 @@ namespace ECommerceMVC.Areas.Admin.Controllers
         public string StatusMessage { get; set; }
 
 
+
+        [HttpGet]
+        public async Task<IActionResult> GetRoles()
+        {
+            var roles = await _roleManager.Roles.ToListAsync();        
+            return Ok(new { status = true, message = "Get roles successfully.", data = roles });
+        }
+
         [HttpGet]
         public async Task<IActionResult> TableUser()
         {
@@ -91,6 +99,9 @@ namespace ECommerceMVC.Areas.Admin.Controllers
                 return BadRequest(new { status = false, mes = "Validation errors", errors = new object[] { "Error: User not found." } });
             }
 
+
+            var userRoles = await _userManager.GetRolesAsync(user);
+
             return Ok(new ResponseData
             {
                 status = true,
@@ -101,7 +112,8 @@ namespace ECommerceMVC.Areas.Admin.Controllers
                     user.DisplayName,
                     Birthday = user.Birthday ?? DateTime.Now,
                     Gender = user?.Gender?.Trim() ?? "other",
-                    Avatar = user.Avatar ?? "https://i.pinimg.com/originals/f1/0f/f7/f10ff70a7155e5ab666bcdd1b45b726d.jpg"
+                    Avatar = user.Avatar ?? "https://i.pinimg.com/originals/f1/0f/f7/f10ff70a7155e5ab666bcdd1b45b726d.jpg",
+                    Roles = userRoles
                 }
             });
         }
@@ -159,6 +171,7 @@ namespace ECommerceMVC.Areas.Admin.Controllers
             var gender = model.Gender;
             var birthday = model.Birthday;
             var avatarFile = model.Avatar;
+            
 
             var user = await _userManager.FindByIdAsync(id);
             if (user == null)
@@ -185,6 +198,41 @@ namespace ECommerceMVC.Areas.Admin.Controllers
                     return StatusCode(StatusCodes.Status500InternalServerError, new { status = false, message = "Failed to upload avatar.", errors = new object[] { ex.Message } });
                 }
             }
+
+
+            // Xử lý roles của người dùng
+            if (model.Roles != null)
+            {
+                // Kiểm tra nếu model.Roles là mảng rỗng
+                if (model.Roles != null && model.Roles.Count == 1 && model.Roles[0] == null)
+                {
+                    // Nếu là mảng rỗng, gán roles của người dùng là một mảng rỗng
+                    var userRoles = await _userManager.GetRolesAsync(user);
+                    var removeRolesResult = await _userManager.RemoveFromRolesAsync(user, userRoles);
+                    if (!removeRolesResult.Succeeded)
+                    {
+                        return BadRequest(new { status = false, message = "Failed to update user roles.", errors = removeRolesResult.Errors });
+                    }
+                }
+                else
+                {
+                    // Nếu không phải mảng rỗng, cập nhật roles của người dùng với các roles mới
+                    var userRoles = await _userManager.GetRolesAsync(user);
+                    var removeRolesResult = await _userManager.RemoveFromRolesAsync(user, userRoles);
+                    if (!removeRolesResult.Succeeded)
+                    {
+                        return BadRequest(new { status = false, message = "Failed to update user roles.", errors = removeRolesResult.Errors });
+                    }
+
+                    var addRolesResult = await _userManager.AddToRolesAsync(user, model.Roles);
+                    if (!addRolesResult.Succeeded)
+                    {
+                        return BadRequest(new { status = false, message = "Failed to update user roles.", errors = addRolesResult.Errors });
+                    }
+                }
+            }
+
+
 
             var result = await _userManager.UpdateAsync(user);
 

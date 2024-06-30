@@ -16,6 +16,9 @@ namespace ECommerceMVC.Models.User
 
         [Required(ErrorMessage = "Birthday is required")]
         public DateTime Birthday { get; set; }
+
+        [Required(ErrorMessage = "Roles is required")]
+        public List<string> Roles { get; set; }
         public IFormFile? Avatar { get; set; } = null!;
     }
 }

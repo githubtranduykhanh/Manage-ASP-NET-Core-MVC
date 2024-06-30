@@ -21,4 +21,9 @@ export const apiEditRole = (rid,data) => axios({
 })
 
 
+export const apiGetRoles = () => axios({
+    url: '/Admin/ManagerUsers/GetRoles',
+    method: 'get',
+})
+
 
