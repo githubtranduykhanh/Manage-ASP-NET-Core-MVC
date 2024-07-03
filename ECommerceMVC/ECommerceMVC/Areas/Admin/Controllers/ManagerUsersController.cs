@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CloudinaryDotNet.Actions;
 using ECommerceMVC.Config;
 using ECommerceMVC.Data;
 using ECommerceMVC.Helper.Jwts;
@@ -15,6 +16,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System.ComponentModel;
+using System.Security.Claims;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ECommerceMVC.Areas.Admin.Controllers
@@ -29,12 +31,14 @@ namespace ECommerceMVC.Areas.Admin.Controllers
         private readonly UserManager<DbUser> _userManager;
         private readonly ICloudinaryService _cloudinaryService;
         private readonly RoleManager<IdentityRole> _roleManager;
-        public ManagerUsersController(SignInManager<DbUser> signInManager,  UserManager<DbUser> userManager, ICloudinaryService cloudinaryService, RoleManager<IdentityRole> roleManager)
+        private readonly ECommerceContext _context;
+        public ManagerUsersController(SignInManager<DbUser> signInManager,  UserManager<DbUser> userManager, ICloudinaryService cloudinaryService, RoleManager<IdentityRole> roleManager, ECommerceContext context)
         {       
             _signInManager = signInManager;       
             _userManager = userManager;
             _cloudinaryService = cloudinaryService;
             _roleManager = roleManager;
+            _context = context;
         }
 
 
@@ -43,12 +47,7 @@ namespace ECommerceMVC.Areas.Admin.Controllers
 
 
 
-        [HttpGet]
-        public async Task<IActionResult> GetRoles()
-        {
-            var roles = await _roleManager.Roles.ToListAsync();        
-            return Ok(new { status = true, message = "Get roles successfully.", data = roles });
-        }
+        
 
         [HttpGet]
         public async Task<IActionResult> TableUser()
@@ -257,7 +256,12 @@ namespace ECommerceMVC.Areas.Admin.Controllers
             return View(roles);
         }
 
-
+        [HttpGet]
+        public async Task<IActionResult> GetRoles()
+        {
+            var roles = await _roleManager.Roles.ToListAsync();
+            return Ok(new { status = true, message = "Get roles successfully.", data = roles });
+        }
 
         [HttpPost]
         public async Task<IActionResult> CreateRole([FromBody] ModelCreateRole model)
@@ -295,8 +299,18 @@ namespace ECommerceMVC.Areas.Admin.Controllers
                 return Ok(new { status = false, message = "Role Name already exists.", errors = new object[] { "Role Name already exists." } });
             }
 
-            
-            return Ok(new { status = true, message = "Get role by id successfully.", data = new { role.Id,role.Name } });
+            var claims = await _context.RoleClaims
+               .Where(rc => rc.RoleId == role.Id)
+               .Select(rc => new
+               {
+                   id = rc.Id,
+                   type = rc.ClaimType,
+                   value = rc.ClaimValue
+               }).ToListAsync();
+
+
+
+            return Ok(new { status = true, message = "Get role by id successfully.", data = new { role.Id,role.Name, roleClaims = claims } });
         }
 
 
@@ -354,6 +368,119 @@ namespace ECommerceMVC.Areas.Admin.Controllers
             }
 
             return RedirectToAction(nameof(TableUserRole));
+        }
+
+
+        [HttpGet("{claimId:int}")]
+        public async Task<IActionResult> GetRoleClaimById(int claimId)
+        {
+            if (claimId <= 0)
+            {
+                return Ok(new { status = false, message = "Claim ID required.", errors = new object[] { "Role ID, Claim Type, and Claim Value required." } });
+            }
+
+            
+            var claim = await _context.RoleClaims.FindAsync(claimId);
+            
+
+            if (claim == null)
+            {
+                return Ok(new { status = false, message = "Claim not found.", errors = new object[] { "Claim not found." } });
+            }
+
+            return Ok(new { status = true, message = "Claim retrieved successfully.", data = new { id = claim.Id ,type = claim.ClaimType, value = claim.ClaimValue } });
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> CreateRoleClaim([FromBody] ModelRoleClaim model)
+        {
+
+            var role = await _roleManager.FindByIdAsync(model.RoleId);
+            if (role == null) return Ok(new { status = false, message = "Role not found.", errors = new object[] { "Role not found." } });
+
+
+            var claim = await _roleManager.GetClaimsAsync(role);
+            var findClaim =  claim.FirstOrDefault(c => c.Value == model.ClaimValue && c.Type == model.ClaimType);
+            if (findClaim != null) return Ok(new { status = false, message = "Claim already exist.", errors = new object[] { "Claim already exist." } });
+
+            var result = await _roleManager.AddClaimAsync(role, new Claim(model.ClaimType, model.ClaimValue));
+            if(!result.Succeeded) return Ok(new { status = false, message = "Failed to create role claim.", errors = result.Errors.Select(e => e.Description).ToArray() });
+            var claims = await _context.RoleClaims
+                           .Where(rc => rc.RoleId == role.Id)
+                           .Select(rc => new
+                           {
+                               id = rc.Id,
+                               type = rc.ClaimType,
+                               value = rc.ClaimValue
+                           }).ToListAsync();
+            return Ok(new { status = true, message = "Role claim create successfully.", data = new { roleClaims = claims } , errors = new object[] { } });
+        }
+
+
+        [HttpPut]
+        public async Task<IActionResult> EditRoleClaim([FromBody] ModelRoleClaim model)
+        {
+            var role = await _roleManager.FindByIdAsync(model.RoleId);
+            if (role == null) return Ok(new { status = false, message = "Role not found.", errors = new object[] { "Role not found." } });
+
+
+            var claim = await _roleManager.GetClaimsAsync(role);
+            var findClaim = claim.FirstOrDefault(c => c.Value == model.ClaimValue && c.Type == model.ClaimType);
+            if (findClaim != null) return Ok(new { status = false, message = "Claim already exist.", errors = new object[] { "Claim already exist." } });
+
+            var existingClaim = await _context.RoleClaims.FindAsync(model.ClaimId);
+            if (existingClaim == null) return Ok(new { status = false, message = "Claim not found.", errors = new object[] { "Claim not found." } });
+
+
+            var claimCurent = new Claim(existingClaim.ClaimType, existingClaim.ClaimValue);
+
+            var removeResult = await _roleManager.RemoveClaimAsync(role, claimCurent);
+            if (!removeResult.Succeeded) return Ok(new { status = false, message = "Failed to Remove Claim.", errors = removeResult.Errors.Select(e => e.Description).ToArray() });
+
+            var addResult = await _roleManager.AddClaimAsync(role, new Claim(model.ClaimType, model.ClaimValue));
+            if (!addResult.Succeeded) return Ok(new { status = false, message = "Failed to Add Claim.", errors = addResult.Errors.Select(e => e.Description).ToArray() });
+
+            var claims = await _context.RoleClaims
+                .Where(rc => rc.RoleId == role.Id)
+                .Select(rc => new
+                {
+                    id = rc.Id,
+                    type = rc.ClaimType,
+                    value = rc.ClaimValue
+                }).ToListAsync();
+
+
+            return Ok(new { status = true, message = "Role claim edit successfully.", data = new { roleClaims = claims } , errors = new object[] { } });
+        }
+
+
+
+        [HttpDelete("{claimId:int}")]
+        public async Task<IActionResult> DeleteRoleClaim(int claimId,[FromBody] ModelRoleClaim model)
+        {
+
+            var role = await _roleManager.FindByIdAsync(model.RoleId);
+            if (role == null) return Ok(new { status = false, message = "Role not found.", errors = new object[] { "Role not found." } });
+
+            var claim = await _context.RoleClaims.FindAsync(model.ClaimId);
+            if (claim == null) return Ok(new { status = false, message = "Claim not found.", errors = new object[] { "Claim not found." } });
+
+            var claimCurent = new Claim(claim.ClaimType, claim.ClaimValue);
+
+            var result = await _roleManager.RemoveClaimAsync(role, claimCurent);
+            if (!result.Succeeded) return Ok(new { status = false, message = "Failed to Remove Claim.", errors = result.Errors.Select(e => e.Description).ToArray() });
+
+            var claims = await _context.RoleClaims
+                .Where(rc => rc.RoleId == role.Id)
+                .Select(rc => new
+                {
+                    id = rc.Id,
+                    type = rc.ClaimType,
+                    value = rc.ClaimValue
+                }).ToListAsync();
+
+            return Ok(new { status = true, message = "Role claim remove successfully.", data = new { roleClaims = claims }, errors = new object[] { } });
         }
 
     }

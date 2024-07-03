@@ -27,3 +27,29 @@ export const apiGetRoles = () => axios({
 })
 
 
+
+export const apiCreateRoleClaim = (data) => axios({
+    url: '/Admin/ManagerUsers/CreateRoleClaim',
+    method: 'post',
+    data
+})
+
+
+export const apiEditRoleClaim = (data) => axios({
+    url: '/Admin/ManagerUsers/EditRoleClaim',
+    method: 'put',
+    data
+})
+
+
+export const apiDeleteRoleClaim = (claimId,data) => axios({
+    url: '/Admin/ManagerUsers/DeleteRoleClaim/' + claimId,
+    method: 'delete',
+    data
+})
+
+export const apiGetClaimDetails = (claimId) => axios({
+    url: '/Admin/ManagerUsers/GetRoleClaimById/' + claimId,
+    method: 'get',
+})
+

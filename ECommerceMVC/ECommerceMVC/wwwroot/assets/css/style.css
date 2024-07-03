@@ -13,6 +13,10 @@ button.dt-button, div.dt-button, a.dt-button, input.dt-button {
     background: #696cff;
     color: #fff;
 }
+.create-new-role-claim.btn.btn-primary {
+    background: #696cff;
+    color: #fff;
+}
 
 .input-group.has-validation > .input-group-text:first-child {
      border-top-right-radius: 0; 
