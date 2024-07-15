@@ -9,7 +9,7 @@ namespace ECommerceMVC.AutoMapperProfile.Caterory
     {
         public CateroryCreateProfile()
         {
-            CreateMap<CreateCategoryVM, DbCategory>().ReverseMap();
+            CreateMap<CreateCateroryVM, DbCategory>().ReverseMap();
         }
     }
 }

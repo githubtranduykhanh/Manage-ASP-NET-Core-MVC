@@ -68,9 +68,9 @@ namespace ECommerceMVC.Areas.Admin.Controllers
         // POST: Admin/Category/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CreateCategoryVM categoryVM, IFormFile? Image)
+        public async Task<IActionResult> Create(CreateCateroryVM categoryVM, IFormFile? Image)
         {
-            var dbCategory = _mapper.Map<CreateCategoryVM, DbCategory>(categoryVM);
+            var dbCategory = _mapper.Map<CreateCateroryVM, DbCategory>(categoryVM);
 
             if (ModelState.IsValid)
             {
@@ -136,7 +136,7 @@ namespace ECommerceMVC.Areas.Admin.Controllers
         // POST: Admin/Category/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, CreateCategoryVM categoryVM, IFormFile? Image)
+        public async Task<IActionResult> Edit(int id, CreateCateroryVM categoryVM, IFormFile? Image)
         {
             //var dbCategory = _mapper.Map<CreateCategoryVM, DbCategory>(categoryVM);         
 
@@ -197,6 +197,8 @@ namespace ECommerceMVC.Areas.Admin.Controllers
                 _notyf.Success("Edit Caterory Successfuly");
                 return RedirectToAction(nameof(Index));
             }
+
+            ViewBag.CategoryList = await GetCategorySelectListAsync();
             return View(dbCategory);
         }
 
@@ -226,6 +228,7 @@ namespace ECommerceMVC.Areas.Admin.Controllers
             var dbCategory = await _context.DbCategories.FindAsync(id);
             _context.DbCategories.Remove(dbCategory);
             await _context.SaveChangesAsync();
+            _notyf.Success("Delete Category Successfuly");
             return RedirectToAction(nameof(Index));
         }
 

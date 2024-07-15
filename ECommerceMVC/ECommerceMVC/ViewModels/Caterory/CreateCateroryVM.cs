@@ -2,7 +2,7 @@
 
 namespace ECommerceMVC.ViewModels.Caterory
 {
-    public class CreateCategoryVM
+    public class CreateCateroryVM
     {
         public int? Id { get; set; }
 
