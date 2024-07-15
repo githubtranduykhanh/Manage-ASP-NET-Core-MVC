@@ -69,7 +69,30 @@ export const apiEditUser = (data, uid) => axios({
 })
 
 
+export const apiCreateClaimUser = (data) => axios({
+    url: '/Admin/ManagerUsers/CreateUserClaim',
+    method: 'post',
+    data
+})
 
+export const apiGetClaimUser = (cid) => axios({
+    url: '/Admin/ManagerUsers/GetUserClaim/' + cid,
+    method: 'get',
+})
+
+
+export const apiEditClaimUser = (data) => axios({
+    url: '/Admin/ManagerUsers/EditUserClaim',
+    method: 'put',
+    data
+})
+
+
+export const apiDeleteClaimUser = (claimId, data) => axios({
+    url: '/Admin/ManagerUsers/DeleteUserClaim/' + claimId,
+    method: 'delete',
+    data
+})
 
 
 

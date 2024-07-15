@@ -1,4 +1,6 @@
+using AspNetCoreHero.ToastNotification;
 using ECommerceMVC.AutoMapperProfile;
+using ECommerceMVC.AutoMapperProfile.Caterory;
 using ECommerceMVC.AutoMapperProfile.User;
 using ECommerceMVC.Config;
 using ECommerceMVC.Data;
@@ -42,8 +44,10 @@ builder.Services.AddControllersWithViews();
 //Đăng ký chuổi kết nối
 builder.Services.AddDbContext<ECommerceContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("E_Commerce"));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("ECommerce"));
 });
+
+
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 
 // Add services to the container.
@@ -68,6 +72,9 @@ builder.Services.AddAutoMapper(typeof(UserRegisterProfile));
 builder.Services.AddAutoMapper(typeof(UserVMDbUserProfile));
 
 builder.Services.AddAutoMapper(typeof(UserInformationcClient));
+
+
+builder.Services.AddAutoMapper(typeof(CateroryCreateProfile));
 
 // Đọc giá trị CORS từ cấu hình
 var corsSettings = builder.Configuration.GetSection("CorsSettings").Get<CorsSettings>();
@@ -178,7 +185,12 @@ builder.Services.AddControllersWithViews();
 
 
 
-
+builder.Services.AddNotyf(config =>
+{
+    config.DurationInSeconds = 4;
+    config.IsDismissable = true;
+    config.Position = NotyfPosition.TopRight;
+});
 
 
 

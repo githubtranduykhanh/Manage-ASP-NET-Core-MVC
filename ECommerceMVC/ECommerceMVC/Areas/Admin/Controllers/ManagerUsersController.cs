@@ -100,6 +100,15 @@ namespace ECommerceMVC.Areas.Admin.Controllers
 
 
             var userRoles = await _userManager.GetRolesAsync(user);
+            var userClaims = await _context.UserClaims
+                                      .Where(uc => uc.UserId == userId)
+                                      .Select(uc => new
+                                      {
+                                          uc.Id,
+                                          Type = uc.ClaimType,
+                                          Value = uc.ClaimValue
+                                      })
+                                      .ToListAsync();
 
             return Ok(new ResponseData
             {
@@ -112,7 +121,8 @@ namespace ECommerceMVC.Areas.Admin.Controllers
                     Birthday = user.Birthday ?? DateTime.Now,
                     Gender = user?.Gender?.Trim() ?? "other",
                     Avatar = user.Avatar ?? "https://i.pinimg.com/originals/f1/0f/f7/f10ff70a7155e5ab666bcdd1b45b726d.jpg",
-                    Roles = userRoles
+                    Roles = userRoles,
+                    Claims = userClaims
                 }
             });
         }
@@ -482,6 +492,147 @@ namespace ECommerceMVC.Areas.Admin.Controllers
 
             return Ok(new { status = true, message = "Role claim remove successfully.", data = new { roleClaims = claims }, errors = new object[] { } });
         }
+
+
+
+        [HttpPost]       
+        public async Task<IActionResult> CreateUserClaim([FromBody] ModelUserClaim model)
+        {
+            var user = await _userManager.FindByIdAsync(model.UserId);
+            if (user == null) return Ok(new { status = false, message = "User not found.", errors = new object[] { "User not found." } });
+
+            var claims = await _userManager.GetClaimsAsync(user);
+            var existingClaim = claims.FirstOrDefault(c => c.Type == model.ClaimType && c.Value == model.ClaimValue);
+            if(existingClaim != null) return Ok(new { status = false, message = "Claim already exist.", errors = new object[] { "Claim already exist." } });
+
+
+
+
+            var result = await _userManager.AddClaimAsync(user, new Claim(model.ClaimType, model.ClaimValue));
+
+
+            if (!result.Succeeded) return Ok(new { status = false, message = "Failed to create user claim.", errors = result.Errors.Select(e => e.Description).ToArray() });
+          
+            var userClaims = await _context.UserClaims
+                                     .Where(uc => uc.UserId == user.Id)
+                                     .Select(uc => new
+                                     {
+                                         uc.Id,
+                                         Type = uc.ClaimType,
+                                         Value = uc.ClaimValue
+                                     })
+                                     .ToListAsync();
+
+
+            return Ok(new { status = true, message = "User claim create successfully.", data = new { claims = userClaims }, errors = new object[] { } });
+        }
+
+
+        [HttpGet("{claimId:int}")]
+        public async Task<IActionResult> GetUserClaim(int claimId)
+        {
+            if (claimId <= 0)
+            {
+                return Ok(new { status = false, message = "Claim ID required.", errors = new object[] { "Claim ID required." } });
+            }
+
+            var claim = await _context.UserClaims.FindAsync(claimId);
+
+            if (claim == null)
+            {               
+                return Ok(new { status = false, message = "Claim not found.", errors = new object[] { "Claim not found." } });
+            }
+
+
+            return Ok(new { status = true, message = "Claim retrieved successfully.", data = new { id = claim.Id, type = claim.ClaimType, value = claim.ClaimValue } });
+
+
+        }
+
+
+
+        [HttpPut]
+        public async Task<IActionResult> EditUserClaim([FromBody] ModelUserClaim model)
+        {
+
+
+            if (!ModelState.IsValid)
+            {
+                // Trả về lỗi validation nếu không đầy đủ dữ liệu
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+                return BadRequest(new { status = false, message = "Validation errors", errors });
+            }
+
+
+            var user = await _userManager.FindByIdAsync(model.UserId);
+            if (user == null) return Ok(new { status = false, message = "User not found.", errors = new object[] { "User not found." } });
+
+
+            var existingClaim = await _context.UserClaims.FindAsync(model.ClaimId);
+            if (existingClaim == null) return Ok(new { status = false, message = "Claim not found.", errors = new object[] { "Claim not found." } });
+
+
+            var claims = await _userManager.GetClaimsAsync(user);
+            var findClaim = claims.FirstOrDefault(c => c.Type == model.ClaimType && c.Value == model.ClaimValue);
+            if (findClaim != null) return Ok(new { status = false, message = "Claim already exist.", errors = new object[] { "Claim already exist." } });
+
+           
+
+
+            var claimCurent = new Claim(existingClaim.ClaimType, existingClaim.ClaimValue);
+
+            var claimNew = new Claim(model.ClaimType, model.ClaimValue);
+
+            var result = await _userManager.ReplaceClaimAsync(user, claimCurent, claimNew);
+            if (!result.Succeeded) return Ok(new { status = false, message = "Failed to Remove Claim.", errors = result.Errors.Select(e => e.Description).ToArray() });
+
+            
+
+            var claimsResult = await _context.UserClaims
+                .Where(rc => rc.UserId == user.Id)
+                .Select(rc => new
+                {
+                    id = rc.Id,
+                    type = rc.ClaimType,
+                    value = rc.ClaimValue
+                }).ToListAsync();
+
+
+            return Ok(new { status = true, message = "User claim edit successfully.", data = new { claims = claimsResult }, errors = new object[] { } });
+        }
+
+
+
+
+
+        [HttpDelete("{claimId:int}")]
+        public async Task<IActionResult> DeleteUserClaim(int claimId, [FromBody] ModelUserClaim model)
+        {
+
+            var user = await _userManager.FindByIdAsync(model.UserId);
+            if (user == null) return Ok(new { status = false, message = "User not found.", errors = new object[] { "User not found." } });
+
+
+            var existingClaim = await _context.UserClaims.FindAsync(model.ClaimId);
+            if (existingClaim == null) return Ok(new { status = false, message = "Claim not found.", errors = new object[] { "Claim not found." } });
+
+            var claimCurent = new Claim(existingClaim.ClaimType, existingClaim.ClaimValue);
+
+            var result = await _userManager.RemoveClaimAsync(user, claimCurent);
+            if (!result.Succeeded) return Ok(new { status = false, message = "Failed to Remove Claim.", errors = result.Errors.Select(e => e.Description).ToArray() });
+
+            var claims = await _context.UserClaims
+                .Where(rc => rc.UserId == user.Id)
+                .Select(rc => new
+                {
+                    id = rc.Id,
+                    type = rc.ClaimType,
+                    value = rc.ClaimValue
+                }).ToListAsync();
+
+            return Ok(new { status = true, message = "Role claim remove successfully.", data = new { claims }, errors = new object[] { } });
+        }
+
 
     }
 

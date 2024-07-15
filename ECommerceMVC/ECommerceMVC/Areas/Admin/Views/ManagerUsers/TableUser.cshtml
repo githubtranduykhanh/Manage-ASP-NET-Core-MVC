@@ -309,7 +309,7 @@
                     <div class="col mb-0">
                         <label for="birthdayExLarge" class="form-label">Roles</label>
                         <div class="accordion accordion-without-arrow">
-                            <div class="card accordion-item active">
+                            <div class="card accordion-item">
                                 <h2 class="accordion-header text-body d-flex justify-content-between">
                                     <button type="button"
                                             class="accordion-button collapsed"
@@ -320,12 +320,52 @@
                                     </button>
                                 </h2>
                                 <div id="accordion-roles"
-                                     class="accordion-collapse collapse show">
+                                     class="accordion-collapse collapse">
                                     <div class="accordion-body">
 
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row g-2 mt-3">
+                    <div class="col mb-0">
+                        <div id="contaner-table" class="table-responsive text-nowrap p-4 pt-0">
+                            <table class="table table-striped" id="js-table-role-claim">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            Claim Type
+                                        </th>
+                                        <th>
+                                            Claim Value
+                                        </th>
+                                        <th>
+                                            Actions
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody class="table-border-bottom-0" id="js-table-role-claim-tbody">
+                                    <tr>
+                                        <td data-original-value="">Claim Type</td>
+                                        <td data-original-value="">Claim Value</td>
+                                        <td>
+                                            <div class="dropdown">
+                                                <button type="button" class="p-0 btn btn-primary btn-icon rounded-pill dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                                                    <i class="bx bx-dots-vertical-rounded"></i>
+                                                </button>
+                                                <div class="dropdown-menu">
+                                                    <button class="dropdown-item js-action-claim-edit" type="button">
+                                                        <i class="bx bx-edit-alt me-1"></i> Edit
+                                                    </button>
+                                                    <button class="dropdown-item js-action-claim-delete" type="button"><i class="bx bx-trash me-1"></i> Delete</button>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -371,7 +411,71 @@
 
 
 
+<!-- Extra Large Modal Create Role Claim-->
+<div class="modal fade" id="exLargeModalRoleClaim" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="js-title-role-claim">Edit Claim</h5>
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-2">
+                    <div class="col mb-0">
+                        <label for="roleType" class="form-label">Claim Type</label>
+                        <input type="text"
+                               id="roleType"
+                               class="form-control"
+                               placeholder="Admin" />
+                    </div>
+                </div>
+                <div class="row g-2">
+                    <div class="col mb-0">
+                        <label for="roleValue" class="form-label">Claim Value</label>
+                        <input type="text"
+                               id="roleValue"
+                               class="form-control"
+                               placeholder="Admin" />
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                    Close
+                </button>
+                <button type="button" id="js-btn-model-role-claim" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
 
+<!-- Confirmation Role Claim Delete Modal -->
+<div class="modal fade" id="confirmationDeleteRoleClaim" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmationDeleteRoleClaimTitle">Delete</h5>
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-0"><strong>Do you want to delete the claim ?</strong></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                    Close
+                </button>
+                <button type="button" id="js-btn-confirmation-delete-role-claim" class="btn btn-danger">Oke</button>
+            </div>
+
+        </div>
+    </div>
+</div>
     
    
 

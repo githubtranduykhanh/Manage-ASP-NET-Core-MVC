@@ -1,0 +1,62 @@
+﻿@model ECommerceMVC.Data.DbCategory
+
+@{
+    ViewData["Title"] = "Category Detail";
+    var statusMessage = TempData["StatusMessage"] as string;
+}
+
+
+<div class="container-xxl flex-grow-1 container-p-y">
+    <h4 class="py-3 mb-4"><span class="text-muted fw-light">Category /</span> Detail</h4>
+
+    <div class="card">
+        <partial name="_StatusMessagePartial" model="statusMessage" />
+        <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+       
+            <h5 class="card-header">Profile Details</h5>
+            <!-- Account -->
+            <div class="card-body">
+                <div class="d-flex align-items-start align-items-sm-center gap-4">
+                    <img src="@Model.Image"
+                         alt="user-avatar"
+                         class="d-block rounded"
+                         height="100"
+                         width="100"
+                         style="object-fit:cover"
+                         id="uploadedAvatar" />                  
+                </div>
+            </div>
+            <hr class="my-0" />
+            <div class="form-floating mb-3">
+            @Html.DropDownListFor(model => model.IdCategoryParent, (SelectList)ViewBag.CategoryList, new { @class = "form-control", @disabled = "disabled" })
+                <label asp-for="IdCategoryParent">User Name Or Email</label>
+                <span asp-validation-for="IdCategoryParent" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+            <input asp-for="Name" class="form-control" autocomplete="Name" aria-required="true" placeholder="TranDuyKhanh001" readonly />
+                <label asp-for="Name"></label>
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+            <input asp-for="DisplayOrder" class="form-control" autocomplete="DisplayOrder" aria-required="true" placeholder="DisplayOrder" readonly />
+                <label asp-for="DisplayOrder"></label>
+                <span asp-validation-for="DisplayOrder" class="text-danger"></span>
+            </div>
+            <!-- Add other properties here -->
+            <div class="form-group">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>               
+                <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+            </div>
+    </div>
+</div>
+
+
+
+
+@section scriptsAdminPage {
+    @{
+        await Html.RenderPartialAsync("_TableScriptsPartial");
+    }
+}
+
+

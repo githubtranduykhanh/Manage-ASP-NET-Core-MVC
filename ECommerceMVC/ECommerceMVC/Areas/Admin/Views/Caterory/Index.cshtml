@@ -1,0 +1,73 @@
+﻿@model List<ECommerceMVC.Data.DbCategory>
+
+
+@{
+    ViewData["Title"] = "Caterory List";
+    var statusMessage = TempData["StatusMessage"] as string;
+}
+
+<div class="container-xxl flex-grow-1 container-p-y">
+    <h4 class="py-3 mb-4"><span class="text-muted fw-light">Caterory /</span> List</h4>
+    <div class="card">
+        <div style="text-align:end">
+            <a asp-area="Admin" asp-controller="Caterory" asp-action="Create" class="btn btn-primary">Create New</a>
+        </div>
+        <div class="table-responsive text-nowrap p-4 pt-0">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.FirstOrDefault().Image)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.FirstOrDefault().Name)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.FirstOrDefault().DisplayOrder)
+                        </th>
+                        <th>
+                            CategoryParent
+                        </th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <img src="@item.Image" style="border-radius: .125rem;object-fit:cover;width:40px" />
+                            </td>                        
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Name)
+                            </td>
+                            <td>                             
+                                <span class="badge badge-center rounded-pill bg-label-primary">@item.DisplayOrder</span>
+                            </td>
+                            <td>
+                                @Html.DropDownListFor(m => item.IdCategoryParent, (SelectList)ViewBag.CategoryList, new { @class = "form-control" })
+                            </td>
+                            <td>
+                                <a class="btn btn-warning" asp-action="Edit" asp-route-id="@item.Id">
+                                    <i class='bx bx-edit'></i>
+                                    Edit
+                                </a> 
+                                <a class="btn btn-info" asp-action="Details" asp-route-id="@item.Id">
+                                    <i class='bx bx-detail'></i>
+                                    Details
+                                </a> 
+                                <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.Id">
+                                    <i class="bx bx-trash me-1"></i>
+                                    Delete
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        
+    </div>
+</div>
+
+
