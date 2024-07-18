@@ -9,5 +9,7 @@ public partial class DbImage
 
     public string Url { get; set; } = null!;
 
+    public string? IdPublic { get; set; }
+
     public virtual ICollection<DbProductImage> DbProductImages { get; set; } = new List<DbProductImage>();
 }

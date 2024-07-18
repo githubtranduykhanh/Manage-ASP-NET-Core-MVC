@@ -270,6 +270,7 @@ public partial class ECommerceContext : IdentityDbContext<DbUser>
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Url).HasColumnName("url");
+            entity.Property(e => e.IdPublic).HasColumnName("id_public"); // Đặt tên cho trường IdPublic trong cơ sở dữ liệu
         });
 
         modelBuilder.Entity<DbInvoice>(entity =>

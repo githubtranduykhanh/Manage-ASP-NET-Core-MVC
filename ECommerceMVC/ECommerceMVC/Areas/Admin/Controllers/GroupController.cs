@@ -104,7 +104,7 @@ namespace ECommerceMVC.Areas.Admin.Controllers
                     }
                     else
                     {
-                        db.Image = "/assets/img/avatars/1.png";
+                        db.Image = "https://i.pinimg.com/originals/f1/0f/f7/f10ff70a7155e5ab666bcdd1b45b726d.jpg";
                     }
                     _context.Add(db);
                     await _context.SaveChangesAsync();

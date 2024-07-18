@@ -1,0 +1,143 @@
+﻿@model ECommerceMVC.Data.DbProduct
+
+@{
+    ViewData["Title"] = "Product Detail";
+    var statusMessage = TempData["StatusMessage"] as string;
+}
+
+
+<div class="container-xxl flex-grow-1 container-p-y">
+    <h4 class="py-3 mb-4"><span class="text-muted fw-light">Product /</span> Detail</h4>
+
+    <div class="card">         
+            <h5 class="card-header">Profile Details</h5>
+            <!-- Account -->
+            <div class="card-body">
+                <div class="card-datatable table-responsive">
+                    <table class="table">
+                        <tbody>
+                            <tr data-dt-row="40" data-dt-column="2">
+                                <td>Product:</td>
+                                <td>
+                                    <div class="d-flex flex-column">
+                                        <h6 class="text-nowrap mb-0">@Model.Name</h6>
+                                        <small class="text-truncate d-none d-sm-block">O'Conner, Paucek and Braun</small>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr data-dt-row="40" data-dt-column="2">
+                                <td>Category:</td>
+                                <td>
+                                    <span class="text-truncate d-flex align-items-center text-heading">
+                                        <span class="w-px-30 h-px-30 rounded-circle d-flex justify-content-center align-items-center bg-label-warning me-4 p-3">
+                                            <i class="bx bx-briefcase bx-sm"></i>
+                                        </span>
+                                        @Model.IdCategoryNavigation.Name
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr data-dt-row="40" data-dt-column="2">
+                                <td>Group:</td>
+                                <td>
+                                    <span class="text-truncate d-flex align-items-center text-heading">
+                                        <span class="w-px-30 h-px-30 rounded-circle d-flex justify-content-center align-items-center bg-label-warning me-4 p-3">
+                                            <i class="bx bx-briefcase bx-sm"></i>
+                                        </span>
+                                        @Model.IdGroupNavigation.Name
+                                    </span>
+                                </td>
+                            </tr>
+                            @*  <tr data-dt-row="40" data-dt-column="4">
+                            <td>stock:</td>
+                            <td>
+                            <span class="text-truncate">
+                            <label class="switch switch-primary switch-sm">
+                            <input type="checkbox" class="switch-input" checked="">
+                            <span class="switch-toggle-slider">
+                            <span class="switch-on"></span>
+                            </span>
+                            </label>
+                            <span class="d-none">In_Stock</span>
+                            </span>
+                            </td>
+                            </tr> *@
+                            <tr data-dt-row="40" data-dt-column="5">
+                                <td>Price:</td>
+                                <td><span>@Model.Price</span></td>
+                            </tr>
+                            <tr data-dt-row="40" data-dt-column="5">
+                                <td>Quantity:</td>
+                                <td><span>@Model.Quantity</span></td>
+                            </tr>
+                            <tr data-dt-row="40" data-dt-column="5">
+                                <td>CreateAt:</td>
+                                <td><span>@Model.CreatedAt</span></td>
+                            </tr>
+                            <tr data-dt-row="40" data-dt-column="5">
+                                <td>RemoveAt:</td>
+                                <td><span>@Model.RemovedAt</span></td>
+                            </tr>
+                            <tr data-dt-row="40" data-dt-column="5">
+                                <td>Sizes:</td>
+                                <td>
+                                    <span class="text-truncate d-flex align-items-center text-heading">
+                                        @foreach (var item in Model.DbProductSizes)
+                                        {
+                                            <span class="w-px-30 h-px-30 rounded-circle d-flex justify-content-center align-items-center bg-label-warning me-4 p-3">
+                                                @item.IdSizeNavigation.Name
+                                            </span>
+                                        }                                
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr data-dt-row="40" data-dt-column="5">
+                                <td>Colors:</td>
+                                <td>
+                                    <span class="text-truncate d-flex align-items-center text-heading">
+                                        @foreach (var item in Model.DbProductColors)
+                                        {
+                                       
+                                            <span style="background-color:@item.IdColorNavigation.Name" class="w-px-30 h-px-30 rounded-circle d-flex justify-content-center align-items-center me-4 p-3">
+
+                                            </span>
+                                        }
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr data-dt-row="40" data-dt-column="5">
+                                <td>Images:</td>
+                                <td>
+                                    <span class="text-truncate d-flex align-items-center text-heading">
+                                        @foreach (var item in Model.DbProductImages)
+                                        {
+                                            <img src="@item.IdImageNavigation.Url" alt="Product Image" height="50" width="50" class="d-block rounded me-2" style="object-fit: cover;" /> <!-- Hiển thị ảnh -->                                      
+                                        }                       
+                                    </span>
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Add other properties here -->
+                <div class="form-group mt-3">
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
+                    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+                </div>
+            </div>
+          
+            
+    </div>
+</div>
+
+
+
+
+
+@section scriptsAdminPage {
+    @{
+        await Html.RenderPartialAsync("_TableScriptsPartial");
+    }
+}
+
+

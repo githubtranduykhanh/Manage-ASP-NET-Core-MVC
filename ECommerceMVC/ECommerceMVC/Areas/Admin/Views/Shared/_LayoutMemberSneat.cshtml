@@ -153,7 +153,7 @@
                     </li>
 
                     <!--Manager Products-->
-                    <li class="menu-item @(Html.IsParentActive("Admin","ManagerProducts", "TableProduct"))">
+                    <li class="menu-item @(Html.IsParentActive("Admin","Product", "Index,Create"))">
                         <a href="javascript:void(0)" class="menu-link menu-toggle">
                             <i class="menu-icon tf-icons bx bxl-product-hunt"></i>
                            
@@ -161,11 +161,16 @@
                             
                         </a>
                         <ul class="menu-sub">
-                            <li class="menu-item @(Html.IsActive("ManagerProducts", "TableProduct"))">
-                                <a asp-area="Admin" asp-controller="ManagerProducts" asp-action="TableProduct" class="menu-link">
-                                    <div data-i18n="Perfect Scrollbar">Table product</div>
+                            <li class="menu-item @(Html.IsActive("Product", "Index"))">
+                                <a asp-area="Admin" asp-controller="Product" asp-action="Index" class="menu-link">
+                                    <div data-i18n="Perfect Scrollbar">List</div>
                                 </a>
-                            </li>                           
+                            </li>
+                            <li class="menu-item @(Html.IsActive("Product", "Create"))">
+                                <a asp-area="Admin" asp-controller="Product" asp-action="Create" class="menu-link">
+                                    <div data-i18n="Perfect Scrollbar">Create</div>
+                                </a>
+                            </li>
                         </ul>
                     </li>
 

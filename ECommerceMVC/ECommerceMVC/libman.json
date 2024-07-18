@@ -1,0 +1,13 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "library": "ckeditor5@42.0.1",
+      "destination": "wwwroot/lib/ckeditor5/",
+      "files": [
+        "ckeditor.min.js"
+      ]
+    }
+  ]
+}

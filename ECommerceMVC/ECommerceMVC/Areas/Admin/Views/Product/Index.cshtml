@@ -1,0 +1,160 @@
+﻿@model List<ECommerceMVC.Data.DbProduct>
+
+
+@{
+    ViewData["Title"] = "Product List";
+    var statusMessage = TempData["StatusMessage"] as string;
+}
+
+<div class="container-xxl flex-grow-1 container-p-y">
+    <h4 class="py-3 mb-4"><span class="text-muted fw-light">Product /</span> List</h4>
+    <div class="card">
+        <div style="display:flex;justify-content: space-between;align-items: center;" class="card-header">
+            <h5 class="" style="margin: 0;">
+                Table Product
+            </h5>
+            <a class="btn btn-primary" href="/Admin/Product/Create"><i class="bx bx-plus me-0 me-sm-1 bx-xs"></i>Create New</a>
+        </div>
+        <div class="table-responsive text-nowrap p-4 pt-0">
+            <table class="table table-striped">
+                <thead>
+                    <tr>      
+                        <th></th>
+                        <th>Product</th>
+                        <th>Category</th>
+                        <th>Group</th>                      
+                        <th>Colors</th>
+                        <th>Sizes</th>
+                        <th>Images</th>                 
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        
+                        <tr>
+                            <td class="control" tabindex="0" style="">
+                                <a asp-action="Details" asp-route-id="@item.Id">
+                                    <i class='bx bxs-plus-circle'></i>
+                                </a>
+                            </td>
+                            <td class="sorting_1">
+                                <div class="d-flex flex-column justify-content-center">
+                                    <span class="text-heading text-wrap fw-medium">@item.Name</span>
+                                    <span class="text-truncate mb-0 d-none d-sm-block">
+                                        <small>@item.Quantity</small>
+                                    </span>
+                                    <span class="text-truncate mb-0 d-none d-sm-block">
+                                        <small>@item.Price</small>
+                                    </span>
+                                </div>
+                            </td>
+
+                            <td>
+                                @Html.DropDownListFor(m => item.IdCategory, (SelectList)ViewBag.CategoryList, new { @class = "form-control" })
+                            </td>
+                            <td>
+                                @Html.DropDownListFor(m => item.IdGroup, (SelectList)ViewBag.GroupList, new { @class = "form-control" })
+                            </td>                          
+                            <td>                            
+                                <div class="accordion accordion-without-arrow">
+                                    <div class="card accordion-item">
+                                        <h2 class="accordion-header text-body d-flex justify-content-between">
+                                            <button type="button"
+                                                    class="accordion-button collapsed"
+                                                    data-bs-toggle="collapse"
+                                                    data-bs-target="#accordion-@item.Id-colors"
+                                                    aria-controls="accordion-@item.Id-colors">
+                                                Colors
+                                            </button>
+                                        </h2>
+                                        <div id="accordion-@item.Id-colors"
+                                             class="accordion-collapse collapse">
+                                            <div class="accordion-body">
+                                                @foreach (var color in item.DbProductColors.Select(pc => pc.IdColorNavigation.Name))
+                                                {                                                 
+                                                    <input type="color" value="@color" class="form-control mb-1" name="Colors" disabled/>                                                 
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                           </td>
+                           <td>
+                              
+                                <div class="accordion accordion-without-arrow">
+                                    <div class="card accordion-item">
+                                        <h2 class="accordion-header text-body d-flex justify-content-between">
+                                            <button type="button"
+                                                    class="accordion-button collapsed"
+                                                    data-bs-toggle="collapse"
+                                                    data-bs-target="#accordion-@item.Id-sizes"
+                                                    aria-controls="accordion-@item.Id-sizes">
+                                                Sizes
+                                            </button>
+                                        </h2>
+                                        <div id="accordion-@item.Id-sizes"
+                                             class="accordion-collapse collapse">
+                                            <div class="accordion-body">
+                                                @foreach (var size in item.DbProductSizes.Select(ps => ps.IdSizeNavigation.Name))
+                                                {
+                                                    <span class="badge bg-info">@size</span>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                           </td>
+                           <td>
+                               
+                                <div class="accordion accordion-without-arrow">
+                                    <div class="card accordion-item">
+                                        <h2 class="accordion-header text-body d-flex justify-content-between">
+                                            <button type="button"
+                                                    class="accordion-button collapsed"
+                                                    data-bs-toggle="collapse"
+                                                    data-bs-target="#accordion-@item.Id-images"
+                                                    aria-controls="accordion-@item.Id-images">
+                                                Images
+                                            </button>
+                                        </h2>
+                                        <div id="accordion-@item.Id-images"
+                                             class="accordion-collapse collapse">
+                                            <div class="accordion-body">
+                                                @foreach (var image in item.DbProductImages.Select(ps => ps.IdImageNavigation.Url))
+                                                {
+                                                    <!-- Chỉ hiển thị ảnh đầu tiên -->
+                                                    <img src="@image" alt="Product Image" height="50" width="50" class="d-block rounded mb-1" style="object-fit: cover" /> <!-- Hiển thị ảnh -->
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                           </td>                         
+                            <td>
+                                <a class="btn btn-warning" asp-action="Edit" asp-route-id="@item.Id">
+                                    <i class='bx bx-edit me-1'></i>
+                                    Edit
+                                </a>                          
+                                <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.Id">
+                                    <i class="bx bx-trash me-1"></i>
+                                    Delete
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+@section cssAdminPage {
+    @{
+        await Html.RenderPartialAsync("_TableBasePageCssPartial");
+    }
+    <link href="~/assets/vendor/css/datatables-responsive-bs5/responsive.bootstrap5.css" rel="stylesheet" />
+}
+

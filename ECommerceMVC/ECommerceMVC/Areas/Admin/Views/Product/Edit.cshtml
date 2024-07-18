@@ -1,0 +1,250 @@
+﻿@model ECommerceMVC.ViewModels.Product.ProductCreateVM
+@using ECommerceMVC.Extension.File
+@{
+    ViewData["Title"] = "Product Create";
+    var statusMessage = TempData["StatusMessage"] as string;
+}
+
+
+<div class="container-xxl flex-grow-1 container-p-y">
+    <h4 class="py-3 mb-4"><span class="text-muted fw-light">Product /</span> Create</h4>
+
+    <div class="card">
+        <partial name="_StatusMessagePartial" model="statusMessage" />
+        <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+        <form asp-action="Edit" method="post" asp-route-id="@Model.Id" enctype="multipart/form-data">
+
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-xl">
+                        <input asp-for="Id" hidden />
+                        <div class="form-floating mb-3">
+                            @Html.DropDownListFor(model => model.IdCategory, (SelectList)ViewBag.CategoryList, new { @class = "form-control" })
+                            <label asp-for="IdCategory">Category List</label>
+                            <span asp-validation-for="IdCategory" class="text-danger"></span>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input asp-for="Name" class="form-control" autocomplete="Name" aria-required="true" placeholder="TranDuyKhanh001" />
+                            <label asp-for="Name"></label>
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input asp-for="Quantity" class="form-control" autocomplete="Quantity" aria-required="true" placeholder="Quantity" />
+                            <label asp-for="Quantity"></label>
+                            <span asp-validation-for="Quantity" class="text-danger"></span>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input asp-for="Price" class="form-control" autocomplete="Price" aria-required="true" placeholder="Price" />
+                            <label asp-for="Price"></label>
+                            <span asp-validation-for="Price" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-xl">
+                        <div class="form-floating mb-3">
+                            @Html.DropDownListFor(model => model.IdGroup, (SelectList)ViewBag.GroupList, new { @class = "form-control" })
+                            <label asp-for="IdGroup">Group List</label>
+                            <span asp-validation-for="IdGroup" class="text-danger"></span>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input asp-for="CreatedAt" class="form-control" autocomplete="CreatedAt" aria-required="true" placeholder="CreatedAt" />
+                            <label asp-for="CreatedAt"></label>
+                            <span asp-validation-for="CreatedAt" class="text-danger"></span>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input asp-for="RemovedAt" class="form-control" autocomplete="RemovedAt" aria-required="true" placeholder="RemovedAt" />
+                            <label asp-for="RemovedAt"></label>
+                            <span asp-validation-for="RemovedAt" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+
+                    <div class="form-group">
+                        <label asp-for="Description"></label>
+                        <textarea asp-for="Description" class="form-control" id="js-description"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+
+                </div>
+                <div class="row mt-3">
+
+                    <div class="col-xl">
+                        <!-- Images -->
+                        <div class="form-group">
+                            <label>Images</label>
+                            <div id="images-container" class="container-list">
+                                <div class="row mb-3 image-row">
+                                    <div class="col-xl">
+                                        <div class="row mb-2">
+                                            <span asp-validation-for="Images" class="text-danger"></span>
+                                            <label for="upload" class="btn btn-primary me-2 mb-2" tabindex="0">
+                                                <span class="d-none d-sm-block">Upload new photo</span>
+                                                <i class="bx bx-upload d-block d-sm-none"></i>
+                                                <input type="file" id="upload" asp-for="Images" class="account-file-input" hidden="" accept="image/png, image/jpeg" multiple>
+                                                <!-- Đặt multiple để cho phép tải lên nhiều tệp -->
+                                            </label>
+                                            <button type="button" class="btn btn-outline-secondary account-image-reset">
+                                                <i class="bx bx-reset d-block d-sm-none"></i>
+                                                <span class="d-none d-sm-block">Reset</span>
+                                            </button>
+                                        </div>
+                                        <div class="row mb-2">
+                                            <p class="text-muted mb-0">Allowed JPG, GIF or PNG. Max size of 800K</p>
+                                        </div>
+                                        <div class="uploaded-images">
+
+                                            @* @if (Model != null && Model.Images != null && Model.Images.Any())
+                                            {
+                                                foreach (var file in Model.Images)
+                                                {
+                                                    var fileName = System.IO.Path.GetFileName(file.FileName);
+                                                    <div class="row mb-3 uploaded-image">
+                                                        <div class="col-8">
+                                                            <img src="data:image/png;base64,@(await file.ToBase64String())" data-filename="@fileName" alt="@fileName" class="d-block rounded" height="100" width="100" style="object-fit: cover" />
+                                                        </div>
+                                                        <div class="col-4">
+                                                            <button type="button" class="btn btn-danger delete-image" fdprocessedid="hj7vai">
+                                                            <i class="bx bx-trash"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            } *@
+
+                                            @if (Model != null && Model.UrlImages != null && Model.UrlImages.Any())
+                                            {
+                                                foreach (var url in Model.UrlImages)
+                                                {
+                                                    
+                                                    <div class="row mb-3 uploaded-image">
+                                                        <div class="col-8">
+                                                            <img src="@url" alt="@url" class="d-block rounded" height="100" width="100" style="object-fit: cover" />
+                                                        </div>
+                                                        <div class="col-4">
+                                                           
+                                                        </div>
+                                                    </div>
+                                                }
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-xl">
+
+                        <!-- Sizes -->
+                        <div class="form-group">
+                            <span asp-validation-for="Sizes" class="text-danger"></span>
+                            <label>Sizes</label>
+                            <div id="sizes-container" class="container-list">
+
+                                @if (Model != null && Model.Sizes != null && Model.Sizes.Any())
+                                {
+                                    foreach (var item in Model.Sizes)
+                                    {
+                                        <div class="row mb-3">
+                                            <div class="col-8">
+                                                <input type="text" value="@item" class="form-control" name="Sizes" />
+                                            </div>
+                                            <div class="col-4">
+                                                <button type="button" class="btn rounded-pill btn-icon btn-primary add-size"><i class="bx bx-plus me-0 bx-xs"></i></button>
+                                                <button type="button" class="btn rounded-pill btn-icon btn-danger delete-item"><i class="bx bx-trash me-0"></i></button>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="row mb-3">
+                                        <div class="col-8">
+                                            <input type="text" class="form-control" name="Sizes" />
+                                        </div>
+                                        <div class="col-4">
+                                            <button type="button" class="btn rounded-pill btn-icon btn-primary add-size"><i class="bx bx-plus me-0 bx-xs"></i></button>
+                                            <button type="button" class="btn rounded-pill btn-icon btn-danger delete-item"><i class="bx bx-trash me-0"></i></button>
+                                        </div>
+                                    </div>
+                                }
+
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-xl">
+
+                        <!-- Colors -->
+                        <div class="form-group">
+                            <span asp-validation-for="Colors" class="text-danger"></span>
+                            <label>Colors</label>
+                            <div id="colors-container" class="container-list">
+                                @if (Model != null && Model.Colors != null && Model.Colors.Any())
+                                {
+                                    foreach (var item in Model.Colors)
+                                    {
+                                        <div class="row mb-3">
+                                            <div class="col-8">
+                                                <input type="color" value="@item" class="form-control" name="Colors" />
+                                            </div>
+                                            <div class="col-4">
+                                                <button type="button" class="btn rounded-pill btn-icon btn-primary add-color"><i class="bx bx-plus me-0 bx-xs"></i></button>
+                                                <button type="button" class="btn rounded-pill btn-icon btn-danger delete-item"><i class="bx bx-trash me-0"></i></button>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="row mb-3">
+                                        <div class="col-8">
+                                            <input type="color" class="form-control" name="Colors" />
+                                        </div>
+                                        <div class="col-4">
+                                            <button type="button" class="btn rounded-pill btn-icon btn-primary add-color"><i class="bx bx-plus me-0 bx-xs"></i></button>
+                                            <button type="button" class="btn rounded-pill btn-icon btn-danger delete-item"><i class="bx bx-trash me-0"></i></button>
+                                        </div>
+                                    </div>
+                                }
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Add other properties here -->
+                <div class="form-group">
+                    <input type="submit" value="Edit" class="btn btn-primary" />
+                    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+                </div>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+
+@section cssAdminPage {
+    <link rel="stylesheet" href="https://cdn.ckeditor.com/ckeditor5/42.0.1/ckeditor5.css" />
+    <style>
+        .ck-editor__editable {
+            resize: vertical; /* Cho phép thay đổi chiều cao */
+            overflow: auto; /* Đảm bảo cuộn nội dung nếu cần */
+            min-height: 300px; /* Chiều cao tối thiểu */
+            max-height: 600px; /* Chiều cao tối đa */
+            width: 100%; /* Chiều rộng */
+        }
+    </style>
+}
+
+@section scriptsAdminPage {
+    @{
+        await Html.RenderPartialAsync("_TableScriptsPartial");
+    }
+    <script src="~/lib/ckeditor5/ckeditor.min.js"></script>
+    <script src="~/js/adminpages/produt.js" asp-append-version="true"></script>
+}
+
+
