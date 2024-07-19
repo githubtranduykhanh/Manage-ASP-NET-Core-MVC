@@ -1,6 +1,5 @@
 ﻿@model List<ECommerceMVC.Domain.Entities.DbProduct>
 
-
 @{
     ViewData["Title"] = "Product List";
     var statusMessage = TempData["StatusMessage"] as string;
@@ -25,6 +24,7 @@
                         <th>Group</th>                      
                         <th>Colors</th>
                         <th>Sizes</th>
+                        <th>Material</th>
                         <th>Images</th>                 
                         <th>Action</th>
                     </tr>
@@ -46,7 +46,7 @@
                                         <small>@item.Quantity</small>
                                     </span>
                                     <span class="text-truncate mb-0 d-none d-sm-block">
-                                        <small>@item.Price</small>
+                                        <small>@item.Price.ToVietnameseNumberFormat() VNĐ</small>
                                     </span>
                                 </div>
                             </td>
@@ -106,8 +106,32 @@
                                     </div>
                                 </div>
                            </td>
-                           <td>
-                               
+                            <td>
+
+                                <div class="accordion accordion-without-arrow">
+                                    <div class="card accordion-item">
+                                        <h2 class="accordion-header text-body d-flex justify-content-between">
+                                            <button type="button"
+                                                    class="accordion-button collapsed"
+                                                    data-bs-toggle="collapse"
+                                                    data-bs-target="#accordion-@item.Id-material"
+                                                    aria-controls="accordion-@item.Id-material">
+                                                Materials
+                                            </button>
+                                        </h2>
+                                        <div id="accordion-@item.Id-material"
+                                             class="accordion-collapse collapse">
+                                            <div class="accordion-body">
+                                                @foreach (var material in item.DbProductMaterials.Select(ps => ps.IdMaterialNavigation.Name))
+                                                {
+                                                    <span class="badge bg-info">@material</span>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                           <td>                              
                                 <div class="accordion accordion-without-arrow">
                                     <div class="card accordion-item">
                                         <h2 class="accordion-header text-body d-flex justify-content-between">

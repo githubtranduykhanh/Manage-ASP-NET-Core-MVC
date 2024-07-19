@@ -14,10 +14,7 @@ builder.Configuration
     .AddEnvironmentVariables(); // Đưa các biến môi trường vào cấu hình
 
 
-// Add services to the container.
-builder.Services.AddControllersWithViews().AddSessionStateTempDataProvider();
-var mvcBuilder = builder.Services.AddRazorPages();
-builder.Services.AddSession();
+
 
 
 //Đăng ký chuổi kết nối
@@ -50,6 +47,11 @@ builder.Services.AddAutoMapper(typeof(GroupCreateProfile));
 
 builder.Services.AddAutoMapper(typeof(ProductCreateProfile));
 
+
+// Add services to the container.
+builder.Services.AddControllersWithViews().AddSessionStateTempDataProvider();
+var mvcBuilder = builder.Services.AddRazorPages();
+builder.Services.AddSession();
 
 var app = builder.Build();
 

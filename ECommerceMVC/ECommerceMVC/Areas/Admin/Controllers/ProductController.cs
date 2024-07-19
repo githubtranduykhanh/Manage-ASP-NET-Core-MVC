@@ -2,6 +2,7 @@
 using AutoMapper;
 using ECommerceMVC.DataAccess.Data;
 using ECommerceMVC.Domain.Entities;
+using ECommerceMVC.Infrastructure.Extensions.Numbers;
 using ECommerceMVC.Infrastructure.Services.Cloudinary;
 using ECommerceMVC.UI.Areas.Admin.ViewModels.Product;
 using Microsoft.AspNetCore.Identity;
@@ -59,6 +60,7 @@ namespace ECommerceMVC.Areas.Admin.Controllers
                        .Include(p => p.DbProductImages).ThenInclude(pi => pi.IdImageNavigation)
                        .Include(p => p.DbProductColors).ThenInclude(pc => pc.IdColorNavigation)
                        .Include(p => p.DbProductSizes).ThenInclude(ps => ps.IdSizeNavigation)
+                       .Include(p => p.DbProductMaterials).ThenInclude(ps => ps.IdMaterialNavigation)
                        .FirstOrDefaultAsync(p => p.Id == id);     
         }
 
@@ -71,6 +73,7 @@ namespace ECommerceMVC.Areas.Admin.Controllers
                 .Include(p => p.DbProductImages).ThenInclude(pi => pi.IdImageNavigation)
                 .Include(p => p.DbProductColors).ThenInclude(pc => pc.IdColorNavigation)
                 .Include(p => p.DbProductSizes).ThenInclude(ps => ps.IdSizeNavigation)
+                .Include(p => p.DbProductMaterials).ThenInclude(ps => ps.IdMaterialNavigation)
                 .ToListAsync();
             await SetViewBagsAsync();
             return View(db);
@@ -89,6 +92,7 @@ namespace ECommerceMVC.Areas.Admin.Controllers
                 .Include(p => p.DbProductImages).ThenInclude(pi => pi.IdImageNavigation)
                 .Include(p => p.DbProductColors).ThenInclude(pc => pc.IdColorNavigation)
                 .Include(p => p.DbProductSizes).ThenInclude(ps => ps.IdSizeNavigation)
+                .Include(p => p.DbProductMaterials).ThenInclude(ps => ps.IdMaterialNavigation)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (db == null)
             {
@@ -102,7 +106,6 @@ namespace ECommerceMVC.Areas.Admin.Controllers
         // GET: Admin/Product/Create
         public async Task<IActionResult> Create()
         {
-
             await SetViewBagsAsync();
             return View();
         }
@@ -224,6 +227,28 @@ namespace ECommerceMVC.Areas.Admin.Controllers
                 await _context.SaveChangesAsync();
             }
 
+
+            // Lưu Materials
+            foreach (var material in model.Materials)
+            {
+
+                var dbMaterial = new DbMaterial
+                {
+                    Name = material
+                };
+
+                await _context.DbMaterials.AddAsync(dbMaterial);
+                await _context.SaveChangesAsync();
+
+                var productMaterial = new DbProductMaterial
+                {
+                    IdProduct = product.Id,
+                    IdMaterial = dbMaterial.Id
+                };
+                await _context.DbProductMaterials.AddAsync(productMaterial);
+                await _context.SaveChangesAsync();
+            }
+
             _notyf.Success("Create products successfully.");
             return RedirectToAction(nameof(Index));
         }
@@ -242,6 +267,7 @@ namespace ECommerceMVC.Areas.Admin.Controllers
              .Include(p => p.DbProductImages).ThenInclude(pi => pi.IdImageNavigation)
              .Include(p => p.DbProductColors).ThenInclude(pc => pc.IdColorNavigation)
              .Include(p => p.DbProductSizes).ThenInclude(ps => ps.IdSizeNavigation)
+             .Include(p => p.DbProductMaterials).ThenInclude(ps => ps.IdMaterialNavigation)
              .FirstOrDefaultAsync(p => p.Id == id);
 
             if (product == null)
@@ -255,6 +281,7 @@ namespace ECommerceMVC.Areas.Admin.Controllers
             // Lấy danh sách màu sắc và kích cỡ từ DbProductColors và DbProductSizes
             model.Colors = product.DbProductColors.Select(pc => pc.IdColorNavigation.Name).ToList();
             model.Sizes = product.DbProductSizes.Select(ps => ps.IdSizeNavigation.Name).ToList();
+            model.Materials = product.DbProductMaterials.Select(ps => ps.IdMaterialNavigation.Name).ToList();
 
 
             // Lấy danh sách ảnh từ DbProductImages và ánh xạ sang ViewModel tương ứng
@@ -313,7 +340,8 @@ namespace ECommerceMVC.Areas.Admin.Controllers
             {
                 try
                 {
-                   
+
+                    
                     product.IdCategory = model.IdCategory;
                     product.IdGroup = model.IdGroup;
                     product.Name = model.Name;
@@ -344,7 +372,6 @@ namespace ECommerceMVC.Areas.Admin.Controllers
                      
 
                     }
-
                     var removedColors = existingColors.Where(ec => !model.Colors.Contains(ec.IdColorNavigation.Name)).ToList();
                     if (removedColors.Any())
                     {
@@ -417,6 +444,33 @@ namespace ECommerceMVC.Areas.Admin.Controllers
                         _context.DbProductSizes.RemoveRange(removedSizes);                      
                     }
 
+
+                    // Cập nhật Materials
+                    var existingMaterials = product.DbProductMaterials.ToList();
+                    var newMaterials = model.Materials.Except(existingMaterials.Select(es => es.IdMaterialNavigation.Name)).ToList();
+                    foreach (var material in newMaterials)
+                    {
+                        var dbMaterial = new DbMaterial { Name = material };
+                        await _context.DbMaterials.AddAsync(dbMaterial);
+                        await _context.SaveChangesAsync();
+                        var productMaterial = new DbProductMaterial
+                        {
+                            IdProduct = product.Id,
+                            IdMaterial = dbMaterial.Id
+                        };
+                        await _context.DbProductMaterials.AddAsync(productMaterial);
+                    }
+
+                    var removedMaterials = existingMaterials.Where(es => !model.Materials.Contains(es.IdMaterialNavigation.Name)).ToList();
+                    if (removedMaterials.Any())
+                    {
+                        _context.DbProductMaterials.RemoveRange(removedMaterials);
+                    }
+
+
+
+
+
                     await _context.SaveChangesAsync();
                     await transaction.CommitAsync();
 
@@ -462,34 +516,53 @@ namespace ECommerceMVC.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-           
+
             // Tìm sản phẩm trong cơ sở dữ liệu
             var product = await _context.DbProducts.FindAsync(id);
             if (product == null)
             {
                 return NotFound();
             }
+            using (var transaction = await _context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                 
+                    // Xóa màu sắc của sản phẩm
+                    var productColors = _context.DbProductColors.Where(pc => pc.IdProduct == id);
+                    _context.DbProductColors.RemoveRange(productColors);
 
-            // Xóa màu sắc của sản phẩm
-            var productColors = _context.DbProductColors.Where(pc => pc.IdProduct == id);
-            _context.DbProductColors.RemoveRange(productColors);
+                    // Xóa ảnh của sản phẩm
+                    var productImages = _context.DbProductImages.Where(pi => pi.IdProduct == id);
+                    _context.DbProductImages.RemoveRange(productImages);
 
-            // Xóa ảnh của sản phẩm
-            var productImages = _context.DbProductImages.Where(pi => pi.IdProduct == id);
-            _context.DbProductImages.RemoveRange(productImages);
+                    // Xóa kích thước của sản phẩm
+                    var productSizes = _context.DbProductSizes.Where(ps => ps.IdProduct == id);
+                    _context.DbProductSizes.RemoveRange(productSizes);
 
-            // Xóa kích thước của sản phẩm
-            var productSizes = _context.DbProductSizes.Where(ps => ps.IdProduct == id);
-            _context.DbProductSizes.RemoveRange(productSizes);
+                    // Xóa chất liệu của sản phẩm
+                    var productMaterials = _context.DbProductMaterials.Where(ps => ps.IdProduct == id);
+                    _context.DbProductMaterials.RemoveRange(productMaterials);
 
-            // Xóa sản phẩm chính
-            _context.DbProducts.Remove(product);
 
-            // Lưu các thay đổi vào cơ sở dữ liệu
-            await _context.SaveChangesAsync();
+                    // Xóa sản phẩm chính
+                    _context.DbProducts.Remove(product);
 
-            _notyf.Success("Delete product successfully.");
-            return RedirectToAction(nameof(Index));
+                    // Lưu các thay đổi vào cơ sở dữ liệu
+                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+
+                    _notyf.Success("Delete product successfully.");
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();                                     
+                    _notyf.Error($"An error occurred while editing the product: {ex.Message}");
+                    return View(product);
+                }
+            }
+            
         }
     }
 }

@@ -40,6 +40,9 @@ namespace ECommerceMVC.UI.Areas.Admin.ViewModels.Product
         [AtLeastOneItem(ErrorMessage = "Please select at least one color.")]
         public List<string> Colors { get; set; } = new List<string>();
 
+        [AtLeastOneItem(ErrorMessage = "Please select at least one materials.")]
+        public List<string> Materials { get; set; } = new List<string>();
+
         //[AtLeastOneImage(ErrorMessage = "Please select at least one image.")]
         public List<IFormFile> Images { get; set; } = new List<IFormFile>();
 

@@ -63,7 +63,7 @@
                             </tr> *@
                             <tr data-dt-row="40" data-dt-column="5">
                                 <td>Price:</td>
-                                <td><span>@Model.Price</span></td>
+                            <td><span>@Model.Price.ToVietnameseNumberFormat() VNĐ</span></td>
                             </tr>
                             <tr data-dt-row="40" data-dt-column="5">
                                 <td>Quantity:</td>
@@ -78,12 +78,24 @@
                                 <td><span>@Model.RemovedAt</span></td>
                             </tr>
                             <tr data-dt-row="40" data-dt-column="5">
+                                <td>Materials:</td>
+                                <td>
+                                    <span class="text-truncate d-flex align-items-center text-heading">
+                                        @foreach (var item in Model.DbProductMaterials)
+                                        {
+                                            <span class="badge bg-primary me-2">@item.IdMaterialNavigation.Name</span>
+                                            
+                                        }
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr data-dt-row="40" data-dt-column="5">
                                 <td>Sizes:</td>
                                 <td>
                                     <span class="text-truncate d-flex align-items-center text-heading">
                                         @foreach (var item in Model.DbProductSizes)
                                         {
-                                            <span class="w-px-30 h-px-30 rounded-circle d-flex justify-content-center align-items-center bg-label-warning me-4 p-3">
+                                            <span class="w-px-30 h-px-30 badge badge-center rounded-pill bg-primary bg-primary me-4 p-3">
                                                 @item.IdSizeNavigation.Name
                                             </span>
                                         }                                

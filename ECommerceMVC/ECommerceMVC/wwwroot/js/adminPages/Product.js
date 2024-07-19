@@ -21,36 +21,6 @@
         $('#colors-container').append(html);
     });
 
-    // $(document).on('click', '#images-container .add-image', function () {
-    //     var html = `
-    //         <div class="row mb-3">
-    //             <div class="col-8">
-    //                          <div class="d-flex align-items-start align-items-sm-center gap-4">
-    //                                                 <img src="../assets/img/avatars/1.png" alt="user-avatar" class="d-block rounded" height="100" width="100">
-    //                                                 <div class="button-wrapper">
-    //                                                     <label for="upload" class="btn btn-primary me-2 mb-4" tabindex="0">
-    //                                                         <span class="d-none d-sm-block">Upload new photo</span>
-    //                                                         <i class="bx bx-upload d-block d-sm-none"></i>
-    //                                                         <input type="file" name="Images" class="account-file-input" hidden="" accept="image/png, image/jpeg">
-    //                                                     </label>
-    //                                                     <button type="button" class="btn btn-outline-secondary account-image-reset mb-4">
-    //                                                         <i class="bx bx-reset d-block d-sm-none"></i>
-    //                                                         <span class="d-none d-sm-block">Reset</span>
-    //                                                     </button>
-
-    //                                                     <p class="text-muted mb-0">Allowed JPG, GIF or PNG. Max size of 800K</p>
-    //                                                 </div>
-    //                                             </div>
-    //             </div>
-    //                      <div class="col-4">
-    //                                             <button type="button" class="btn rounded-pill btn-icon btn-primary add-image"><i class='bx bx-add-to-queue'></i></button>
-    //                                             <button type="button" class="btn rounded-pill btn-icon btn-danger delete-item"><i class='bx bx-message-square-x'></i></button>
-    //                                         </div>
-    //         </div>
-    //     `;
-    //     $('#images-container').append(html);
-    // });
-
     $(document).on('click', '#sizes-container .add-size', function () {
         var html = `
                     <div class="row mb-3">
@@ -64,6 +34,22 @@
                     </div>
                 `;
         $('#sizes-container').append(html);
+    });
+
+
+    $(document).on('click', '#materials-container .add-material', function () {
+        var html = `
+                    <div class="row mb-3">
+                        <div class="col-8">
+                            <input type="text" class="form-control" name="Materials" />
+                        </div>
+         <div class="col-4">
+                                                  <button type="button" class="btn rounded-pill btn-icon btn-primary add-material"><i class="bx bx-plus me-0 bx-xs"></i></button>
+                                                <button type="button" class="btn rounded-pill btn-icon btn-danger delete-item"><i class="bx bx-trash me-0"></i></button>
+                                                </div>
+                    </div>
+                `;
+        $('#materials-container').append(html);
     });
 
     // Hàm xóa mục chung
@@ -115,6 +101,7 @@
     // Thêm sự kiện click cho nút xóa mục trong các container khác nhau
     $(document).on('click', '#colors-container .delete-item', deleteItemHandler);
     $(document).on('click', '#sizes-container .delete-item', deleteItemHandler);
+    $(document).on('click', '#materials-container .delete-item', deleteItemHandler);
     /*$(document).on('click', '.uploaded-images .delete-image', deleteImageHandler);*/
 
     // Xử lý khi người dùng thay đổi tệp tải lên

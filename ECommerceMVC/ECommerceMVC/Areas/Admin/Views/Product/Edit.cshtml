@@ -1,5 +1,5 @@
 ﻿@model ECommerceMVC.UI.Areas.Admin.ViewModels.Product.ProductCreateVM
-@using ECommerceMVC.Infrastructure.Extensions.File
+
 @{
     ViewData["Title"] = "Product Create";
     var statusMessage = TempData["StatusMessage"] as string;
@@ -68,7 +68,7 @@
                 </div>
                 <div class="row mt-3">
 
-                    <div class="col-xl">
+                    <div class="col-2">
                         <!-- Images -->
                         <div class="form-group">
                             <label>Images</label>
@@ -129,6 +129,47 @@
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-xl">
+
+                        <!-- Materials -->
+                        <div class="form-group">
+                            <span asp-validation-for="Materials" class="text-danger"></span>
+                            <label>Materials</label>
+                            <div id="materials-container" class="container-list">
+
+                                @if (Model != null && Model.Materials != null && Model.Materials.Any())
+                                {
+                                    foreach (var item in Model.Materials)
+                                    {
+                                        <div class="row mb-3">
+                                            <div class="col-8">
+                                                <input type="text" value="@item" class="form-control" name="Materials" />
+                                            </div>
+                                            <div class="col-4">
+                                                <button type="button" class="btn rounded-pill btn-icon btn-primary add-material"><i class="bx bx-plus me-0 bx-xs"></i></button>
+                                                <button type="button" class="btn rounded-pill btn-icon btn-danger delete-item"><i class="bx bx-trash me-0"></i></button>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="row mb-3">
+                                        <div class="col-8">
+                                            <input type="text" class="form-control" name="Materials" />
+                                        </div>
+                                        <div class="col-4">
+                                            <button type="button" class="btn rounded-pill btn-icon btn-primary add-material"><i class="bx bx-plus me-0 bx-xs"></i></button>
+                                            <button type="button" class="btn rounded-pill btn-icon btn-danger delete-item"><i class="bx bx-trash me-0"></i></button>
+                                        </div>
+                                    </div>
+                                }
+
+
                             </div>
 
                         </div>
@@ -244,7 +285,7 @@
         await Html.RenderPartialAsync("_TableScriptsPartial");
     }
     <script src="~/lib/ckeditor5/ckeditor.min.js"></script>
-    <script src="~/js/adminpages/produt.js" asp-append-version="true"></script>
+    <script src="~/js/adminpages/product.js" asp-append-version="true"></script>
 }
 
 

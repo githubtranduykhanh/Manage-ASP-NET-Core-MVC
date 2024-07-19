@@ -215,6 +215,45 @@
                             </li>
                         </ul>
                     </li>
+                    <!--Manager NewCategories-->
+                    <li class="menu-item @(Html.IsParentActive("Admin","NewCategories", "Index,Create"))">
+                        <a href="javascript:void(0)" class="menu-link menu-toggle">
+                           
+                            <i class='menu-icon tf-icons bx bx-category-alt'></i>
+                            <div data-i18n="Extended UI">New Categories</div>
+                        </a>
+                        <ul class="menu-sub">
+                            <li class="menu-item @(Html.IsActive("NewCategories", "Index"))">
+                                <a asp-area="Admin" asp-controller="NewCategories" asp-action="Index" class="menu-link">
+                                    <div data-i18n="Perfect Scrollbar">List</div>
+                                </a>
+                            </li>
+                            <li class="menu-item @(Html.IsActive("NewCategories", "Create"))">
+                                <a asp-area="Admin" asp-controller="NewCategories" asp-action="Create" class="menu-link">
+                                    <div data-i18n="Perfect Scrollbar">Create</div>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <!--Manager News-->
+                    <li class="menu-item @(Html.IsParentActive("Admin","News", "Index,Create"))">
+                        <a href="javascript:void(0)" class="menu-link menu-toggle">
+                            <i class='menu-icon tf-icons bx bx-news'></i>                           
+                            <div data-i18n="Extended UI">News</div>
+                        </a>
+                        <ul class="menu-sub">
+                            <li class="menu-item @(Html.IsActive("News", "Index"))">
+                                <a asp-area="Admin" asp-controller="News" asp-action="Index" class="menu-link">
+                                    <div data-i18n="Perfect Scrollbar">List</div>
+                                </a>
+                            </li>
+                            <li class="menu-item @(Html.IsActive("News", "Create"))">
+                                <a asp-area="Admin" asp-controller="News" asp-action="Create" class="menu-link">
+                                    <div data-i18n="Perfect Scrollbar">Create</div>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
 
 
                     @* <li class="menu-item">

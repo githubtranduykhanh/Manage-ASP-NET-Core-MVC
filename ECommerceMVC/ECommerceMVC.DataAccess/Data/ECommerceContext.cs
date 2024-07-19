@@ -9,9 +9,9 @@ namespace ECommerceMVC.DataAccess.Data;
 
 public partial class ECommerceContext : IdentityDbContext<DbUser>
 {
-    public ECommerceContext()
-    {
-    }
+    //public ECommerceContext()
+    //{
+    //}
 
     public ECommerceContext(DbContextOptions<ECommerceContext> options)
         : base(options)
@@ -66,6 +66,7 @@ public partial class ECommerceContext : IdentityDbContext<DbUser>
 
     public virtual DbSet<DbUser> DbUsers { get; set; }
 
+   
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
