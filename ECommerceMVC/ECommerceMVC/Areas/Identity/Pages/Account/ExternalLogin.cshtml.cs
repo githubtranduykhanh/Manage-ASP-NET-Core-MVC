@@ -11,19 +11,18 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
-using ECommerceMVC.Data;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Logging;
-using ECommerceMVC.Helper.Strings;
 using Microsoft.EntityFrameworkCore;
-using ECommerceMVC.ViewModels;
 using Microsoft.AspNetCore.Authentication;
 using Newtonsoft.Json.Linq;
 using ECommerceMVC.Helper.Facebooks;
+using ECommerceMVC.Infrastructure.Helpers.Strings;
+using ECommerceMVC.Domain.Entities;
 
 namespace ECommerceMVC.Areas.Identity.Pages.Account
 {

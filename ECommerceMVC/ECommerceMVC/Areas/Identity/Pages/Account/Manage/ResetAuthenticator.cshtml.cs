@@ -4,7 +4,7 @@
 
 using System;
 using System.Threading.Tasks;
-using ECommerceMVC.Data;
+using ECommerceMVC.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;

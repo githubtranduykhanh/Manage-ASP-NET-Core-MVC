@@ -4,8 +4,9 @@
 
 using System;
 using System.Threading.Tasks;
+using ECommerceMVC.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
-using ECommerceMVC.Data;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;

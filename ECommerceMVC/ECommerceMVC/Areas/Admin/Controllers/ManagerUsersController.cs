@@ -1,16 +1,8 @@
 ﻿using AutoMapper;
 using CloudinaryDotNet.Actions;
-using ECommerceMVC.Config;
-using ECommerceMVC.Data;
-using ECommerceMVC.Helper.Jwts;
-using ECommerceMVC.Helper.Responses;
-using ECommerceMVC.Models.Role;
-using ECommerceMVC.Models.User;
-using ECommerceMVC.Services.Cloudinary;
-using ECommerceMVC.Services.Store;
-using ECommerceMVC.Services.User;
-using ECommerceMVC.ViewModels;
-using Microsoft.AspNetCore.Authorization;
+using ECommerceMVC.Infrastructure.Config;
+using ECommerceMVC.DataAccess.Data;
+using ECommerceMVC.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -18,10 +10,14 @@ using Microsoft.Extensions.Options;
 using System.ComponentModel;
 using System.Security.Claims;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using ECommerceMVC.UI.Areas.Admin.Models.User;
+using ECommerceMVC.UI.Areas.Admin.Models.Role;
+using ECommerceMVC.Infrastructure.Services.Cloudinary;
+using ECommerceMVC.Helper.Responses;
 
 namespace ECommerceMVC.Areas.Admin.Controllers
 {
-   
+
     [Area("Admin")]
     [Route("Admin/[controller]/[action]")]
     public class ManagerUsersController : Controller

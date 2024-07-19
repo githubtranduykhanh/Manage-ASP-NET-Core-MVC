@@ -9,9 +9,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
-using ECommerceMVC.Data;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
+using ECommerceMVC.Domain.Entities;
 
 namespace ECommerceMVC.Areas.Identity.Pages.Account
 {

@@ -1,9 +1,9 @@
 ﻿using AspNetCoreHero.ToastNotification.Abstractions;
 using AutoMapper;
-using ECommerceMVC.Data;
-using ECommerceMVC.Services.Cloudinary;
-using ECommerceMVC.ViewModels.Caterory;
-using ECommerceMVC.ViewModels.Product;
+using ECommerceMVC.DataAccess.Data;
+using ECommerceMVC.Domain.Entities;
+using ECommerceMVC.Infrastructure.Services.Cloudinary;
+using ECommerceMVC.UI.Areas.Admin.ViewModels.Product;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;

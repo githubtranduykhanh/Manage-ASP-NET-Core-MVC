@@ -1,6 +1,5 @@
 ﻿
-using ECommerceMVC.Data;
-using ECommerceMVC.Services.Store;
+using ECommerceMVC.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;

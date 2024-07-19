@@ -1,33 +1,8 @@
-using AspNetCoreHero.ToastNotification;
-using ECommerceMVC.AutoMapperProfile;
-using ECommerceMVC.AutoMapperProfile.Caterory;
-using ECommerceMVC.AutoMapperProfile.Group;
-using ECommerceMVC.AutoMapperProfile.Product;
-using ECommerceMVC.AutoMapperProfile.User;
-using ECommerceMVC.Config;
-using ECommerceMVC.Data;
-using ECommerceMVC.Helper.Email;
-using ECommerceMVC.Helper.Excel;
-using ECommerceMVC.Helper.Jwts;
-using ECommerceMVC.Helper.Responses;
-using ECommerceMVC.Repositorys.User;
-using ECommerceMVC.Services.Cloudinary;
-using ECommerceMVC.Services.Store;
-using ECommerceMVC.Services.User;
-using ECommerceMVC.ViewModels;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authentication.OAuth;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using System.Configuration;
-using System.Security.Claims;
-using System.Text;
-using System.Text.Json;
-using static Microsoft.IO.RecyclableMemoryStreamManager;
+using ECommerceMVC.Infrastructure.Configuration;
+using ECommerceMVC.UI.Areas.Admin.AutoMapperProfile.Caterory;
+using ECommerceMVC.UI.Areas.Admin.AutoMapperProfile.Group;
+using ECommerceMVC.UI.Areas.Admin.AutoMapperProfile.Product;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,247 +16,39 @@ builder.Configuration
 
 // Add services to the container.
 builder.Services.AddControllersWithViews().AddSessionStateTempDataProvider();
-
-
+var mvcBuilder = builder.Services.AddRazorPages();
 builder.Services.AddSession();
 
 
 //Đăng ký chuổi kết nối
-builder.Services.AddDbContext<ECommerceContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("ECommerce")));
+builder.Services.RegisterDb(builder.Configuration);
+
+//Đăng ký Identity
+builder.Services.RegisterIdentity(builder.Configuration);
 
 
-builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
+//Đăng ký Cors
+builder.Services.RegisterCors(builder.Configuration);
 
-// Add services to the container.
-builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
-builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
-builder.Services.AddTransient<IEmailSender, EmailSender>();
+//Đăng ký Notyf
+builder.Services.RegisterNotyf();
 
-builder.Services.Configure<AuthenticationSettings>(builder.Configuration.GetSection("AuthenticationSettings"));
 
-//builder.Services.AddScoped<IRepositoryUser, RepositoryUser>();
-//builder.Services.AddScoped<IServiceUser<DbUser, UserVM>, ServiceUser>();
-//builder.Services.AddScoped<IServiceUser<DbUser, UserFirstVM>, ServiceUserFirst>();
-builder.Services.AddSingleton<IServiceStore, ServiceStore>();
-builder.Services.AddScoped<IExcel<DbUser>, UserExcel>();
-builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
+//Đăng ký Configure Option
+builder.Services.AddConfigureOption(builder.Configuration);
 
-builder.Services.AddScoped<JwtAuthenticationManager>();
+
+
+//Đăng ký Dependency Injection
+builder.Services.AddDependencyInjection();
+
 
 //AddAutoMapper
-builder.Services.AddAutoMapper(typeof(UserRegisterProfile));
-
-builder.Services.AddAutoMapper(typeof(UserVMDbUserProfile));
-
-builder.Services.AddAutoMapper(typeof(UserInformationcClient));
-
-
 builder.Services.AddAutoMapper(typeof(CateroryCreateProfile));
 
 builder.Services.AddAutoMapper(typeof(GroupCreateProfile));
 
 builder.Services.AddAutoMapper(typeof(ProductCreateProfile));
-
-// Đọc giá trị CORS từ cấu hình
-var corsSettings = builder.Configuration.GetSection("CorsSettings").Get<CorsSettings>();
-// Đọc giá trị Jwt từ cấu hình
-var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
-// Đọc giá trị AuthenticationSettings từ cấu hình
-var authenticationSettings = builder.Configuration.GetSection("AuthenticationSettings").Get<AuthenticationSettings>();
-
-
-//Cấu hình Cors
-builder.Services.AddCors(options =>
-{
-    //Cấu hình cho req tùy trỉnh
-    //options.AddPolicy("CorsPolicy",
-    //        builderCors => builderCors
-    //            .WithOrigins(corsSettings.AllowedOrigins.ToArray())
-    //            .WithMethods(corsSettings.AllowedMethods.ToArray())
-    //            .WithHeaders(corsSettings.AllowedHeaders.ToArray())
-    //);
-
-
-
-    //Cấu hình cho bất kỳ req nào 
-    options.AddPolicy("CorsPolicy", policy =>
-    {
-        policy.WithOrigins(corsSettings.AllowedOrigins.ToArray())
-               .AllowAnyHeader()
-               .AllowAnyMethod()
-               .AllowCredentials();
-    });
-});
-
-builder.Services.AddRazorPages();
-
-//builder.Services.AddDefaultIdentity<DbUser>()
-//    .AddEntityFrameworkStores<ECommerceContext>()
-//    .AddDefaultTokenProviders();
-
-
-builder.Services.AddIdentity<DbUser, IdentityRole>()
-    .AddEntityFrameworkStores<ECommerceContext>()
-    .AddDefaultTokenProviders();
-
-//Truy cập IdentityOptions
-builder.Services.Configure<IdentityOptions>(options => {
-    // Thiết lập về Password
-    options.Password.RequireDigit = false; // Không bắt phải có số
-    options.Password.RequireLowercase = false; // Không bắt phải có chữ thường
-    options.Password.RequireNonAlphanumeric = false; // Không bắt ký tự đặc biệt
-    options.Password.RequireUppercase = false; // Không bắt buộc chữ in
-    options.Password.RequiredLength = 3; // Số ký tự tối thiểu của password
-    options.Password.RequiredUniqueChars = 1; // Số ký tự riêng biệt
-
-    // Cấu hình Lockout - khóa user
-    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5); // Khóa 5 phút
-    options.Lockout.MaxFailedAccessAttempts = 5; // Thất bại 5 lầ thì khóa
-    options.Lockout.AllowedForNewUsers = true;
-
-    // Cấu hình về User.
-    options.User.AllowedUserNameCharacters = // các ký tự đặt tên user
-        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-    options.User.RequireUniqueEmail = true;  // Email là duy nhất
-
-    // Cấu hình đăng nhập.
-    options.SignIn.RequireConfirmedEmail = true;            // Cấu hình xác thực địa chỉ email (email phải tồn tại)
-    options.SignIn.RequireConfirmedPhoneNumber = false;     // Xác thực số điện thoại
-    options.SignIn.RequireConfirmedAccount = true;  // Email phải được xác thực trước khi đăng nhặp
-});
-
-
-//Khai báo path
-builder.Services.ConfigureApplicationCookie(options =>
-{
-    options.LoginPath = "/Identity/Account/Login";
-    options.LogoutPath = "/Identity/Account/Logout";
-    options.AccessDeniedPath = "/Identity/Account/AccessDenied";
-});
-
-builder.Services.AddAuthentication()
-    .AddGoogle(googleOptions =>
-    {
-        // Thiết lập ClientID và ClientSecret để truy cập API google
-        googleOptions.ClientId = authenticationSettings.Google.ClientId;
-        googleOptions.ClientSecret = authenticationSettings.Google.ClientSecret;
-        // Cấu hình Url callback lại từ Google (không thiết lập thì mặc định là /signin-google)
-        googleOptions.CallbackPath = authenticationSettings.Google.CallbackPath;
-        googleOptions.Scope.Add("profile");
-        googleOptions.ClaimActions.MapJsonKey("urn:google:picture", "picture");
-        googleOptions.Events = new OAuthEvents()
-        {
-            OnRedirectToAuthorizationEndpoint = c =>
-            {
-                c.RedirectUri += "&prompt=consent";
-                c.Response.Redirect(c.RedirectUri);
-                return Task.CompletedTask;
-            }
-        };
-    })
-    .AddFacebook(facebookOptions => {
-        facebookOptions.AppId = authenticationSettings.Facebook.AppId;
-        facebookOptions.AppSecret = authenticationSettings.Facebook.AppSecret;
-        // Thiết lập đường dẫn Facebook chuyển hướng đến
-        facebookOptions.CallbackPath = authenticationSettings.Facebook.CallbackPath;
-        facebookOptions.SaveTokens = true;
-    });
-
-builder.Services.AddControllersWithViews();
-
-
-
-builder.Services.AddNotyf(config =>
-{
-    config.DurationInSeconds = 4;
-    config.IsDismissable = true;
-    config.Position = NotyfPosition.TopRight;
-});
-
-
-
-// Cấu hình JWT authentication
-//builder.Services.AddAuthentication(options =>
-//{
-//    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-//    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-//}).AddJwtBearer( options =>
-//{
-//    options.TokenValidationParameters = new TokenValidationParameters
-//    {
-//        ValidateIssuer = true,
-//        ValidateAudience = true,    
-//        ValidateLifetime = true,
-//        ValidateIssuerSigningKey = true,  
-//        ClockSkew = TimeSpan.Zero,
-//        ValidIssuer = jwtSettings?.Issuer,
-//        ValidAudience = jwtSettings?.Audience,
-//        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtSettings?.SecretKey ?? "ECommerceAuthorizationInformationWarningGETPOSTPUTPUT"))
-//    };
-
-//options.Events = new JwtBearerEvents
-//{
-//    OnAuthenticationFailed = context =>
-//    {
-//        if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
-//        {
-//            if (!context.Response.HasStarted)
-//            {
-//                context.Response.WriteJsonResponseAsync(
-//                  new AuthenticationFailedResponse()
-//                  {
-//                      mes = "Token expired"
-//                  },
-//                  StatusCodes.Status401Unauthorized,
-//                  "Token expired"
-//                ).Wait();
-//            }
-//        }
-//        else if (context.Exception.GetType() == typeof(SecurityTokenInvalidSignatureException))
-//        {
-//            if (!context.Response.HasStarted)
-//            {
-//                // Token has invalid signature
-//                context.Response.WriteJsonResponseAsync(
-//                  new AuthenticationFailedResponse()
-//                  {
-//                      mes = "Token has invalid signature"
-//                  },
-//                  StatusCodes.Status401Unauthorized,
-//                  "Token has invalid signature"
-//                ).Wait();
-//            }               
-//        }
-//        else
-//        {
-//            if (!context.Response.HasStarted)
-//            {
-//                // Token invalid
-//                context.Response.WriteJsonResponseAsync(
-//                   new AuthenticationFailedResponse()
-//                   {
-//                       mes = "Token invalid"
-//                   },
-//                   StatusCodes.Status401Unauthorized, "Token invalid"
-//                ).Wait();
-//            }
-
-//        }
-//        return Task.CompletedTask;
-//    },
-//    OnTokenValidated = context =>
-//    {
-//        Console.WriteLine("Token validated successfully");
-//        return Task.CompletedTask;
-//    },
-//    OnChallenge = context =>
-//    {
-//        context.HandleResponse();
-//        return Task.CompletedTask;
-//    }
-//};
-//});
-
 
 
 var app = builder.Build();
@@ -293,6 +60,10 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+else
+{
+    mvcBuilder.AddRazorRuntimeCompilation();
+}
 
 app.UseHttpsRedirection();
 
@@ -301,6 +72,8 @@ app.UseSession(); // Kích hoạt middleware Session
 app.UseStaticFiles();
 
 app.UseRouting();
+
+
 
 app.UseCors("CorsPolicy");
 
@@ -314,19 +87,6 @@ app.MapAreaControllerRoute(
     pattern: "Admin/{controller=Home}/{action=Index}/{id?}"
 );
 
-
-app.MapAreaControllerRoute(
-    name: "MyAreaMember",
-    areaName: "Member",
-    pattern: "Member/{controller=Home}/{action=Index}/{id?}"
-);
-
-
-//app.MapAreaControllerRoute(
-//    name: "MyAreaAccount",
-//    areaName: "Account",
-//    pattern: "Account/{controller=Home}/{action=Index}/{id?}"
-//);
 
 app.MapControllerRoute(
     name: "default",
