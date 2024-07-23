@@ -13,6 +13,8 @@ namespace ECommerceMVC.DataAccess.Repositorys
         protected readonly ECommerceContext _context;
 
         private IProductRepositorie? _productRepositorie;
+
+        private INewCategoriesRepositorie? _newCategoriesRepositorie;
         public UnitOfWork(ECommerceContext context)
         {
             _context = context;
@@ -20,8 +22,7 @@ namespace ECommerceMVC.DataAccess.Repositorys
 
 
         public IProductRepositorie ProductRepositorie => _productRepositorie ??= new ProductRepositorie(_context);
-
-       
+        public INewCategoriesRepositorie NewCategoriesRepositorie => _newCategoriesRepositorie ??= new NewCategoriesRepositorie(_context);
 
         public async Task SaveChangesAsync()
         {

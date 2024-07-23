@@ -7,47 +7,90 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ECommerceMVC.DataAccess.Data;
 using ECommerceMVC.Domain.Entities;
+using ECommerceMVC.Application.Interfaces;
+using ECommerceMVC.Application.Dtos.DataTable;
+using ECommerceMVC.UI.Areas.Admin.ViewModels.NewCategories;
+using ECommerceMVC.Areas.Admin.Controllers;
+using AspNetCoreHero.ToastNotification.Abstractions;
+using AutoMapper;
+using ECommerceMVC.Domain.Abstract.Cloudinary;
+using Microsoft.AspNetCore.Identity;
+using ECommerceMVC.Application.Services.NewCategories;
+using ECommerceMVC.UI.Areas.Admin.Models.NewCategories;
+using ECommerceMVC.Application.Dtos.NewCategories;
 
 namespace ECommerceMVC.UI.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    public class NewCategoriesController : Controller
-    {
-        private readonly ECommerceContext _context;
-
-        public NewCategoriesController(ECommerceContext context)
+    public class NewCategoriesController : BaseController
+    {      
+        private readonly INewCategoriesService _newCategoriesService;
+       
+        public NewCategoriesController(SignInManager<DbUser> signInManager, UserManager<DbUser> userManager, ICloudinaryService cloudinaryService, RoleManager<IdentityRole> roleManager, INotyfService notyf, IMapper mapper, ECommerceContext context, INewCategoriesService newCategoriesService) : base(signInManager, userManager, cloudinaryService, roleManager, notyf, mapper, context)
         {
-            _context = context;
+            _newCategoriesService = newCategoriesService;
         }
 
-        // GET: Admin/NewCategories
-        public async Task<IActionResult> Index()
+        private async Task SetViewBagsAsync()
         {
-            return View(await _context.DbNewCategories.ToListAsync());
+
+            var categories = await _context.DbNewCategories.ToListAsync();
+
+            // Add a null option to the beginning of the list
+            categories.Insert(0, new DbNewCategory { Id = 0, Name = "No parent category" });
+
+            // Create SelectList with categories          
+            ViewBag.CategoryList = new SelectList(categories, "Id", "Name");
+        }
+
+
+        // GET: Admin/NewCategories
+        public async Task<IActionResult> Index(RequestDataTable request)
+        {
+            return View();
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> GetAllDataTable(RequestDataTable request)
+        {
+            if (request == null)
+            {
+                return BadRequest();
+            }
+
+            var result = await _newCategoriesService.GetAllDataTableAsync(request);
+
+            return Ok(result);
         }
 
         // GET: Admin/NewCategories/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> DetailsPartial(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var dbNewCategory = await _context.DbNewCategories
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (dbNewCategory == null)
-            {
-                return NotFound();
-            }
-
-            return View(dbNewCategory);
+            if (id == null) return NotFound();        
+            var db = await _newCategoriesService.GetByIdAsync(id);
+            if (db == null) return NotFound(); 
+            var model = _mapper.Map<NewCategoriesModel, NewCategoryVM>(db);
+            model.UrlImage = db.Image;
+            return PartialView("Partials/DetailsPartial", model);        
         }
 
         // GET: Admin/NewCategories/Create
-        public IActionResult Create()
+        public async Task<IActionResult> CreateOrEditPartial(int? id)
         {
-            return View();
+            if(id == null || id == 0)
+            {
+                ViewBag.Type = "Create";
+                await SetViewBagsAsync();
+                return PartialView("Partials/CreateOrEditPartial");
+            }
+            ViewBag.Type = "Edit";
+            var db = await _newCategoriesService.GetByIdAsync(id);
+            if (db == null) { return NotFound(); }  
+            await SetViewBagsAsync();
+            var model = _mapper.Map<NewCategoriesModel, NewCategoryVM>(db);
+            model.UrlImage = db.Image;
+            return PartialView("Partials/CreateOrEditPartial", model);
         }
 
         // POST: Admin/NewCategories/Create
@@ -55,66 +98,51 @@ namespace ECommerceMVC.UI.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Image,DisplayOrder,IdNewParent")] DbNewCategory dbNewCategory)
+        public async Task<IActionResult> Create(NewCategoryVM model)
         {
             if (ModelState.IsValid)
-            {
-                _context.Add(dbNewCategory);
+            {             
+                var dbNewCategory = new DbNewCategory();
+                dbNewCategory.Image = "https://i.pinimg.com/originals/f1/0f/f7/f10ff70a7155e5ab666bcdd1b45b726d.jpg";
+                if (model.Image != null) dbNewCategory.Image = await _cloudinaryService.UploadFileAsync(model.Image);
+                dbNewCategory.Name = model.Name;
+                dbNewCategory.IdNewParent = model.IdNewParent != 0 ? model.IdNewParent : null;
+                dbNewCategory.DisplayOrder = model.DisplayOrder;
+                await _context.AddAsync(dbNewCategory);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return Ok(new ResponseModel
+                {
+                    success = true,
+                    message = "Create successfully."
+                });
             }
-            return View(dbNewCategory);
-        }
-
-        // GET: Admin/NewCategories/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
+            return Ok(new ResponseModel
             {
-                return NotFound();
-            }
-
-            var dbNewCategory = await _context.DbNewCategories.FindAsync(id);
-            if (dbNewCategory == null)
-            {
-                return NotFound();
-            }
-            return View(dbNewCategory);
+                success = false,
+                message = "Create errors.",
+                EnumErrors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage)
+            });
         }
-
         // POST: Admin/NewCategories/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Image,DisplayOrder,IdNewParent")] DbNewCategory dbNewCategory)
+        public async Task<IActionResult> Edit(NewCategoryVM model)
         {
-            if (id != dbNewCategory.Id)
-            {
-                return NotFound();
-            }
-
+          
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(dbNewCategory);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!DbNewCategoryExists(dbNewCategory.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(dbNewCategory);
+                var dbMap = _mapper.Map<NewCategoryVM, NewCategoriesModel>(model);
+                var resut = await _newCategoriesService.UpdateAsync(dbMap, model.Image);
+                return Ok(resut);
+            }         
+            return Ok(new ResponseModel
+            {
+                success = false,
+                message = "Create errors.",
+                EnumErrors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage)
+            });
         }
 
         // GET: Admin/NewCategories/Delete/5
@@ -125,14 +153,10 @@ namespace ECommerceMVC.UI.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var dbNewCategory = await _context.DbNewCategories
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (dbNewCategory == null)
-            {
-                return NotFound();
-            }
-
-            return View(dbNewCategory);
+            var db = await _newCategoriesService.GetByIdAsync(id);
+            if (db == null) { return NotFound(); }       
+            var model = _mapper.Map<NewCategoriesModel, NewCategoryVM>(db);
+            return PartialView("Partials/DeletePartial", model);         
         }
 
         // POST: Admin/NewCategories/Delete/5
@@ -140,14 +164,7 @@ namespace ECommerceMVC.UI.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var dbNewCategory = await _context.DbNewCategories.FindAsync(id);
-            if (dbNewCategory != null)
-            {
-                _context.DbNewCategories.Remove(dbNewCategory);
-            }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return Ok(await _newCategoriesService.DeleteAsync(id));
         }
 
         private bool DbNewCategoryExists(int id)

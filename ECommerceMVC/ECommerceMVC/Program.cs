@@ -1,4 +1,5 @@
 using ECommerceMVC.Infrastructure.Configuration;
+using ECommerceMVC.UI.Areas.Admin.AutoMapperProfile;
 using ECommerceMVC.UI.Areas.Admin.AutoMapperProfile.Caterory;
 using ECommerceMVC.UI.Areas.Admin.AutoMapperProfile.Group;
 using ECommerceMVC.UI.Areas.Admin.AutoMapperProfile.Product;
@@ -46,6 +47,8 @@ builder.Services.AddAutoMapper(typeof(CateroryCreateProfile));
 builder.Services.AddAutoMapper(typeof(GroupCreateProfile));
 
 builder.Services.AddAutoMapper(typeof(ProductCreateProfile));
+
+builder.Services.AddAutoMapper(typeof(AdminMapper));
 
 
 // Add services to the container.

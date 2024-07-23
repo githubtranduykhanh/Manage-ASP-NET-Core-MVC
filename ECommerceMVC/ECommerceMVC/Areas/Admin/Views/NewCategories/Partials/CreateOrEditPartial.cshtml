@@ -1,22 +1,22 @@
-﻿@model ECommerceMVC.Domain.Entities.DbNewCategory
+﻿@model ECommerceMVC.UI.Areas.Admin.ViewModels.NewCategories.NewCategoryVM
 
 @{
     ViewData["Title"] = "New Category Create";
     var statusMessage = TempData["StatusMessage"] as string;
+    var urlImage = Model != null && Model.UrlImage != null ? Model.UrlImage : "https://i.pinimg.com/originals/f1/0f/f7/f10ff70a7155e5ab666bcdd1b45b726d.jpg";
 }
 
 <div class="container-xxl flex-grow-1 container-p-y">
-    <h4 class="py-3 mb-4"><span class="text-muted fw-light">New Category /</span> Create</h4>
-
     <div class="card">
         <partial name="_StatusMessagePartial" model="statusMessage" />
         <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-        <form asp-action="Create" enctype="multipart/form-data">
+        <form asp-action="@ViewBag.Type" enctype="multipart/form-data" id="js-form-partial">
             <h5 class="card-header">Profile Details</h5>
             <!-- Account -->
             <div class="card-body">
+                <input asp-for="Id" hidden />
                 <div class="d-flex align-items-start align-items-sm-center gap-4">
-                    <img src="~/assets/img/avatars/1.png"
+                    <img src="@urlImage"
                          alt="user-avatar"
                          class="d-block rounded"
                          height="100"
@@ -61,8 +61,10 @@
                 </div>
                 <!-- Add other properties here -->
                 <div class="form-group">
-                    <input type="submit" value="Create" class="btn btn-primary" />
-                    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+                    <input type="submit" value="Submit" class="btn btn-primary" />
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        Close
+                    </button>
                 </div>
             </div>
         </form>
@@ -70,6 +72,4 @@
 </div>
 
 
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+

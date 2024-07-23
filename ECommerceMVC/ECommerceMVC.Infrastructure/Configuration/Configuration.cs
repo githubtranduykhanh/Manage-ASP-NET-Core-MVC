@@ -20,6 +20,9 @@ using ECommerceMVC.Infrastructure.Config;
 using ECommerceMVC.Application.Mappings;
 using ECommerceMVC.Infrastructure.Services.Email;
 using ECommerceMVC.Infrastructure.Services.Cloudinary;
+using ECommerceMVC.Application.Interfaces;
+using ECommerceMVC.Application.Services.NewCategories;
+using ECommerceMVC.Domain.Abstract.Cloudinary;
 
 namespace ECommerceMVC.Infrastructure.Configuration
 {
@@ -154,7 +157,10 @@ namespace ECommerceMVC.Infrastructure.Configuration
         {
             services.AddAutoMapper(typeof(MappingProfile));
 
-            services.AddTransient<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            // Đăng ký NewCategoriesService sau khi IUnitOfWork đã được đăng ký
+            services.AddScoped<INewCategoriesService, NewCategoriesService>();
 
             services.AddTransient<IEmailSender, EmailSender>();   
             services.AddScoped<ICloudinaryService, CloudinaryService>();

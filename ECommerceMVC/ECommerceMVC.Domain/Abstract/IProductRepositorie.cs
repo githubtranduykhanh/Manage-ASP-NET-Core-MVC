@@ -1,4 +1,5 @@
 ﻿using ECommerceMVC.Domain.Entities;
+using Microsoft.EntityFrameworkCore.Query;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,9 @@ namespace ECommerceMVC.Domain.Abstract
 {
     public interface IProductRepositorie 
     {
+
+        IQueryable<DbProduct> GetAllQueryable(Expression<Func<DbProduct, bool>> expression = null, Func<IQueryable<DbProduct>, IIncludableQueryable<DbProduct, object>> include = null);
+        Task<IEnumerable<DbProduct>> GetAllIncludingAsync(Expression<Func<DbProduct, bool>> expression = null, Func<IQueryable<DbProduct>, IIncludableQueryable<DbProduct, object>> include = null);
         Task<IEnumerable<DbProduct>> GetAllAsync(Expression<Func<DbProduct, bool>> expression = null);
         Task<DbProduct?> GetSingleAsync(Expression<Func<DbProduct, bool>> expression = null);
         Task CreateAsync(DbProduct entity);

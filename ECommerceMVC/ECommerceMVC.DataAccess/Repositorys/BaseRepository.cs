@@ -1,5 +1,6 @@
 ﻿using ECommerceMVC.DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,22 @@ namespace ECommerceMVC.DataAccess.Repositorys
         {
             _context = context;
         }
+        public IQueryable<T> GetAllQueryable(Expression<Func<T, bool>> expression = null,Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
+        {
+            IQueryable<T> query = _context.Set<T>();
+
+            if (include != null)
+            {
+                query = include(query);
+            }
+
+            if (expression != null)
+            {
+                query = query.Where(expression);
+            }
+
+            return query;
+        }
 
         public async Task<IEnumerable<T>> GetAllAsync(Expression<Func<T,bool>> expression = null)
         {
@@ -26,6 +43,24 @@ namespace ECommerceMVC.DataAccess.Repositorys
             
             return await _context.Set<T>().Where(expression).ToListAsync();
         }
+
+        public async Task<IEnumerable<T>> GetAllIncludingAsync(Expression<Func<T, bool>> expression = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
+        {
+            IQueryable<T> query = _context.Set<T>();
+
+            if (include != null)
+            {
+                query = include(query);
+            }
+
+            if (expression != null)
+            {
+                query = query.Where(expression);
+            }
+
+            return await query.ToListAsync();
+        }
+
 
         public async Task<T?> GetSingleAsync(Expression<Func<T, bool>> expression = null)
         {

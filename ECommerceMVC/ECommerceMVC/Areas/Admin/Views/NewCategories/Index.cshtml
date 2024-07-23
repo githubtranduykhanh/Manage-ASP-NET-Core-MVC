@@ -1,53 +1,258 @@
-﻿@model IEnumerable<ECommerceMVC.Domain.Entities.DbNewCategory>
-
+﻿
 @{
     ViewData["Title"] = "Index";
+    var HelperToastsScriptPath = Url.Content("~/js/helper/HelperToasts.js");
 }
 
-<h1>Index</h1>
+<div class="container-xxl flex-grow-1 container-p-y">
+    <h4 class="py-3 mb-4"><span class="text-muted fw-light">News Category /</span> List</h4>
+    <div class="card">     
+        <div class="table-responsive text-nowrap p-4 pt-0">
+            <table class="table table-striped" id="js-table-data">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Image</th>
+                        <th>Name</th>
+                        <th>Display Order</th>
+                        <th>NewParent</th>                      
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody class="table-border-bottom-0">
+                   
+                </tbody>
+            </table>
+        </div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Image)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DisplayOrder)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IdNewParent)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Image)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DisplayOrder)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IdNewParent)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
+    </div>
+</div>
+
+
+@section cssAdminPage {
+    @{
+        await Html.RenderPartialAsync("_TableBasePageCssPartial");
+    }
 }
-    </tbody>
-</table>
+
+
+@section scriptsAdminPage {
+    @{
+        
+        await Html.RenderPartialAsync("_TableScriptsPartial");    
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script src="~/js/common/datatable.js"></script>
+    <script src="~/js/helper/helpermodal.js"></script>
+    <script type="module">
+        import { ToastBody } from "@HelperToastsScriptPath"
+        import NProgress from 'https://cdn.jsdelivr.net/npm/nprogress@0.2.0/+esm'
+        $(document).ready(function () {
+            
+            var Table
+
+
+            const toast = new ToastBody({ placement: 'top-0 end-0', title: 'E Commerce', icon: '<i class="bx bx-bell me-2"></i>', toastOptions: { delay: 2000, autohide: true } })
+            // Create Modal
+            const modalManager = new Modal();
+            const { modalElement, bodyElement, titleElement } = modalManager.createModal({ id: 'main-modal', title: 'Modal title' });
+           
+            const modal = new bootstrap.Modal(modalElement);
+
+            function AddEvenBtn() {
+                // Sự kiện click cho các nút trong bảng
+                $(document).on('click', '.js-edit-btn', function () {
+                    const url = $(this).data('url');
+                    Edit(url);
+                });
+
+                $(document).on('click', '.js-delete-confirmed-btn', function () {
+                    const url = $(this).data('url');
+                    DeleteConfirmed(url);
+                });
+
+                $(document).on('click', '.js-detail-btn', function (event) {
+                    event.preventDefault();
+                    const url = $(this).attr('href');                
+                    Detail(url);
+                });
+            }
+
+
+            Table = renderTable({
+                tableID: "#js-table-data",
+                columns: [
+                    {
+                        "data": null,
+                        "render": function (data, type, row) {
+                            return '<a class="js-detail-btn" href="@Url.Action("DetailsPartial", "NewCategories")/' + row.id + '"><i class="bx bxs-plus-circle"></i></a>';
+                        },
+                        "orderable": false
+                    },
+                    {
+                        "data": "image", 
+                        render: function (data, type, row) {
+                            return `<img src="${data}" alt="Product Image" height="50" width="50" class="d-block rounded mb-1" style="object-fit: cover" />`
+                        },
+                        "orderable": false
+                    },
+                    {   "data": "name",
+                        render: function (data, type, row) {
+                            return `<h6 class="text-nowrap mb-0">${data}</h6>`
+                        },
+                    },
+                    {   "data": "displayOrder",
+                        render: function (data, type, row) {
+                            return `<span class="badge badge-center rounded-pill bg-primary">${data}</span>`
+                        },
+                    },
+                    {   "data": "newParentName" },
+                    {
+                        "data": null,
+                        "render": function (data, type, row) {
+                            const editUrl = '@Url.Action("CreateOrEditPartial", "NewCategories")/' + row.id;
+                            const deleteUrl = '@Url.Action("Delete", "NewCategories")/' + row.id;
+                            return '<button class="btn btn-warning me-2 js-edit-btn" data-url="' + editUrl + '"><i class="bx bx-edit me-1"></i> Edit</button>' +
+                                '<button class="btn btn-danger js-delete-confirmed-btn" data-url="' + deleteUrl + '"><i class="bx bx-trash me-1"></i> Delete</button>';
+                        },
+                        "orderable": false
+                    }
+                ],
+                url: "@Url.Action("GetAllDataTable", "NewCategories")",
+                tableName: "New Categories",
+                FnCreate: Create,
+                initComplete: AddEvenBtn
+            });
+
+
+            
+
+           
+
+
+
+            function Create(e, dt, node, config) {
+                $.get("@Url.Action("CreateOrEditPartial", "NewCategories")")
+                    .done(function (res) {
+                        modalManager.updateTitle(modalElement, 'Create New Category')
+                        modalManager.addContentToBody(modalElement, res)
+                        modal.show()
+                        handleDisplayImageUpload()
+                        initializeForm()
+                    })
+            }
+
+
+            function Edit(url) {
+                $.get(url)
+                    .done(function (res) {
+                        modalManager.updateTitle(modalElement, 'Edit New Category')
+                        modalManager.addContentToBody(modalElement, res)
+                        modal.show()
+                        handleDisplayImageUpload()
+                        initializeForm()
+                    })
+            }
+
+            function DeleteConfirmed(url) {
+                $.get(url)
+                    .done(function (res) {
+                        modalManager.updateTitle(modalElement, 'Confirmed Delete New Category')
+                        modalManager.addContentToBody(modalElement, res)
+                        modal.show()                     
+                        initializeForm()
+                    })
+            }
+
+
+            function Detail(url) {
+                $.get(url)
+                    .done(function (res) {
+                        modalManager.updateTitle(modalElement, 'Details New Category')
+                        modalManager.addContentToBody(modalElement, res)
+                        modal.show()
+                    })
+            }
+            
+          
+
+
+            function handleDisplayImageUpload() {
+                // Update/reset user image of account page
+                let accountUserImage = document.getElementById('uploadedAvatar');
+                const fileInput = document.querySelector('.account-file-input');
+                const resetFileInput = document.querySelector('.account-image-reset');
+
+                if (accountUserImage) {
+                    const resetImage = accountUserImage.src;
+                    fileInput.onchange = () => {
+                        if (fileInput.files[0]) {
+                            accountUserImage.src = window.URL.createObjectURL(fileInput.files[0]);
+                        }
+                    };
+                    resetFileInput.onclick = () => {
+                        fileInput.value = '';
+                        accountUserImage.src = resetImage;
+                    };
+                }
+            }
+
+            // Function to initialize form
+            function initializeForm() {
+                // Example: Bind a submit event handler to the form
+                $('#js-form-partial').on('submit', function (event) {
+                    event.preventDefault();
+                    // Your form handling logic here
+                    console.log('Form submitted');
+
+                    $.validator.unobtrusive.parse(this)
+
+                    if($(this).valid()){
+                        // Tạo đối tượng FormData từ form
+                        var formData = new FormData(this);
+
+
+                        console.log('valid submitted');
+                        for (var pair of formData.entries()) {
+                            console.log(pair[0] + ': ' + pair[1]);
+                        }
+                        // Gửi dữ liệu bằng AJAX
+                        NProgress.start()
+                        $.ajax({
+                            url: $(this).attr('action'), // URL gửi yêu cầu
+                            type: 'POST', // Phương thức gửi dữ liệu
+                            data: formData, // Dữ liệu gửi đi
+                            processData: false,
+                            contentType: false,
+                            success: function (response) {
+                                NProgress.done()
+                                console.log('response', response);
+                                if (response?.success) {
+                                    modal.hide()
+                                    Table.ajax.reload()
+                                    AddEvenBtn()
+                                    toast.success(response?.message)
+                                } else {
+                                    toast.danger(response?.enumErrors?.map(str => `- ${str}`).join("\n"))
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                // Xử lý lỗi
+                                toast.danger(error)
+                                console.log('An error occurred: ' + error)
+                                NProgress.done()
+                            }
+                        });
+                    }
+
+                    
+                });             
+            }
+        })
+    </script>
+}
+
+
+
+

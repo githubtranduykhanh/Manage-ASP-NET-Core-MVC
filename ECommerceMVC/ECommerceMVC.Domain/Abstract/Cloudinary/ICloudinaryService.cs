@@ -1,7 +1,7 @@
 ﻿using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Http;
 
-namespace ECommerceMVC.Infrastructure.Services.Cloudinary
+namespace ECommerceMVC.Domain.Abstract.Cloudinary
 {
     public interface ICloudinaryService
     {

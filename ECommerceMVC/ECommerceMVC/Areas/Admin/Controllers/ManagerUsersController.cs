@@ -14,6 +14,7 @@ using ECommerceMVC.UI.Areas.Admin.Models.User;
 using ECommerceMVC.UI.Areas.Admin.Models.Role;
 using ECommerceMVC.Infrastructure.Services.Cloudinary;
 using ECommerceMVC.Helper.Responses;
+using ECommerceMVC.Domain.Abstract.Cloudinary;
 
 namespace ECommerceMVC.Areas.Admin.Controllers
 {

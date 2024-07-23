@@ -1,6 +1,7 @@
 ﻿using ECommerceMVC.DataAccess.Data;
 using ECommerceMVC.Domain.Abstract;
 using ECommerceMVC.Domain.Entities;
+using Microsoft.EntityFrameworkCore.Query;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,8 +16,17 @@ namespace ECommerceMVC.DataAccess.Repositorys
         
         public ProductRepositorie(ECommerceContext context) : base(context) { }
 
+        public IQueryable<DbProduct> GetAllQueryable(Expression<Func<DbProduct, bool>> expression = null, Func<IQueryable<DbProduct>, IIncludableQueryable<DbProduct, object>> include = null)
+        {
+            var query = base.GetAllQueryable(expression, include);
+            return query;
+        }
 
-        public async Task<IEnumerable<DbProduct>> GetAllAsync(Expression<Func<DbProduct, bool>> expression = null)
+        public async Task<IEnumerable<DbProduct>> GetAllIncludingAsync(Expression<Func<DbProduct, bool>> expression = null, Func<IQueryable<DbProduct>, IIncludableQueryable<DbProduct, object>> include = null)
+        {
+            return await base.GetAllIncludingAsync(expression, include);
+        }
+        public async Task<IEnumerable<DbProduct>> GetAllAsync(Expression<Func<DbProduct, bool>>? expression = null)
         {
             return await base.GetAllAsync(expression);
         }

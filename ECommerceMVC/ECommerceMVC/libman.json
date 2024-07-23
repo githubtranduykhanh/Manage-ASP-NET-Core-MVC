@@ -8,6 +8,15 @@
       "files": [
         "ckeditor.min.js"
       ]
+    },
+    {
+      "provider": "unpkg",
+      "library": "jquery-ui@1.13.3",
+      "destination": "wwwroot/jquery-ui/",
+      "files": [
+        "dist/jquery-ui.min.js",
+        "dist/themes/base/jquery-ui.min.css"
+      ]
     }
   ]
 }

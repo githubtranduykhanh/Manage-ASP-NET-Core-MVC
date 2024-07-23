@@ -2,7 +2,7 @@
 using AutoMapper;
 using ECommerceMVC.DataAccess.Data;
 using ECommerceMVC.Domain.Entities;
-using ECommerceMVC.Infrastructure.Services.Cloudinary;
+using ECommerceMVC.Domain.Abstract.Cloudinary;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 

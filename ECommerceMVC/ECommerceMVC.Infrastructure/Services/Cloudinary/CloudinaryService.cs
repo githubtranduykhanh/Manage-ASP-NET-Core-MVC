@@ -3,6 +3,8 @@ using CloudinaryDotNet.Actions;
 using ECommerceMVC.Infrastructure.Config;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
+using ECommerceMVC.Domain.Abstract.Cloudinary;
+
 
 
 namespace ECommerceMVC.Infrastructure.Services.Cloudinary
