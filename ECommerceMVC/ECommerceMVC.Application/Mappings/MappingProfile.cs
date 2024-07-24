@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using ECommerceMVC.Application.Dtos;
 using ECommerceMVC.Application.Dtos.NewCategories;
+using ECommerceMVC.Application.Dtos.Order;
 using ECommerceMVC.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,9 @@ namespace ECommerceMVC.Application.Mappings
         {
             CreateMap<DbProduct, ProductDto>().ReverseMap();
             // Cấu hình các map khác nếu cần
-            CreateMap<DbNewCategory, NewCategoriesModel>().ReverseMap();         
+            CreateMap<DbNewCategory, NewCategoriesModel>().ReverseMap();
+
+            CreateMap<DbOrder, OrderModel>().ReverseMap();
         }
     }
 }

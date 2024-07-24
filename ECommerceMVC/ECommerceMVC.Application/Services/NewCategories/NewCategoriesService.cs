@@ -33,15 +33,6 @@ namespace ECommerceMVC.Application.Services.NewCategories
             _mapper = mapper;
             _cloudinaryService = cloudinaryService;
         }
-
-        private readonly Dictionary<string, string> keyValuePairs = new Dictionary<string, string>()
-        {
-            { "name" , "Name" },
-            { "image" ,"Image"},  
-            { "displayOrder","DisplayOrder" },
-            { "newParentName","NewParentName" }
-        };
-
         public async Task<ResponseDataTable<NewCategoriesModel>> GetAllDataTableAsync(RequestDataTable request)
         {
             // Tạo biểu thức điều kiện cho lọc

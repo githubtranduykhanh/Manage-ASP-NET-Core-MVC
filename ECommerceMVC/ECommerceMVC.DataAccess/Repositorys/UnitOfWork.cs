@@ -15,6 +15,14 @@ namespace ECommerceMVC.DataAccess.Repositorys
         private IProductRepositorie? _productRepositorie;
 
         private INewCategoriesRepositorie? _newCategoriesRepositorie;
+
+        private IInvoiceDatailsRepositorie? _invoiceDatailsRepositorie;
+
+        private IInvoiceRepositorie? _invoiceRepositorie;
+
+        private IOrderDetailsRepositorie? _orderDetailsRepositorie;
+
+        private IOrderRepositorie? _orderRepositorie;
         public UnitOfWork(ECommerceContext context)
         {
             _context = context;
@@ -23,6 +31,10 @@ namespace ECommerceMVC.DataAccess.Repositorys
 
         public IProductRepositorie ProductRepositorie => _productRepositorie ??= new ProductRepositorie(_context);
         public INewCategoriesRepositorie NewCategoriesRepositorie => _newCategoriesRepositorie ??= new NewCategoriesRepositorie(_context);
+        public IInvoiceDatailsRepositorie InvoiceDatailsRepositorie => _invoiceDatailsRepositorie ??= new InvoiceDatailsRepositorie(_context);
+        public IInvoiceRepositorie InvoiceRepositorie => _invoiceRepositorie ??= new InvoiceRepositorie(_context);
+        public IOrderDetailsRepositorie OrderDetailsRepositorie => _orderDetailsRepositorie ??= new OrderDetailsRepositorie(_context);
+        public IOrderRepositorie OrderRepositorie => _orderRepositorie ??= new OrderRepositorie(_context);
 
         public async Task SaveChangesAsync()
         {

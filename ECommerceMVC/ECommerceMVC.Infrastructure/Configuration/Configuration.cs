@@ -23,6 +23,7 @@ using ECommerceMVC.Infrastructure.Services.Cloudinary;
 using ECommerceMVC.Application.Interfaces;
 using ECommerceMVC.Application.Services.NewCategories;
 using ECommerceMVC.Domain.Abstract.Cloudinary;
+using ECommerceMVC.Application.Services.Product;
 
 namespace ECommerceMVC.Infrastructure.Configuration
 {
@@ -161,6 +162,9 @@ namespace ECommerceMVC.Infrastructure.Configuration
 
             // Đăng ký NewCategoriesService sau khi IUnitOfWork đã được đăng ký
             services.AddScoped<INewCategoriesService, NewCategoriesService>();
+
+            // Đăng ký OrderService sau khi IUnitOfWork đã được đăng ký
+            services.AddScoped<IOrderService, OrderService>();
 
             services.AddTransient<IEmailSender, EmailSender>();   
             services.AddScoped<ICloudinaryService, CloudinaryService>();
