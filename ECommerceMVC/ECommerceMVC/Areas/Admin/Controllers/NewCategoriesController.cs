@@ -140,7 +140,7 @@ namespace ECommerceMVC.UI.Areas.Admin.Controllers
             return Ok(new ResponseModel
             {
                 success = false,
-                message = "Create errors.",
+                message = "Edit errors.",
                 EnumErrors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage)
             });
         }

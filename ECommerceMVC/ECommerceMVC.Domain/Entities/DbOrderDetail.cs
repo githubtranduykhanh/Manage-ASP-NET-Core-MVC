@@ -5,6 +5,7 @@ namespace ECommerceMVC.Domain.Entities;
 
 public partial class DbOrderDetail
 {
+   
     public int IdProduct { get; set; }
 
     public int IdOrder { get; set; }

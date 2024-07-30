@@ -1,0 +1,147 @@
+﻿@using ECommerceMVC.UI.Constants.Order
+@model ECommerceMVC.UI.Areas.Admin.ViewModels.Order.OrderVM
+
+
+
+@{
+    ViewData["Title"] = "Order Create Or Edit";
+    var statusMessage = TempData["StatusMessage"] as string;
+}
+
+
+    <form asp-action="@ViewBag.Type" enctype="multipart/form-data" id="js-form-partial">
+        <div class="card mb-2">
+            <partial name="_StatusMessagePartial" model="statusMessage" />
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            <h5 class="card-header">Profile Details</h5>
+            <div class="card-body">
+                <input asp-for="Id" hidden />
+                <input asp-for="IdUser" hidden />
+                <div class="row">
+                    <div class="col">
+                        <div class="form-floating mb-3">
+                            @Html.DropDownListFor(model => model.Status, OrderConstants.StatusOptions, new { @class = "form-control" })
+                            <label asp-for="Status">Status</label>
+                            <span asp-validation-for="Status" class="text-danger"></span>
+                        </div>
+                        <div class="form-floating mb-3">
+                            @Html.DropDownListFor(model => model.PaymentType, OrderConstants.PaymentTypeOptions, new { @class = "form-control" })
+                            <label asp-for="PaymentType">Payment Type</label>
+                            <span asp-validation-for="PaymentType" class="text-danger"></span>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input asp-for="CreatedAt" class="form-control" autocomplete="CreatedAt" aria-required="true" placeholder="TranDuyKhanh001" />
+                            <label asp-for="CreatedAt"></label>
+                            <span asp-validation-for="CreatedAt" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-floating mb-3">
+                            <input asp-for="NameUser" class="form-control" autocomplete="NameUser" aria-required="true" placeholder="TranDuyKhanh001" />
+                            <label asp-for="NameUser"></label>
+                            <span asp-validation-for="NameUser" class="text-danger"></span>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input asp-for="EmailUser" class="form-control" autocomplete="EmailUser" aria-required="true" placeholder="TranDuyKhanh001" />
+                            <label asp-for="EmailUser"></label>
+                            <span asp-validation-for="EmailUser" class="text-danger"></span>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input asp-for="PhoneUser" class="form-control" autocomplete="PhoneUser" aria-required="true" placeholder="TranDuyKhanh001" />
+                            <label asp-for="PhoneUser"></label>
+                            <span asp-validation-for="PhoneUser" class="text-danger"></span>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input asp-for="AddressUser" class="form-control" autocomplete="AddressUser" aria-required="true" placeholder="TranDuyKhanh001" />
+                            <label asp-for="AddressUser"></label>
+                            <span asp-validation-for="AddressUser" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+        </div>
+        <div class="card mb-2">
+            <div class="card-body">
+                <div class="table-responsive text-nowrap p-4 pt-0">
+                    <table class="table table-striped" id="js-table-order-detail">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Product</th>
+                                <th>Quantity</th>
+                                <th>Total</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-border-bottom-0">
+
+                            @if (Model != null && Model.DbOrderDetails != null && Model.DbOrderDetails.Any())
+                            {
+                                foreach (var item in Model.DbOrderDetails)
+                                {
+                                    <tr>
+                                        <td>
+                                            <button class="js-action-detail" data-id-product="@item.IdProduct" data-id-order="@item.IdOrder"><i class="bx bxs-plus-circle"></i></button>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex justify-content-start align-items-center order-name text-nowrap">
+                                                <div class="avatar-wrapper">
+                                                    <div class="avatar avatar-sm me-3">
+                                                        <img src="@item.IdProductNavigation.DbProductImages.First().IdImageNavigation.Url" alt="Avatar" class="rounded-circle">
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex flex-column">
+                                                    <h6 class="m-0">
+                                                        <a href="pages-profile-user.html" class="text-heading">@item.IdProductNavigation.Name</a>
+                                                    </h6>
+                                                    <small>@item.UnitPrice.ToVietnameseNumberFormat()</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            @item.Quantity
+                                        </td>
+                                        <td>
+                                            (@item.Quantity * @item.UnitPrice)
+                                        </td>
+                                        <td>
+                                            <div class="dropdown">
+                                                <button type="button" class="p-0 btn btn-primary btn-icon rounded-pill dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                                                    <i class="bx bx-dots-vertical-rounded"></i>
+                                                </button>
+                                                <div class="dropdown-menu">
+                                                    <button class="dropdown-item js-action-edit" type="button" data-id-product="@item.IdProduct" data-id-order="@item.IdOrder">
+                                                        <i class="bx bx-edit-alt me-1"></i> Edit
+                                                    </button>
+                                                    <button class="dropdown-item js-action-delete" type="button" ddata-id-product="@item.IdProduct" data-id-order="@item.IdOrder"><i class="bx bx-trash me-1"></i> Delete</button>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+               
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <!-- Add other properties here -->
+                <div class="form-group">
+                    <input type="submit" value="Submit" class="btn btn-primary" />
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+
+
+
+
+
+

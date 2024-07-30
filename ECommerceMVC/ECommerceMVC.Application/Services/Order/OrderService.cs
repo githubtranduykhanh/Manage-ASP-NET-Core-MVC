@@ -1,4 +1,5 @@
-﻿using ECommerceMVC.Application.Dtos;
+﻿using AutoMapper;
+using ECommerceMVC.Application.Dtos;
 using ECommerceMVC.Application.Dtos.DataTable;
 using ECommerceMVC.Application.Dtos.NewCategories;
 using ECommerceMVC.Application.Dtos.Order;
@@ -22,60 +23,66 @@ namespace ECommerceMVC.Application.Services.Product
     {
         private readonly IUnitOfWork _unitOfWork;
         protected readonly SignInManager<DbUser> _signInManager;
-        protected readonly UserManager<DbUser> _userManager;      
-        public OrderService(IUnitOfWork unitOfWork,SignInManager<DbUser> signInManager,UserManager<DbUser> userManager)
+        protected readonly UserManager<DbUser> _userManager;
+        protected readonly IMapper _mapper;
+        public OrderService(IUnitOfWork unitOfWork,SignInManager<DbUser> signInManager,UserManager<DbUser> userManager, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _signInManager = signInManager;
             _userManager = userManager;
+            _mapper = mapper;
         }
-        public async Task<ResponseService<IQueryable<DbOrder>>> GetAllAsync()
+        public async Task<ResponseService<List<OrderModel>>> GetAllAsync()
         {
             try
-            {         
-                return new ResponseService<IQueryable<DbOrder>>
+            {
+
+                var db = await _unitOfWork.OrderRepositorie.GetAsync();
+                var list = await db.ToListAsync();
+
+
+                return new ResponseService<List<OrderModel>>
                 {
                     success = true,
                     message = "New Categories update successfully.",
-                    data = await _unitOfWork.OrderRepositorie.GetAsync()
+                    data = _mapper.Map<List<DbOrder>,List<OrderModel>>(list)
                 };
             }
             catch (Exception ex)
             {
-                return new ResponseService<IQueryable<DbOrder>>
+                return new ResponseService<List<OrderModel>>
                 {                    
                     message = ex.Message,                    
                 };              
-            }
-            
+            }         
         }
 
-        public async Task<ResponseService<DbOrder>> GetByIdAsync(int? id)
+        public async Task<ResponseService<OrderModel>> GetByIdAsync(int? id)
         {
             try
             {
 
-                if(id == null) return new ResponseService<DbOrder>
+                if(id == null) return new ResponseService<OrderModel>
                 {
                     message = "Id is required.",
                 };
 
                 var find = await _unitOfWork.OrderRepositorie.GetByIDAsync(id);
-                if(find == null) return new ResponseService<DbOrder>
+                if (find == null) return new ResponseService<OrderModel>
                 {
                     message = "Order not found.",
                 };
 
-                return new ResponseService<DbOrder>
+                return new ResponseService<OrderModel>
                 {
                     success = true,
                     message = "Get order successfully.",
-                    data = find
+                    data = _mapper.Map<DbOrder, OrderModel>(find)
                 };
             }
             catch (Exception ex)
             {
-                return new ResponseService<DbOrder>
+                return new ResponseService<OrderModel>
                 {
                     message = ex.Message,
                 };
@@ -127,27 +134,26 @@ namespace ECommerceMVC.Application.Services.Product
 
             // Phân trang
             var dataEntities = await query.Skip(request.Start).Take(request.Length).ToListAsync();
+            //var data = new List<OrderModel>();
 
-            var data = new List<OrderModel>();
-
-            foreach (var entity in dataEntities)
-            {
+            //foreach (var entity in dataEntities)
+            //{
                 
-                data.Add(new OrderModel
-                {
-                    Id = entity.Id,
-                    TotalAmount = entity.TotalAmount,
-                    Status = entity.Status,
-                    IdUser = entity.IdUser,
-                    NameUser = entity.NameUser,
-                    EmailUser = entity.EmailUser,
-                    AddressUser = entity.AddressUser,
-                    PhoneUser = entity.PhoneUser,
-                    PaymentType = entity.PaymentType,
-                    CreatedAt = entity.CreatedAt,
-                    DbOrderDetails = entity.DbOrderDetails,                
-                });
-            }
+            //    data.Add(new OrderModel
+            //    {
+            //        Id = entity.Id,
+            //        TotalAmount = entity.TotalAmount,
+            //        Status = entity.Status,
+            //        IdUser = entity.IdUser,
+            //        NameUser = entity.NameUser,
+            //        EmailUser = entity.EmailUser,
+            //        AddressUser = entity.AddressUser,
+            //        PhoneUser = entity.PhoneUser,
+            //        PaymentType = entity.PaymentType,
+            //        CreatedAt = entity.CreatedAt,
+            //        DbOrderDetails = entity.DbOrderDetails,                
+            //    });
+            //}
 
             // Trả về dữ liệu dưới dạng JSON
             return new ResponseDataTable<OrderModel>
@@ -155,7 +161,11 @@ namespace ECommerceMVC.Application.Services.Product
                 Draw = request.Draw,
                 RecordsTotal = recordsTotal,
                 RecordsFiltered = recordsTotal, // Điều chỉnh nếu cần
-                Data = data
+                Data = _mapper.Map<List<DbOrder>, List<OrderModel>>(dataEntities).Select(order =>
+                {
+                    order.IdUserNavigation = null;
+                    return order;
+                }).ToList()
             };
         }
 

@@ -7,50 +7,80 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ECommerceMVC.DataAccess.Data;
 using ECommerceMVC.Domain.Entities;
+using AspNetCoreHero.ToastNotification.Abstractions;
+using AutoMapper;
+using ECommerceMVC.Application.Interfaces;
+using ECommerceMVC.Domain.Abstract.Cloudinary;
+using Microsoft.AspNetCore.Identity;
+using ECommerceMVC.Application.Services.NewCategories;
+using ECommerceMVC.Areas.Admin.Controllers;
+using ECommerceMVC.Application.Dtos.NewCategories;
+using ECommerceMVC.UI.Areas.Admin.ViewModels.NewCategories;
+using ECommerceMVC.Application.Dtos.Order;
+using ECommerceMVC.UI.Areas.Admin.ViewModels.Order;
+using ECommerceMVC.UI.Areas.Admin.Models.NewCategories;
+using ECommerceMVC.Application.Dtos.DataTable;
 
 namespace ECommerceMVC.UI.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    public class OrdersController : Controller
+    public class OrdersController : BaseController
     {
-        private readonly ECommerceContext _context;
+        
+        private readonly IOrderService _orderService;
 
-        public OrdersController(ECommerceContext context)
+        public OrdersController(SignInManager<DbUser> signInManager, UserManager<DbUser> userManager, ICloudinaryService cloudinaryService, RoleManager<IdentityRole> roleManager, INotyfService notyf, IMapper mapper, ECommerceContext context, IOrderService orderService) : base(signInManager, userManager, cloudinaryService, roleManager, notyf, mapper, context)
         {
-            _context = context;
+            _orderService = orderService;
         }
 
         // GET: Admin/Orders
         public async Task<IActionResult> Index()
-        {
-            var eCommerceContext = _context.DbOrders.Include(d => d.IdUserNavigation);
-            return View(await eCommerceContext.ToListAsync());
+        {          
+            return View();
         }
 
-        // GET: Admin/Orders/Details/5
-        public async Task<IActionResult> Details(int? id)
+
+        [HttpPost]
+        public async Task<IActionResult> GetAllDataTable(RequestDataTable request)
+        {
+            if (request == null)
+            {
+                return BadRequest();
+            }
+
+            var result = await _orderService.GetAllDataTableAsync(request);
+
+            return Ok(result);
+        }
+
+
+        // GET: Admin/Orders/DetailsPartial/5
+        public async Task<IActionResult> DetailsPartial(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
-
-            var dbOrder = await _context.DbOrders
-                .Include(d => d.IdUserNavigation)             
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (dbOrder == null)
-            {
-                return NotFound();
-            }
-
-            return View(dbOrder);
+            var db = await _orderService.GetByIdAsync(id);
+            if (db == null || db.success == false || db.data == null) { return NotFound(); }
+            var model = _mapper.Map<OrderModel, OrderVM>(db.data);
+            return PartialView("Partials/DetailsPartial", model);
         }
 
         // GET: Admin/Orders/Create
-        public IActionResult Create()
+        public async Task<IActionResult> CreateOrEditPartial(int? id)
         {
-            ViewData["IdUser"] = new SelectList(_context.DbUsers, "Id", "Id");
-            return View();
+            if (id == null || id == 0)
+            {
+                ViewBag.Type = "Create";
+                return PartialView("Partials/CreateOrEditPartial");
+            }
+            ViewBag.Type = "Edit";
+            var db = await _orderService.GetByIdAsync(id);
+            if (db == null || db.success == false || db.data == null) { return NotFound(); }
+            var model = _mapper.Map<OrderModel, OrderVM>(db.data);        
+            return PartialView("Partials/CreateOrEditPartial", model);
         }
 
         // POST: Admin/Orders/Create
@@ -58,33 +88,23 @@ namespace ECommerceMVC.UI.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,TotalAmount,Status,IdUser,NameUser,EmailUser,AddressUser,PhoneUser,PaymentType,CreatedAt")] DbOrder dbOrder)
+        public async Task<IActionResult> Create(OrderVM model)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(dbOrder);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["IdUser"] = new SelectList(_context.DbUsers, "Id", "Id", dbOrder.IdUser);
-            return View(dbOrder);
-        }
-
-        // GET: Admin/Orders/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
+                return Ok(new ResponseModel
+                {
+                    success = true,
+                    message = "Create successfully."
+                });
             }
 
-            var dbOrder = await _context.DbOrders.FindAsync(id);
-            if (dbOrder == null)
+            return Ok(new ResponseModel
             {
-                return NotFound();
-            }
-            ViewData["IdUser"] = new SelectList(_context.DbUsers, "Id", "Id", dbOrder.IdUser);
-            return View(dbOrder);
+                success = false,
+                message = "Create errors.",
+                EnumErrors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage)
+            });
         }
 
         // POST: Admin/Orders/Edit/5
@@ -92,35 +112,19 @@ namespace ECommerceMVC.UI.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,TotalAmount,Status,IdUser,NameUser,EmailUser,AddressUser,PhoneUser,PaymentType,CreatedAt")] DbOrder dbOrder)
+        public async Task<IActionResult> Edit(OrderVM model)
         {
-            if (id != dbOrder.Id)
-            {
-                return NotFound();
-            }
-
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(dbOrder);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!DbOrderExists(dbOrder.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                return Ok(await _orderService.UpdateAsync(_mapper.Map<OrderVM, OrderModel>(model)));
             }
-            ViewData["IdUser"] = new SelectList(_context.DbUsers, "Id", "Id", dbOrder.IdUser);
-            return View(dbOrder);
+
+            return Ok(new ResponseModel
+            {
+                success = false,
+                message = "Edit errors.",
+                EnumErrors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage)
+            });
         }
 
         // GET: Admin/Orders/Delete/5
@@ -131,15 +135,10 @@ namespace ECommerceMVC.UI.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var dbOrder = await _context.DbOrders
-                .Include(d => d.IdUserNavigation)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (dbOrder == null)
-            {
-                return NotFound();
-            }
-
-            return View(dbOrder);
+            var db = await _orderService.GetByIdAsync(id);
+            if (db == null || db.success == false || db.data == null) { return NotFound(); }
+            var model = _mapper.Map<OrderModel, OrderVM>(db.data);
+            return PartialView("Partials/DeletePartial", model);
         }
 
         // POST: Admin/Orders/Delete/5
@@ -147,14 +146,7 @@ namespace ECommerceMVC.UI.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var dbOrder = await _context.DbOrders.FindAsync(id);
-            if (dbOrder != null)
-            {
-                _context.DbOrders.Remove(dbOrder);
-            }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return Ok(await _orderService.DeleteAsync(id));
         }
 
         private bool DbOrderExists(int id)

@@ -13,8 +13,8 @@ namespace ECommerceMVC.Application.Interfaces
 {
     public interface IOrderService
     {
-        Task<ResponseService<IQueryable<DbOrder>>> GetAllAsync();
-        Task<ResponseService<DbOrder>> GetByIdAsync(int? id);
+        Task<ResponseService<List<OrderModel>>> GetAllAsync();
+        Task<ResponseService<OrderModel>> GetByIdAsync(int? id);
         Task<ResponseDataTable<OrderModel>> GetAllDataTableAsync(RequestDataTable request);
         Task<ResponseService> UpdateAsync(OrderModel model);
         Task UpdateUserInfoAsync(string id, OrderModel model);

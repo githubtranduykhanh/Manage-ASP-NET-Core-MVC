@@ -1,7 +1,7 @@
 ﻿class Modal {
     constructor() {}
 
-    createModal({ id, title }) {
+    createModal({ id, title, size = 'xl' }) {
         // Create modal elements
         const modal = document.createElement('div');
         modal.classList.add('modal', 'fade', 'show');
@@ -11,7 +11,7 @@
         modal.setAttribute('role', 'dialog');      
 
         const dialog = document.createElement('div');
-        dialog.classList.add('modal-dialog', 'modal-xl');
+        dialog.classList.add('modal-dialog', `modal-${size}`);
         dialog.setAttribute('role', 'document');
 
         const content = document.createElement('div');

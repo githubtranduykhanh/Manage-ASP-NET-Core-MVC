@@ -1,83 +1,301 @@
-﻿@model IEnumerable<ECommerceMVC.Domain.Entities.DbOrder>
-
-@{
+﻿@{
     ViewData["Title"] = "Index";
+    var HelperToastsScriptPath = Url.Content("~/js/helper/HelperToasts.js");
 }
 
-<h1>Index</h1>
+<div class="container-xxl flex-grow-1 container-p-y">
+    <h4 class="py-3 mb-4"><span class="text-muted fw-light">News Category /</span> List</h4>
+    <div class="card">
+        <div class="table-responsive text-nowrap p-4 pt-0">
+            <table class="table table-striped" id="js-table-data">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Image</th>
+                        <th>Name</th>
+                        <th>Display Order</th>
+                        <th>NewParent</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody class="table-border-bottom-0">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.TotalAmount)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Status)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.NameUser)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EmailUser)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.AddressUser)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PhoneUser)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PaymentType)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CreatedAt)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IdUserNavigation)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.TotalAmount)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.NameUser)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EmailUser)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.AddressUser)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PhoneUser)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PaymentType)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedAt)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IdUserNavigation.Id)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
+
+@section cssAdminPage {
+    @{
+        await Html.RenderPartialAsync("_TableBasePageCssPartial");
+    }
 }
-    </tbody>
-</table>
+
+
+@section scriptsAdminPage {
+    @{
+        var controller = "Orders";
+        await Html.RenderPartialAsync("_TableScriptsPartial");
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script src="~/js/common/datatable.js"></script>
+    <script src="~/js/helper/helpermodal.js"></script>
+    <script type="module">
+        import { ToastBody } from "@HelperToastsScriptPath"
+        import NProgress from 'https://cdn.jsdelivr.net/npm/nprogress@0.2.0/+esm'
+        $(document).ready(function () {
+
+            var Table
+
+
+            const toast = new ToastBody({ placement: 'top-0 end-0', title: 'E Commerce', icon: '<i class="bx bx-bell me-2"></i>', toastOptions: { delay: 2000, autohide: true } })
+            // Create Modal
+            const modalManager = new Modal();
+            const { modalElement, bodyElement, titleElement } = modalManager.createModal({ id: 'main-modal', title: 'Modal title' });
+
+            const modal = new bootstrap.Modal(modalElement);
+
+
+
+            const options = {
+                controller: 'Orders',
+                tableName: 'Orders',
+                titleModalCreate: 'Create Order',
+                titleModalEdit: 'Edit Order',
+                titleModalConfirmedDelete: 'Confirmed Delete Order',
+                titleModalDelete: 'Delete Order',
+                titleModalDetails: 'Details Order',
+            }
+
+
+            function AddEvenBtn() {
+                // Sự kiện click cho các nút trong bảng
+                $(document).on('click', '.js-edit-btn', function () {
+                    const url = $(this).data('url');
+                    Edit(url);
+                });
+
+                $(document).on('click', '.js-delete-confirmed-btn', function () {
+                    const url = $(this).data('url');
+                    DeleteConfirmed(url);
+                });
+
+                $(document).on('click', '.js-detail-btn', function (event) {
+                    event.preventDefault();
+                    const url = $(this).attr('href');
+                    Detail(url);
+                });
+            }
+
+
+            Table = renderTable({
+                tableID: "#js-table-data",
+                columns: [
+                    {
+                        "data": null,
+                        "render": function (data, type, row) {
+                            const detailUrl = '@Url.Action("DetailsPartial", controller)/' + row.id;
+                            return '<a class="js-detail-btn" href="' + detailUrl + '"><i class="bx bxs-plus-circle"></i></a>';
+                        },
+                        "orderable": false
+                    },
+                    {
+                        "data": null,
+                        render: function (data, type, row) {
+                            return `<div class="d-flex justify-content-start align-items-center order-name text-nowrap">                                       
+                                        <div class="d-flex flex-column">
+                                            <h6 class="m-0">
+                                                <a href="pages-profile-user.html" class="text-heading">${row.nameUser}</a>
+                                            </h6>
+                                            <small>${row.emailUser}</small>
+                                            <small>${row.phoneUser}</small>
+                                        </div>
+                                    </div>
+                                    `
+                        },
+                        "orderable": false
+                    },
+                    {
+                        "data": "createdAt",
+                        render: function (data, type, row) {
+                            let formattedDate = new Date(data).toLocaleDateString('vi-VN');
+                            return `<span class="text-nowrap">${formattedDate}</span>`
+                        },
+                    },
+                    {
+                        "data": "paymentType",
+                        render: function (data, type, row) {
+                            return `<h6 class="mb-0 align-items-center d-flex w-px-100 text-warning"><i class="bx bxs-circle bx-8px me-1"></i>${data}</h6>`
+                        },
+                    },
+                    {
+                        "data": "paymentType",
+                        render: function (data, type, row) {
+                            return `<span class="badge px-2 bg-label-success" text-capitalized="">${data}</span>`
+                        },
+                    },
+                    {
+                        "data": null,
+                        "render": function (data, type, row) {
+                            const editUrl = '@Url.Action("CreateOrEditPartial", controller)/' + row.id;
+                            const deleteUrl = '@Url.Action("Delete", controller)/' + row.id;
+                            return `<div class="dropdown">
+                                            <button type="button" class="p-0 btn btn-primary btn-icon rounded-pill dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                                                 <i class="bx bx-dots-vertical-rounded"></i>
+                                                                            </button>
+                                                                            <div class="dropdown-menu">
+                                                                                <button class="dropdown-item js-edit-btn" type="button" data-url="${editUrl}">
+                                                                                    <i class="bx bx-edit-alt me-1"></i> Edit
+                                                                                </button>
+                                                                                <button class="dropdown-item js-delete-confirmed-btn" type="button" data-url="${deleteUrl}"><i class="bx bx-trash me-1"></i> Delete</button>
+                                                                            </div>
+                                                                        </div>`;
+
+
+
+                        },
+                        "orderable": false
+                    }
+                ],
+                url: "@Url.Action("GetAllDataTable", controller)",
+                tableName: options.tableName,
+                FnCreate: Create,
+                initComplete: AddEvenBtn
+            });
+
+
+            function Create(e, dt, node, config) {
+                $.get("@Url.Action("CreateOrEditPartial", controller)")
+                    .done(function (res) {
+                        modalManager.updateTitle(modalElement, options.titleModalCreate)
+                        modalManager.addContentToBody(modalElement, res)
+                        modal.show()
+                        handleDisplayImageUpload()
+                        initTableOrderDetail()
+                        initializeForm()
+                    })
+            }
+
+
+            function Edit(url) {
+                $.get(url)
+                    .done(function (res) {
+                        modalManager.updateTitle(modalElement, options.titleModalEdit)
+                        modalManager.addContentToBody(modalElement, res)
+                        modal.show()
+                        handleDisplayImageUpload()
+                        initTableOrderDetail()
+                        initializeForm()
+                    })
+            }
+
+            function DeleteConfirmed(url) {
+                $.get(url)
+                    .done(function (res) {
+                        modalManager.updateTitle(modalElement, options.titleModalConfirmedDelete)
+                        modalManager.addContentToBody(modalElement, res)
+                        modal.show()
+                        initializeForm()
+                    })
+            }
+
+
+            function Detail(url) {
+                $.get(url)
+                    .done(function (res) {
+                        modalManager.updateTitle(modalElement, options.titleModalDetails)
+                        modalManager.addContentToBody(modalElement, res)
+                        modal.show()
+                    })
+            }
+
+
+
+            function initTableOrderDetail(){
+                renderTableNoAjax({
+                    tableID: '#js-table-order-detail',
+                    tableName: 'Order Details'
+                });
+            }
+
+
+            function handleDisplayImageUpload() {
+                // Update/reset user image of account page
+                let accountUserImage = document.getElementById('uploadedAvatar');
+                const fileInput = document.querySelector('.account-file-input');
+                const resetFileInput = document.querySelector('.account-image-reset');
+
+                if (accountUserImage) {
+                    const resetImage = accountUserImage.src;
+                    fileInput.onchange = () => {
+                        if (fileInput.files[0]) {
+                            accountUserImage.src = window.URL.createObjectURL(fileInput.files[0]);
+                        }
+                    };
+                    resetFileInput.onclick = () => {
+                        fileInput.value = '';
+                        accountUserImage.src = resetImage;
+                    };
+                }
+            }
+
+            // Function to initialize form
+            function initializeForm() {
+                // Example: Bind a submit event handler to the form
+                $('#js-form-partial').on('submit', function (event) {
+                    event.preventDefault();
+                    // Your form handling logic here
+                    console.log('Form submitted');
+
+                    $.validator.unobtrusive.parse(this)
+
+                    if ($(this).valid()) {
+                        // Tạo đối tượng FormData từ form
+                        var formData = new FormData(this);
+
+
+                        console.log('valid submitted');
+                        for (var pair of formData.entries()) {
+                            console.log(pair[0] + ': ' + pair[1]);
+                        }
+                        // Gửi dữ liệu bằng AJAX
+                        NProgress.start()
+                        $.ajax({
+                            url: $(this).attr('action'), // URL gửi yêu cầu
+                            type: 'POST', // Phương thức gửi dữ liệu
+                            data: formData, // Dữ liệu gửi đi
+                            processData: false,
+                            contentType: false,
+                            success: function (response) {
+                                NProgress.done()
+                                console.log('response', response);
+                                if (response?.success) {
+                                    modal.hide()
+                                    Table.ajax.reload()
+                                    AddEvenBtn()
+                                    toast.success(response?.message)
+                                } else {
+                                    toast.danger(response?.enumErrors?.map(str => `- ${str}`).join("\n"))
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                // Xử lý lỗi
+                                toast.danger(error)
+                                console.log('An error occurred: ' + error)
+                                NProgress.done()
+                            }
+                        });
+                    }
+
+
+                });
+            }
+        })
+    </script>
+}
+
+
+
+

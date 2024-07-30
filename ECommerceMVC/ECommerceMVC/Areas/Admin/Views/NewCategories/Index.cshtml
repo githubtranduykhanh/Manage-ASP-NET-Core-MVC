@@ -57,8 +57,12 @@
             // Create Modal
             const modalManager = new Modal();
             const { modalElement, bodyElement, titleElement } = modalManager.createModal({ id: 'main-modal', title: 'Modal title' });
+
+            const { modalElement:modalElementLG, bodyElement:bodyElementLG, titleElement:titleElementLG} = modalManager.createModal({ id: 'main-modal-dalete', title: 'Modal title', size: 'lg' });
            
             const modal = new bootstrap.Modal(modalElement);
+
+            const modalSizeLG = new bootstrap.Modal(modalElementLG);
 
             function AddEvenBtn() {
                 // Sự kiện click cho các nút trong bảng
@@ -158,9 +162,9 @@
             function DeleteConfirmed(url) {
                 $.get(url)
                     .done(function (res) {
-                        modalManager.updateTitle(modalElement, 'Confirmed Delete New Category')
-                        modalManager.addContentToBody(modalElement, res)
-                        modal.show()                     
+                        modalManager.updateTitle(modalElementLG, 'Confirmed Delete New Category')
+                        modalManager.addContentToBody(modalElementLG, res)
+                        modalSizeLG.show()
                         initializeForm()
                     })
             }

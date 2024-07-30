@@ -61,5 +61,35 @@ const renderTable = ({ tableID, columns, url, tableName, FnCreate, initComplete 
         const headLabel = document.querySelector('div.head-label')
         headLabel.innerHTML = `<h5 class="card-title mb-0">${tableName}</h5>`
         return table
-    }
+}
 
+
+
+const renderTableNoAjax = ({ tableID, tableName }) => {
+    const table = $(tableID).DataTable({  
+        responsive: true,
+        dom: '<"card-header flex-column flex-md-row"<"head-label text-center"><"dt-action-buttons text-end pt-3 pt-md-0"B>><"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6 d-flex justify-content-center justify-content-md-end"f>>t<"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>', // B: Buttons, f: Filter input, r: Processing, t: Table, i: Table information, p: Pagination
+        buttons: [
+            {
+                extend: "collection",
+                className: "btn btn-label-primary dropdown-toggle me-2",
+                text: '<i class="bx bx-export me-sm-1"></i> <span class="d-none d-sm-inline-block">Export</span>',
+                buttons: [
+                    exportButtonConfig("print", "bx bx-printer me-1", "Print", tableName),
+                    exportButtonConfig("csv", "bx bx-file me-1", "Csv", tableName),
+                    exportButtonConfig("excel", "bx bxs-file-export me-1", "Excel", tableName),
+                    exportButtonConfig("pdf", "bx bxs-file-pdf me-1", "Pdf", tableName),
+                    exportButtonConfig("copy", "bx bx-copy me-1", "Copy", tableName)
+                ]
+            },
+            {
+                text: '<i class="bx bx-plus me-sm-1"></i> <span class="d-none d-sm-inline-block">Add Claim</span>',
+                className: "create-new-role-claim btn btn-primary",    
+            }
+        ],        
+    });   
+    const headLabel = document.querySelector(`${tableID}_wrapper`).querySelector('div.head-label')
+    headLabel.innerHTML = `<h5 class="card-title mb-0">${tableName}</h5>`
+  
+    return table
+}

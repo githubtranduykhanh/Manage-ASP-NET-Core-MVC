@@ -2,19 +2,25 @@
 
 
 
-<div class="container-xxl flex-grow-1 container-p-y">
-    <h4 class="py-3 mb-4"><span class="text-muted fw-light">New Category /</span> Confirmed Delete</h4>
-    <div class="card">
+<h4 class="py-3 mb-4"><span class="text-muted fw-light">New Category /</span> Confirmed Delete</h4>
+<div class="card mb-3">
+    <div class="card-body">
         <div class="alert alert-danger" role="alert">
             Do you want to delete the product<br />
             ID : @Model.Id <br />
             Name : @Model.Name <br />
-            Display Order : @Model.DisplayOrder <br /> 
+            Display Order : @Model.DisplayOrder <br />
             @if (string.IsNullOrEmpty(Model.NewParentName))
             {
                 @:New Parent Name : @Model.NewParentName <br />
             }
-         </div>
+        </div>
+    </div>
+
+
+</div>
+<div class="card mb-3">
+    <div class="card-body">
         <form id="js-form-partial" asp-action="Delete" asp-route-id="@Model.Id">
             <div class="form-group">
                 <button type="submit" data-id="@Model.Id" class="btn btn-danger">
@@ -24,6 +30,6 @@
                     Close
                 </button>
             </div>
-        </form>  
+        </form>
     </div>
 </div>

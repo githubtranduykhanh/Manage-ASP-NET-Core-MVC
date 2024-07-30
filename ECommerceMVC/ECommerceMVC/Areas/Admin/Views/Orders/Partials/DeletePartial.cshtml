@@ -1,0 +1,30 @@
+﻿@model ECommerceMVC.UI.Areas.Admin.ViewModels.Order.OrderVM
+
+
+
+<div class="container-xxl flex-grow-1 container-p-y">
+    <h4 class="py-3 mb-4"><span class="text-muted fw-light">Order /</span> Confirmed Delete</h4>
+    <div class="card">
+        <div class="alert alert-danger" role="alert">
+            Do you want to delete the product<br />
+            ID : @Model.Id <br />
+            Name User : @Model.NameUser <br />
+            Email User : @Model.EmailUser <br />
+            Address User : @Model.AddressUser <br />
+            Phone User : @Model.PhoneUser <br />
+            Status : @Model.Status <br />
+            Payment Type : @Model.PaymentType <br />
+            CreatedAt Type : @Model.CreatedAt <br />
+         </div>
+        <form id="js-form-partial" asp-action="Delete" asp-route-id="@Model.Id">
+            <div class="form-group">
+                <button type="submit" data-id="@Model.Id" class="btn btn-danger">
+                    Delete
+                </button>
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                    Close
+                </button>
+            </div>
+        </form>  
+    </div>
+</div>

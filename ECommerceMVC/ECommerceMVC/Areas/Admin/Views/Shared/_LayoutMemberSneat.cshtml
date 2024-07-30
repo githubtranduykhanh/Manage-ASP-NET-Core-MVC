@@ -249,6 +249,20 @@
                             </li>
                         </ul>
                     </li>
+                    <!--Order-->
+                    <li class="menu-item @(Html.IsParentActive("Admin","Orders", "Index"))">
+                        <a href="javascript:void(0)" class="menu-link menu-toggle">                           
+                            <i class='menu-icon tf-icons bx bx-receipt'></i>
+                            <div data-i18n="Extended UI">Orders</div>
+                        </a>
+                        <ul class="menu-sub">
+                            <li class="menu-item @(Html.IsActive("Orders", "Index"))">
+                                <a asp-area="Admin" asp-controller="Orders" asp-action="Index" class="menu-link">
+                                    <div data-i18n="Perfect Scrollbar">List</div>
+                                </a>
+                            </li>                         
+                        </ul>
+                    </li>
 
 
                     @* <li class="menu-item">

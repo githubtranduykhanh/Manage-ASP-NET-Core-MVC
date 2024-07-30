@@ -1,0 +1,64 @@
+﻿@model ECommerceMVC.UI.Areas.Admin.ViewModels.Order.OrderVM
+
+<div class="container-xxl flex-grow-1 container-p-y">
+    <h4 class="py-3 mb-4"><span class="text-muted fw-light">Order /</span> Detail</h4>
+
+    <div class="card">         
+            <h5 class="card-header">Profile Details</h5>
+            <!-- Account -->
+            <div class="card-body">
+                <div class="card-datatable table-responsive">
+                    <table class="table">
+                        <tbody>
+                            <tr data-dt-row="40" data-dt-column="2">
+                                <td>New Category:</td>
+                                <td>
+                                    <div class="d-flex justify-content-start align-items-center product-name">                                       
+                                        <div class="d-flex flex-column">
+                                            <h6 class="text-nowrap mb-0">@Model.NameUser</h6>
+                                           
+                                                <small class="text-truncate d-none d-sm-block">
+                                                   @Model.EmailUser
+                                                </small>
+                                                <small class="text-truncate d-none d-sm-block">
+                                                   @Model.PhoneUser
+                                                </small>
+                                                                                 
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                          
+                                                                      
+                            <tr data-dt-row="40" data-dt-column="5">
+                                <td>Payment Type:</td>
+                                <td>
+                                     <h6 class="mb-0 align-items-center d-flex w-px-100 text-warning"><i class="bx bxs-circle bx-8px me-1"></i>@Model.PaymentType</h6>
+                                </td>
+                            </tr>
+                            <tr data-dt-row="40" data-dt-column="5">
+                                <td>Status:</td>
+                                <td>
+                                    <span class="badge px-2 bg-label-success" text-capitalized="">@Model.Status</span>
+                                </td>
+                            </tr>
+                            <tr data-dt-row="40" data-dt-column="5">
+                            <td>CreatedAt:</td>
+                                <td>
+                                    <span class="text-nowrap">@Model.CreatedAt</span>
+                                </td>
+                            </tr>
+                    </tbody>
+                    </table>
+                </div>
+                <!-- Add other properties here -->
+                <div class="form-group mt-3">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        Close
+                    </button>
+                </div>
+            </div>       
+    </div>
+</div>
+
+
