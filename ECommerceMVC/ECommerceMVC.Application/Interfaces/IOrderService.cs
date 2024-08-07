@@ -19,5 +19,6 @@ namespace ECommerceMVC.Application.Interfaces
         Task<ResponseService> UpdateAsync(OrderModel model);
         Task UpdateUserInfoAsync(string id, OrderModel model);
         Task<ResponseService> DeleteAsync(int id);
+        Task<ResponseService<OrderStatistical>> GetStatisticalAsync();
     }
 }

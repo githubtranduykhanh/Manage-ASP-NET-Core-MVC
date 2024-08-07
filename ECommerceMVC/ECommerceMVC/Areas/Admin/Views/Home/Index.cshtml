@@ -1,4 +1,17 @@
-﻿
+﻿@model ECommerceMVC.Application.Dtos.Dashboards
+
+
+@{
+    var paymentsPercent = Model?.Payments?.Percent ?? 0;
+    var transactionsPercent = Model?.Transactions?.Percent ?? 0;
+
+    var profileReportPercent = Model?.ProfileReport?.Percent ?? 0;
+
+    var totalBalancePercent = Model?.TotalBalance?.Percent ?? 0;
+
+    var totalBalancePreviousTotalPercent = Model?.TotalBalance?.PreviousTotalPercent ?? 0;
+}
+
 <div class="container-xxl flex-grow-1 container-p-y">
     <div class="row">
         <!-- Total Revenue -->
@@ -19,12 +32,19 @@
                                             data-bs-toggle="dropdown"
                                             aria-haspopup="true"
                                             aria-expanded="false">
-                                        2022
+                                        @(Model?.Growth?.FirstOrDefault()?.Year ?? DateTime.Now.Year)
                                     </button>
                                     <div class="dropdown-menu dropdown-menu-end" aria-labelledby="growthReportId">
-                                        <a class="dropdown-item" href="javascript:void(0);">2021</a>
-                                        <a class="dropdown-item" href="javascript:void(0);">2020</a>
-                                        <a class="dropdown-item" href="javascript:void(0);">2019</a>
+
+                                        @if (Model != null && Model?.Growth != null && Model?.Growth?.Any() == true)
+                                        {
+                                            @foreach (var item in Model.Growth)
+                                            {
+
+                                                <a class="dropdown-item" href="javascript:void(0);">@item.Year</a>
+
+                                            }
+                                        }                                    
                                     </div>
                                 </div>
                             </div>
@@ -33,7 +53,27 @@
                         <div class="text-center fw-medium pt-3 mb-2">62% Company Growth</div>
 
                         <div class="d-flex px-xxl-4 px-lg-2 p-4 gap-xxl-3 gap-lg-1 gap-3 justify-content-between">
-                            <div class="d-flex">
+
+
+
+                            @if (Model != null && Model?.Growth != null && Model?.Growth?.Any() == true)
+                            {
+                                @foreach (var item in Model.Growth)
+                                {
+
+                                    <div class="d-flex">
+                                        <div class="me-2">
+                                            <span class="badge bg-label-primary p-2"><i class="bx bx-dollar text-primary"></i></span>
+                                        </div>
+                                        <div class="d-flex flex-column">
+                                            <small>@item.Year</small>
+                                            <small class="mb-0">@item.Money.ToVietnameseNumberFormat() VNĐ</small>
+                                        </div>
+                                    </div>
+
+                                }
+                            }
+                           @*  <div class="d-flex">
                                 <div class="me-2">
                                     <span class="badge bg-label-primary p-2"><i class="bx bx-dollar text-primary"></i></span>
                                 </div>
@@ -50,7 +90,7 @@
                                     <small>2021</small>
                                     <h6 class="mb-0">$41.2k</h6>
                                 </div>
-                            </div>
+                            </div> *@
                         </div>
                     </div>
                 </div>
@@ -66,7 +106,7 @@
                                 <div class="avatar flex-shrink-0">
                                     <img src="~/assets/img/icons/unicons/paypal.png" alt="Credit Card" class="rounded" />
                                 </div>
-                                <div class="dropdown">
+                              @*   <div class="dropdown">
                                     <button class="btn p-0"
                                             type="button"
                                             id="cardOpt4"
@@ -79,11 +119,16 @@
                                         <a class="dropdown-item" href="javascript:void(0);">View More</a>
                                         <a class="dropdown-item" href="javascript:void(0);">Delete</a>
                                     </div>
-                                </div>
+                                </div> *@
                             </div>
                             <span class="d-block mb-1">Payments</span>
-                            <h3 class="card-title text-nowrap mb-2">$2,456</h3>
-                            <small class="text-danger fw-medium"><i class="bx bx-down-arrow-alt"></i> -14.82%</small>
+                            <h6 class="card-title text-nowrap mb-2">@((Model?.Payments?.Money ?? 0).ToVietnameseNumberFormat()) VNĐ</h6>
+                            @if (paymentsPercent > 0)
+                            {
+                                <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i> @paymentsPercent%</small>
+                            }else{
+                                <small class="text-danger fw-medium"><i class="bx bx-down-arrow-alt"></i>@paymentsPercent%</small>
+                            }           
                         </div>
                     </div>
                 </div>
@@ -94,24 +139,18 @@
                                 <div class="avatar flex-shrink-0">
                                     <img src="~/assets/img/icons/unicons/cc-primary.png" alt="Credit Card" class="rounded" />
                                 </div>
-                                <div class="dropdown">
-                                    <button class="btn p-0"
-                                            type="button"
-                                            id="cardOpt1"
-                                            data-bs-toggle="dropdown"
-                                            aria-haspopup="true"
-                                            aria-expanded="false">
-                                        <i class="bx bx-dots-vertical-rounded"></i>
-                                    </button>
-                                    <div class="dropdown-menu" aria-labelledby="cardOpt1">
-                                        <a class="dropdown-item" href="javascript:void(0);">View More</a>
-                                        <a class="dropdown-item" href="javascript:void(0);">Delete</a>
-                                    </div>
-                                </div>
+                               
                             </div>
                             <span class="fw-medium d-block mb-1">Transactions</span>
-                            <h3 class="card-title mb-2">$14,857</h3>
-                            <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i> +28.14%</small>
+                            <h6 class="card-title mb-2">@(Model?.Transactions?.Money ?? 0)</h6>
+                            @if (transactionsPercent > 0)
+                            {
+                                <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i> @transactionsPercent%</small>
+                            }
+                            else
+                            {
+                                <small class="text-danger fw-medium"><i class="bx bx-down-arrow-alt"></i>@transactionsPercent%</small>
+                            }
                         </div>
                     </div>
                 </div>
@@ -124,11 +163,19 @@
                                 <div class="d-flex flex-sm-column flex-row align-items-start justify-content-between">
                                     <div class="card-title">
                                         <h5 class="text-nowrap mb-2">Profile Report</h5>
-                                        <span class="badge bg-label-warning rounded-pill">Year 2021</span>
+                                        <span class="badge bg-label-warning rounded-pill">@(Model?.ProfileReport?.Year ?? DateTime.Now.Year)</span>
                                     </div>
                                     <div class="mt-sm-auto">
-                                        <small class="text-success text-nowrap fw-medium"><i class="bx bx-chevron-up"></i> 68.2%</small>
-                                        <h3 class="mb-0">$84,686k</h3>
+                                        @if (profileReportPercent > 0)
+                                        {
+                                            <small class="text-success text-nowrap fw-medium"><i class="bx bx-up-arrow-alt"></i> @profileReportPercent%</small>
+                                        }
+                                        else
+                                        {
+                                            <small class="text-danger text-nowrap fw-medium"><i class="bx bx-down-arrow-alt"></i>@profileReportPercent%</small>
+                                        }
+                                      
+                                        <h6 class="mb-0">@((Model?.ProfileReport?.Money ?? 0).ToVietnameseNumberFormat()) VNĐ</h6>
                                     </div>
                                 </div>
                                 <div id="profileReportChart"></div>
@@ -146,50 +193,50 @@
                 <div class="card-header d-flex align-items-center justify-content-between pb-0">
                     <div class="card-title mb-0">
                         <h5 class="m-0 me-2">Order Statistics</h5>
-                        <small class="text-muted">42.82k Total Sales</small>
+                        <small class="text-muted">@((Model?.OrderStatistics?.TotalSales ?? 0).ToVietnameseNumberFormat()) VNĐ Total Sales</small>
                     </div>
-                    <div class="dropdown">
-                        <button class="btn p-0"
-                                type="button"
-                                id="orederStatistics"
-                                data-bs-toggle="dropdown"
-                                aria-haspopup="true"
-                                aria-expanded="false">
-                            <i class="bx bx-dots-vertical-rounded"></i>
-                        </button>
-                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="orederStatistics">
-                            <a class="dropdown-item" href="javascript:void(0);">Select All</a>
-                            <a class="dropdown-item" href="javascript:void(0);">Refresh</a>
-                            <a class="dropdown-item" href="javascript:void(0);">Share</a>
-                        </div>
-                    </div>
+                   
                 </div>
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <div class="d-flex flex-column align-items-center gap-1">
-                            <h2 class="mb-2">8,258</h2>
+                            <h2 class="mb-2">@(Model?.OrderStatistics?.TotalOrders ?? 0)</h2>
                             <span>Total Orders</span>
                         </div>
                         <div id="orderStatisticsChart"></div>
                     </div>
                     <ul class="p-0 m-0">
-                        <li class="d-flex mb-4 pb-1">
-                            <div class="avatar flex-shrink-0 me-3">
-                                <span class="avatar-initial rounded bg-label-primary">
-                                    <i class="bx bx-mobile-alt"></i>
-                                </span>
-                            </div>
-                            <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                                <div class="me-2">
-                                    <h6 class="mb-0">Electronic</h6>
-                                    <small class="text-muted">Mobile, Earbuds, TV</small>
-                                </div>
-                                <div class="user-progress">
-                                    <small class="fw-medium">82.5k</small>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="d-flex mb-4 pb-1">
+
+                        @if (Model != null && Model?.OrderStatistics != null && Model?.OrderStatistics?.OrderStatisticsTable != null && Model?.OrderStatistics?.OrderStatisticsTable?.Any() == true)
+                        {
+                            @foreach (var item in Model.OrderStatistics.OrderStatisticsTable)
+                            {
+
+                                <li class="d-flex mb-4 pb-1">
+                                    <div class="avatar flex-shrink-0 me-3">
+                                        <img src="@item.Image" class="avatar-initial rounded bg-label-primary" />                                                                            
+                                    </div>
+                                    <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                                        <div class="me-2">
+                                            <h6 class="mb-0">@item.Title</h6>
+                                            <small class="text-muted">@item.Price.ToVietnameseNumberFormat() VNĐ</small>
+                                        </div>
+                                        <div class="user-progress">
+                                            <small class="fw-medium">@item.TotalAmount.ToVietnameseNumberFormat() VNĐ</small>
+                                        </div>
+                                    </div>
+                                </li>
+
+                            }
+                        }
+
+                        
+
+                      
+
+
+
+                       @*  <li class="d-flex mb-4 pb-1">
                             <div class="avatar flex-shrink-0 me-3">
                                 <span class="avatar-initial rounded bg-label-success"><i class="bx bx-closet"></i></span>
                             </div>
@@ -232,7 +279,7 @@
                                     <small class="fw-medium">99</small>
                                 </div>
                             </div>
-                        </li>
+                        </li> *@
                     </ul>
                 </div>
             </div>
@@ -272,11 +319,18 @@
                                 <div>
                                     <small class="text-muted d-block">Total Balance</small>
                                     <div class="d-flex align-items-center">
-                                        <h6 class="mb-0 me-1">$459.10</h6>
-                                        <small class="text-success fw-medium">
-                                            <i class="bx bx-chevron-up"></i>
-                                            42.9%
-                                        </small>
+                                        <h6 class="mb-0 me-1">@((Model?.TotalBalance?.Money ?? 0).ToVietnameseNumberFormat()) VNĐ</h6>
+
+
+                                        @if (totalBalancePercent > 0)
+                                        {
+                                            <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i> @totalBalancePercent%</small>
+                                        }
+                                        else
+                                        {
+                                            <small class="text-danger fw-medium"><i class="bx bx-down-arrow-alt"></i>@totalBalancePercent%</small>
+                                        }
+                                       
                                     </div>
                                 </div>
                             </div>
@@ -287,7 +341,7 @@
                                 </div>
                                 <div>
                                     <p class="mb-n1 mt-1">Expenses This Week</p>
-                                    <small class="text-muted">$39 less than last week</small>
+                                    <small class="text-muted">@totalBalancePreviousTotalPercent% less than last week</small>
                                 </div>
                             </div>
                         </div>
@@ -301,21 +355,7 @@
             <div class="card h-100">
                 <div class="card-header d-flex align-items-center justify-content-between">
                     <h5 class="card-title m-0 me-2">Transactions</h5>
-                    <div class="dropdown">
-                        <button class="btn p-0"
-                                type="button"
-                                id="transactionID"
-                                data-bs-toggle="dropdown"
-                                aria-haspopup="true"
-                                aria-expanded="false">
-                            <i class="bx bx-dots-vertical-rounded"></i>
-                        </button>
-                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="transactionID">
-                            <a class="dropdown-item" href="javascript:void(0);">Last 28 Days</a>
-                            <a class="dropdown-item" href="javascript:void(0);">Last Month</a>
-                            <a class="dropdown-item" href="javascript:void(0);">Last Year</a>
-                        </div>
-                    </div>
+                  
                 </div>
                 <div class="card-body">
                     <ul class="p-0 m-0">
@@ -424,4 +464,183 @@
     @{
         await Html.RenderPartialAsync("_DashboardPageScriptsPartial");
     }
+
+    <script type="text/javascript">
+        'use strict';
+
+        $(document).ready(function () {
+            (() => {
+
+                // Lấy năm hiện tại
+                var currentYear = new Date().getFullYear();
+
+                $.ajax({
+                    url: `@Url.Action("GetDataChart", "Home")?year=${currentYear}`, // URL gửi yêu cầu
+                    type: 'GET', // Phương thức gửi dữ liệu                
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        console.log(response)
+                        if (response?.success){
+                            updateRevenueChart(response?.data?.totalRevenue)
+
+                            dashboardAdmin.growthChart.updateSeries([response?.data?.growthChart])
+
+
+
+                            dashboardAdmin.profileReportChart.updateSeries([
+                                {
+                                        data: response?.data?.profileReportChart
+                                }
+                            ])
+
+
+
+                            dashboardAdmin.statisticsChart.updateSeries(response?.data?.statisticsChart?.data)
+
+                            dashboardAdmin.statisticsChart.updateOptions({
+                                labels: response?.data?.statisticsChart?.labels
+                            });
+
+                            updateIncomeChart(response?.data?.totalBalance?.incomeChart)
+
+
+                            dashboardAdmin.weeklyExpenses.updateSeries([response?.data?.totalBalance?.weeklyExpensesChart])
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        // Xử lý lỗi
+                       
+                        console.log('An error occurred: ' + error)               
+                    }
+                });
+
+
+                const updateRevenueChart = (chartData) => {
+                    console.log(chartData)                
+                    // Lấy danh sách tất cả các tháng có dữ liệu
+                    var allMonths = getMonths(chartData);
+
+                    // Cắt các số và bổ sung dữ liệu thiếu cho các tháng trong biểu đồ
+                    var newChartData = chartData.map(function (item) {
+                        var filteredData = filterAndCutNumbers(item.data, allMonths);
+                        return {
+                            name: item.name,
+                            data: filteredData
+                        };
+                    });
+
+                    // Cập nhật dữ liệu biểu đồ
+                    dashboardAdmin.totalRevenueChart.updateSeries(newChartData);
+                    dashboardAdmin.totalRevenueChart.updateOptions({
+                        xaxis: {
+                            categories: allMonths
+                        }
+                    });
+                }
+
+
+                const updateIncomeChart = (chartData) => {
+                    console.log(chartData)
+                    // Lấy danh sách tất cả các tháng có dữ liệu
+                    var allMonths = getMonthsIncomeChart(chartData);
+
+                    var filteredData = filterAndCutNumbersIncomeChart(chartData, allMonths);
+
+
+                    console.log({ allMonths, filteredData })
+
+                    // Cập nhật dữ liệu biểu đồ
+                    dashboardAdmin.incomeChart.updateSeries([
+                        {
+                            data: filteredData
+                        }
+                    ])
+
+                    dashboardAdmin.incomeChart.updateOptions({
+                        xaxis: {
+                            categories: allMonths
+                        }
+                    });
+                }
+
+                // Hàm để lấy danh sách các tháng có dữ liệu từ các năm
+                const getMonths = (data) => {
+                    var categories = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                    var monthsSet = new Set();
+
+                    data.forEach(yearData => {
+                        yearData.data.forEach((value, index) => {
+                            if (value > 0) {
+                                monthsSet.add(categories[index]);
+                            }
+                        });
+                    });
+
+                    return Array.from(monthsSet);
+                }
+
+                // Hàm để lấy danh sách các tháng có dữ liệu từ các năm
+                const getMonthsIncomeChart = (data) => {
+                    var categories = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                    var monthsSet = new Set();
+                    data.forEach((value, index) => {
+                        if (value > 0) {
+                            monthsSet.add(categories[index]);
+                        }
+                    });
+                 
+                    return Array.from(monthsSet);
+                }
+
+                // Hàm để cắt số và bổ sung dữ liệu thiếu cho các tháng
+                const filterAndCutNumbers = (data, categories) => {
+                    var fullData = Array(categories.length).fill(0);
+                    var originalCategories = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+                    data.forEach((num, index) => {
+                        if (num > 0) {
+                            var monthIndex = categories.indexOf(originalCategories[index]);
+                            if (monthIndex !== -1) {
+                                fullData[monthIndex] = num / 1000;
+                            }
+                        }
+                    });
+
+                    return fullData;
+                }
+
+
+                // Hàm để cắt số và bổ sung dữ liệu thiếu cho các tháng
+                const filterAndCutNumbersIncomeChart = (data, categories) => {
+                    var fullData = Array(categories.length).fill(0);
+                    var originalCategories = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+                    data.forEach((num, index) => {
+                        if (num > 0) {
+                            var monthIndex = categories.indexOf(originalCategories[index]);
+                            if (monthIndex !== -1) {
+                                fullData[monthIndex] = num * 10;
+                            }
+                        }
+                    });
+
+                    return fullData;
+                }
+
+
+               
+
+
+              
+
+              
+
+               
+
+               
+
+            })()
+        })     
+    </script>
 }

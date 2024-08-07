@@ -47,5 +47,9 @@ button.dt-button, div.dt-button, a.dt-button, input.dt-button {
     z-index: 99999; /* Đặt giá trị z-index mà bạn cần */
 }
 
+.icon-calendar {
+    font-size: 1.5rem !important;
+}
+
 
 

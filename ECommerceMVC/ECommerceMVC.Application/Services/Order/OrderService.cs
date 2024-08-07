@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using CloudinaryDotNet.Actions;
+using ECommerceMVC.Application.Constants.Order;
 using ECommerceMVC.Application.Dtos;
 using ECommerceMVC.Application.Dtos.DataTable;
 using ECommerceMVC.Application.Dtos.NewCategories;
@@ -32,6 +34,53 @@ namespace ECommerceMVC.Application.Services.Product
             _userManager = userManager;
             _mapper = mapper;
         }
+
+        public async Task<ResponseService<OrderStatistical>> GetStatisticalAsync()
+        {
+            try
+            {
+                var orders = await _unitOfWork.OrderRepositorie.GetAsync();
+
+                if (orders == null || !orders.Any()) return new ResponseService<OrderStatistical>
+                {
+                    message = "No data.",
+                };
+
+
+                var result = new OrderStatistical();
+
+                foreach (var item in orders)
+                {
+                    if (item.Status == OrderConstants.StatusOptions.Pending) result.Pending++;
+
+                    if (item.Status == OrderConstants.StatusOptions.Processing) result.Processing++;
+
+                    if (item.Status == OrderConstants.StatusOptions.Completed) result.Completed++;
+
+                    if (item.Status == OrderConstants.StatusOptions.Cancelled) result.Cancelled++;
+                }
+
+
+                return new ResponseService<OrderStatistical>
+                {
+                    success = true,
+                    message = "Get Statistical successfully.",
+                    data = result
+                };
+
+            }
+            catch (Exception ex)
+            {
+
+                return new ResponseService<OrderStatistical>
+                {
+                    message = ex.Message,
+                };
+            }
+        }
+
+
+
         public async Task<ResponseService<List<OrderModel>>> GetAllAsync()
         {
             try

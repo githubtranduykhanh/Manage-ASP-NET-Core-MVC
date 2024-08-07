@@ -4,7 +4,17 @@
 
 'use strict';
 
-(function () {
+const dashboardAdmin = (function () {
+
+    const result = {
+        totalRevenueChart:null,
+        growthChart: null,
+        profileReportChart: null,
+        statisticsChart: null,
+        incomeChart: null,
+        weeklyExpenses: null,
+    }
+
   let cardColor, headingColor, axisColor, shadeColor, borderColor;
 
   cardColor = config.colors.cardColor;
@@ -78,7 +88,7 @@
         }
       },
       xaxis: {
-        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+          categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov','Dec'],
         labels: {
           style: {
             fontSize: '13px',
@@ -100,7 +110,7 @@
           }
         }
       },
-      responsive: [
+      responsive: [        
         {
           breakpoint: 1700,
           options: {
@@ -271,7 +281,8 @@
     };
   if (typeof totalRevenueChartEl !== undefined && totalRevenueChartEl !== null) {
     const totalRevenueChart = new ApexCharts(totalRevenueChartEl, totalRevenueChartOptions);
-    totalRevenueChart.render();
+      totalRevenueChart.render();
+      result.totalRevenueChart = totalRevenueChart
   }
 
   // Growth Chart - Radial Bar Chart
@@ -352,7 +363,8 @@
     };
   if (typeof growthChartEl !== undefined && growthChartEl !== null) {
     const growthChart = new ApexCharts(growthChartEl, growthChartOptions);
-    growthChart.render();
+      growthChart.render();
+      result.growthChart = growthChart
   }
 
   // Profit Report Line Chart
@@ -415,7 +427,8 @@
     };
   if (typeof profileReportChartEl !== undefined && profileReportChartEl !== null) {
     const profileReportChart = new ApexCharts(profileReportChartEl, profileReportChartConfig);
-    profileReportChart.render();
+      profileReportChart.render();
+      result.profileReportChart = profileReportChart
   }
 
   // Order Statistics Chart
@@ -493,7 +506,8 @@
     };
   if (typeof chartOrderStatistics !== undefined && chartOrderStatistics !== null) {
     const statisticsChart = new ApexCharts(chartOrderStatistics, orderChartConfig);
-    statisticsChart.render();
+      statisticsChart.render();
+      result.statisticsChart = statisticsChart
   }
 
   // Income Chart - Area chart
@@ -592,7 +606,8 @@
     };
   if (typeof incomeChartEl !== undefined && incomeChartEl !== null) {
     const incomeChart = new ApexCharts(incomeChartEl, incomeChartConfig);
-    incomeChart.render();
+      incomeChart.render();
+      result.incomeChart = incomeChart
   }
 
   // Expenses Mini Chart - Radial Chart
@@ -665,6 +680,11 @@
     };
   if (typeof weeklyExpensesEl !== undefined && weeklyExpensesEl !== null) {
     const weeklyExpenses = new ApexCharts(weeklyExpensesEl, weeklyExpensesConfig);
-    weeklyExpenses.render();
+      weeklyExpenses.render();
+      result.weeklyExpenses = weeklyExpenses
   }
+
+
+
+    return result
 })();

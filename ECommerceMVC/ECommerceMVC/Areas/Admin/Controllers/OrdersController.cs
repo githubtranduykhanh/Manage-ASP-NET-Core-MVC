@@ -36,8 +36,8 @@ namespace ECommerceMVC.UI.Areas.Admin.Controllers
 
         // GET: Admin/Orders
         public async Task<IActionResult> Index()
-        {          
-            return View();
+        {              
+            return View(await _orderService.GetStatisticalAsync());
         }
 
 

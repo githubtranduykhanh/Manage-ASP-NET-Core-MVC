@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ECommerceMVC.UI.Constants.Order
 {
-    public static class OrderConstants
+    public static class OrderConstantsUI
     {
         public static readonly List<SelectListItem> StatusOptions = new List<SelectListItem>
         {

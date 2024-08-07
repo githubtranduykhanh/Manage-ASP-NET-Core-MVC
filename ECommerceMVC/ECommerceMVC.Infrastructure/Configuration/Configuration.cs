@@ -24,6 +24,7 @@ using ECommerceMVC.Application.Interfaces;
 using ECommerceMVC.Application.Services.NewCategories;
 using ECommerceMVC.Domain.Abstract.Cloudinary;
 using ECommerceMVC.Application.Services.Product;
+using ECommerceMVC.Application.Services;
 
 namespace ECommerceMVC.Infrastructure.Configuration
 {
@@ -162,6 +163,9 @@ namespace ECommerceMVC.Infrastructure.Configuration
 
             // Đăng ký NewCategoriesService sau khi IUnitOfWork đã được đăng ký
             services.AddScoped<INewCategoriesService, NewCategoriesService>();
+
+            // Đăng ký DashboardsService sau khi IUnitOfWork đã được đăng ký
+            services.AddScoped<IDashboardsService, DashboardsService>();
 
             // Đăng ký OrderService sau khi IUnitOfWork đã được đăng ký
             services.AddScoped<IOrderService, OrderService>();

@@ -1,6 +1,7 @@
 ﻿using ECommerceMVC.DataAccess.Data;
 using ECommerceMVC.Domain.Abstract;
 using ECommerceMVC.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +27,15 @@ namespace ECommerceMVC.DataAccess.Repositorys
             );
 
             return order.FirstOrDefault(); // Lấy bản ghi đầu tiên từ kết quả (vì filter chỉ có một bản ghi)
+        }
+
+        public async Task<IQueryable<DbOrder>> GetOrdersWithDetailsAndImagesAsync()
+        {
+            return dbSet
+                .Include(o => o.DbOrderDetails)
+                    .ThenInclude(od => od.IdProductNavigation)
+                        .ThenInclude(p => p.DbProductImages)
+                            .ThenInclude(pi => pi.IdImageNavigation); // Đảm bảo bao gồm DbImage
         }
     }
 }

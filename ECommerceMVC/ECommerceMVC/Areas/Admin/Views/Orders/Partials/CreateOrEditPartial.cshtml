@@ -20,12 +20,12 @@
                 <div class="row">
                     <div class="col">
                         <div class="form-floating mb-3">
-                            @Html.DropDownListFor(model => model.Status, OrderConstants.StatusOptions, new { @class = "form-control" })
+                        @Html.DropDownListFor(model => model.Status, OrderConstantsUI.StatusOptions, new { @class = "form-control" })
                             <label asp-for="Status">Status</label>
                             <span asp-validation-for="Status" class="text-danger"></span>
                         </div>
                         <div class="form-floating mb-3">
-                            @Html.DropDownListFor(model => model.PaymentType, OrderConstants.PaymentTypeOptions, new { @class = "form-control" })
+                        @Html.DropDownListFor(model => model.PaymentType, OrderConstantsUI.PaymentTypeOptions, new { @class = "form-control" })
                             <label asp-for="PaymentType">Payment Type</label>
                             <span asp-validation-for="PaymentType" class="text-danger"></span>
                         </div>
