@@ -2,6 +2,7 @@
 using ECommerceMVC.Application.Dtos;
 using ECommerceMVC.Application.Dtos.NewCategories;
 using ECommerceMVC.Application.Dtos.Order;
+using ECommerceMVC.Application.Dtos.OrderDetail;
 using ECommerceMVC.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -16,10 +17,23 @@ namespace ECommerceMVC.Application.Mappings
         public MappingProfile()
         {
             CreateMap<DbProduct, ProductDto>().ReverseMap();
+
+
+          
+
             // Cấu hình các map khác nếu cần
             CreateMap<DbNewCategory, NewCategoriesModel>().ReverseMap();
 
-            CreateMap<DbOrder, OrderModel>().ReverseMap();
+            CreateMap<DbProduct, OrderProduct>()               
+              .ReverseMap();
+
+
+            CreateMap<DbOrderDetail, OrderDetailModel>()              
+                .ReverseMap();
+
+            CreateMap<DbOrder, OrderModel>()
+                .ForMember(dest => dest.DbOrderDetails, opt => opt.MapFrom(src => src.DbOrderDetails))
+                .ReverseMap();
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using ECommerceMVC.Domain.Entities;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
+using ECommerceMVC.Application.Dtos.OrderDetail;
 
 namespace ECommerceMVC.UI.Areas.Admin.ViewModels.Order
 {
@@ -38,8 +39,8 @@ namespace ECommerceMVC.UI.Areas.Admin.ViewModels.Order
         [Required(ErrorMessage = "CreatedAt Order is required")]
         public DateTime CreatedAt { get; set; }
 
-        public ICollection<DbOrderDetail> DbOrderDetails { get; set; } = new List<DbOrderDetail>();
+        public ICollection<OrderDetailModel> DbOrderDetails { get; set; } = new List<OrderDetailModel>();
 
-        public DbUser User { get; set; } = null!;
+        public DbUser? User { get; set; } = null!;
     }
 }

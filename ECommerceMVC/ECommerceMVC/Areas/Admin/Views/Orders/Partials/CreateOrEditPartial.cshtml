@@ -34,6 +34,11 @@
                             <label asp-for="CreatedAt"></label>
                             <span asp-validation-for="CreatedAt" class="text-danger"></span>
                         </div>
+                        <div class="form-floating mb-3">
+                        <input asp-for="TotalAmount" class="form-control" autocomplete="TotalAmount" aria-required="true" placeholder="TotalAmount" />
+                             <label asp-for="TotalAmount"></label>
+                        <span asp-validation-for="TotalAmount" class="text-danger"></span>
+                        </div>
                     </div>
                     <div class="col">
                         <div class="form-floating mb-3">
@@ -81,7 +86,7 @@
                                 {
                                     <tr>
                                         <td>
-                                            <button class="js-action-detail" data-id-product="@item.IdProduct" data-id-order="@item.IdOrder"><i class="bx bxs-plus-circle"></i></button>
+                                            <a href="#" class="js-action-detail" data-id-product="@item.IdProduct" data-id-order="@item.IdOrder"><i class="bx bxs-plus-circle"></i></a>
                                         </td>
                                         <td>
                                             <div class="d-flex justify-content-start align-items-center order-name text-nowrap">
@@ -92,7 +97,7 @@
                                                 </div>
                                                 <div class="d-flex flex-column">
                                                     <h6 class="m-0">
-                                                        <a href="pages-profile-user.html" class="text-heading">@item.IdProductNavigation.Name</a>
+                                                        <a class="text-heading">@item.IdProductNavigation.Name</a>
                                                     </h6>
                                                     <small>@item.UnitPrice.ToVietnameseNumberFormat()</small>
                                                 </div>
@@ -102,7 +107,7 @@
                                             @item.Quantity
                                         </td>
                                         <td>
-                                            (@item.Quantity * @item.UnitPrice)
+                                            @(item.Quantity * item.UnitPrice)
                                         </td>
                                         <td>
                                             <div class="dropdown">

@@ -6,6 +6,7 @@
     ViewData["Title"] = "Index";
     var model = Model;
     var HelperToastsScriptPath = Url.Content("~/js/helper/HelperToasts.js");
+    var HelperLoadingScriptPath = Url.Content("~/js/helper/HelperLoading.js");
 }
 
 <div class="container-xxl flex-grow-1 container-p-y">
@@ -78,10 +79,10 @@
                 <thead>
                     <tr>
                         <th></th>
-                        <th>Image</th>
-                        <th>Name</th>
-                        <th>Display Order</th>
-                        <th>NewParent</th>
+                        <th>Order</th>
+                        <th>CreatedAt</th>
+                        <th>Payment Type</th>
+                        <th>Status</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -111,10 +112,34 @@
     <script src="~/js/helper/helpermodal.js"></script>
     <script type="module">
         import { ToastBody } from "@HelperToastsScriptPath"
+        import Loading from "@HelperLoadingScriptPath"
         import NProgress from 'https://cdn.jsdelivr.net/npm/nprogress@0.2.0/+esm'
         $(document).ready(function () {
 
             var Table
+
+
+            // Customizing and creating a Spinner
+            const loading = new Loading({
+                lines: 13, // The number of lines to draw
+                length: 38, // The length of each line
+                width: 17, // The line thickness
+                radius: 45, // The radius of the inner circle
+                scale: 0.65, // Scales overall size of the spinner
+                corners: 1, // Corner roundness (0..1)
+                speed: 1, // Rounds per second
+                rotate: 0, // The rotation offset
+                animation: 'spinner-line-fade-quick', // The CSS animation name for the lines
+                direction: 1, // 1: clockwise, -1: counterclockwise
+                color: '#5f61e6', // CSS color or array of colors
+                fadeColor: 'white', // CSS color or array of colors
+                top: '50%', // Top position relative to parent
+                left: '50%', // Left position relative to parent
+                shadow: '0 0 1px transparent', // Box-shadow for the lines
+                zIndex: 2000000000, // The z-index (defaults to 2e9)
+                className: 'spinner', // The CSS class to assign to the spinner
+                position: 'absolute', // Element positioning
+            })
 
 
             const toast = new ToastBody({ placement: 'top-0 end-0', title: 'E Commerce', icon: '<i class="bx bx-bell me-2"></i>', toastOptions: { delay: 2000, autohide: true } })
@@ -198,7 +223,7 @@
                         },
                     },
                     {
-                        "data": "paymentType",
+                        "data": "status",
                         render: function (data, type, row) {
                             return `<span class="badge px-2 bg-label-success" text-capitalized="">${data}</span>`
                         },
@@ -230,6 +255,18 @@
                 tableName: options.tableName,
                 FnCreate: Create,
                 initComplete: AddEvenBtn
+            });
+
+            Table.on('processing.dt', async function (e, settings, processing) {
+                if (processing) {
+                    $('.dataTables_processing').show();  // Hiển thị processing khi bắt đầu xử lý
+                  
+                    console.log('show')
+                } else {
+                    $('.dataTables_processing').hide();  // Ẩn processing khi hoàn tất
+                    console.log('hide')
+                   
+                }
             });
 
 

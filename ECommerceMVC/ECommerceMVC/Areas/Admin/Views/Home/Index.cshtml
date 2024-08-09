@@ -58,7 +58,7 @@
 
                             @if (Model != null && Model?.Growth != null && Model?.Growth?.Any() == true)
                             {
-                                @foreach (var item in Model.Growth)
+                                @foreach (var item in Model.Growth.OrderByDescending(o => o.Year).Take(2).Reverse())
                                 {
 
                                     <div class="d-flex">

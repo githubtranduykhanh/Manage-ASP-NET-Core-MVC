@@ -37,5 +37,70 @@ namespace ECommerceMVC.DataAccess.Repositorys
                         .ThenInclude(p => p.DbProductImages)
                             .ThenInclude(pi => pi.IdImageNavigation); // Đảm bảo bao gồm DbImage
         }
+
+
+        public async Task<IQueryable<DbOrder>> GetOrdersAllRelationshipAsync()
+        {
+            return dbSet
+                .Include(u => u.IdUserNavigation)
+                .Include(o => o.DbOrderDetails)                 
+                   .ThenInclude(od => od.IdProductNavigation.DbProductImages)
+                   .ThenInclude(i => i.IdImageNavigation)
+            ;
+        }
+
+
+        public async Task<DbOrder?> GetOrderByIDAllRelationshipAsync(int? id)
+        {
+            return await dbSet
+                 .AsSplitQuery() // Sử dụng Split Query
+                .Include(o => o.DbOrderDetails)  // Bao gồm các chi tiết đơn hàng
+                                    .ThenInclude(od => od.IdProductNavigation) // Bao gồm sản phẩm trong chi tiết đơn hàng
+                                        .ThenInclude(p => p.DbProductImages) // Bao gồm hình ảnh sản phẩm
+                                            .ThenInclude(pi => pi.IdImageNavigation) // Bao gồm chi tiết của từng hình ảnh
+                                .Include(o => o.DbOrderDetails)  // Bao gồm các chi tiết đơn hàng
+                                    .ThenInclude(od => od.IdProductNavigation) // Bao gồm sản phẩm trong chi tiết đơn hàng
+                                        .ThenInclude(p => p.DbProductColors)  // Bao gồm màu sắc sản phẩm
+                                         .ThenInclude(pi => pi.IdColorNavigation) // Bao gồm chi tiết của từng hình ảnh
+                                 .Include(o => o.DbOrderDetails)  // Bao gồm các chi tiết đơn hàng
+                                    .ThenInclude(od => od.IdProductNavigation) // Bao gồm sản phẩm trong chi tiết đơn hàng
+                                        .ThenInclude(p => p.DbProductMaterials)  // Bao gồm màu sắc sản phẩm
+                                         .ThenInclude(pi => pi.IdMaterialNavigation) // Bao gồm chi tiết của từng hình ảnh
+                                  .Include(o => o.DbOrderDetails)  // Bao gồm các chi tiết đơn hàng
+                                    .ThenInclude(od => od.IdProductNavigation) // Bao gồm sản phẩm trong chi tiết đơn hàng
+                                        .ThenInclude(p => p.DbAuctions)  // Bao gồm màu sắc sản phẩm
+                                         .ThenInclude(pi => pi.DbAuctionRounds) // Bao gồm chi tiết của từng hình ảnh
+                                                  
+                                 .Include(o => o.DbOrderDetails)  // Bao gồm các chi tiết đơn hàng
+                                    .ThenInclude(od => od.IdProductNavigation) // Bao gồm sản phẩm trong chi tiết đơn hàng
+                                        .ThenInclude(p => p.DbComments)  // Bao gồm màu sắc sản phẩm
+
+                                  .Include(o => o.DbOrderDetails)  // Bao gồm các chi tiết đơn hàng
+                                    .ThenInclude(od => od.IdProductNavigation) // Bao gồm sản phẩm trong chi tiết đơn hàng
+                                        .ThenInclude(p => p.DbInvoiceDetails)  // Bao gồm màu sắc sản phẩm
+
+
+                                  .Include(o => o.DbOrderDetails)  // Bao gồm các chi tiết đơn hàng
+                                    .ThenInclude(od => od.IdProductNavigation) // Bao gồm sản phẩm trong chi tiết đơn hàng
+                                        .ThenInclude(p => p.DbProductSizes)  // Bao gồm màu sắc sản phẩm
+                                         .ThenInclude(pi => pi.IdSizeNavigation) // Bao gồm chi tiết của từng hình ảnh
+
+                                  .Include(o => o.DbOrderDetails)  // Bao gồm các chi tiết đơn hàng
+                                    .ThenInclude(od => od.IdProductNavigation) // Bao gồm sản phẩm trong chi tiết đơn hàng
+                                        .ThenInclude(p => p.DbRatings)  // Bao gồm màu sắc sản phẩm
+
+
+                                  .Include(o => o.DbOrderDetails)  // Bao gồm các chi tiết đơn hàng
+                                    .ThenInclude(od => od.IdProductNavigation) // Bao gồm sản phẩm trong chi tiết đơn hàng
+                                        .ThenInclude(p => p.IdGroupNavigation)  // Bao gồm màu sắc sản phẩm
+
+
+                                  .Include(o => o.DbOrderDetails)  // Bao gồm các chi tiết đơn hàng
+                                    .ThenInclude(od => od.IdProductNavigation) // Bao gồm sản phẩm trong chi tiết đơn hàng
+                                        .ThenInclude(p => p.IdCategoryNavigation)  // Bao gồm màu sắc sản phẩm
+
+                                .Include(o => o.IdUserNavigation) // Bao gồm thông tin người dùng
+                                .FirstOrDefaultAsync(o => o.Id == id);  // Điều kiện lọc để lấy ra đơn hàng với Id cụ thể
+        }
     }
 }

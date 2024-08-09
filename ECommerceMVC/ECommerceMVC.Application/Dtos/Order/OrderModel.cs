@@ -1,4 +1,5 @@
-﻿using ECommerceMVC.Domain.Entities;
+﻿using ECommerceMVC.Application.Dtos.OrderDetail;
+using ECommerceMVC.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -43,7 +44,7 @@ namespace ECommerceMVC.Application.Dtos.Order
         [Required]
         public DateTime CreatedAt { get; set; }
 
-        public virtual ICollection<DbOrderDetail> DbOrderDetails { get; set; } = new List<DbOrderDetail>();
+        public virtual ICollection<OrderDetailModel> DbOrderDetails { get; set; } = new List<OrderDetailModel>();
 
         [DisplayName("User")]
         public virtual DbUser IdUserNavigation { get; set; } = null!;

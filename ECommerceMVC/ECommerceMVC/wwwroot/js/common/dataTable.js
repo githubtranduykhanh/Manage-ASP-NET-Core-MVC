@@ -20,7 +20,7 @@
 
 const renderTable = ({ tableID, columns, url, tableName, FnCreate, initComplete }) => {
 
-        const table = $(tableID).DataTable({
+    const table = $(tableID).DataTable({            
             processing: true,
             serverSide: true,
             responsive: true,
@@ -60,6 +60,8 @@ const renderTable = ({ tableID, columns, url, tableName, FnCreate, initComplete 
         });
         const headLabel = document.querySelector('div.head-label')
         headLabel.innerHTML = `<h5 class="card-title mb-0">${tableName}</h5>`
+      
+
         return table
 }
 

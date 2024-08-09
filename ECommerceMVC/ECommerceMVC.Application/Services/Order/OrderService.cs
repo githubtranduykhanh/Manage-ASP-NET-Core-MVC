@@ -116,7 +116,7 @@ namespace ECommerceMVC.Application.Services.Product
                     message = "Id is required.",
                 };
 
-                var find = await _unitOfWork.OrderRepositorie.GetByIDAsync(id);
+                var find = await _unitOfWork.OrderRepositorie.GetOrderByIDAllRelationshipAsync(id);
                 if (find == null) return new ResponseService<OrderModel>
                 {
                     message = "Order not found.",
@@ -158,8 +158,8 @@ namespace ECommerceMVC.Application.Services.Product
                 orderBy: q => q.OrderBy(o => o.CreatedAt), // Sắp xếp theo CreatedAt
                 includeProperties: new Expression<Func<DbOrder, object>>[]
                 {
-                    p => p.DbOrderDetails,
-                    p => p.IdUserNavigation,// Add more include properties as needed                  
+                    p => p.DbOrderDetails,                  
+                    p => p.IdUserNavigation,// Add more include properties as needed
                 });
 
 
@@ -212,7 +212,7 @@ namespace ECommerceMVC.Application.Services.Product
                 RecordsFiltered = recordsTotal, // Điều chỉnh nếu cần
                 Data = _mapper.Map<List<DbOrder>, List<OrderModel>>(dataEntities).Select(order =>
                 {
-                    order.IdUserNavigation = null;
+                    order.IdUserNavigation = null;                 
                     return order;
                 }).ToList()
             };

@@ -38,8 +38,7 @@ namespace ECommerceMVC.Application.Services
 
 
             // Lấy dữ liệu từ cơ sở dữ liệu
-            var revenueData = await orders
-                .Where(o => o.CreatedAt.Year == year)
+            var revenueData = await orders              
                 .GroupBy(o => new { o.CreatedAt.Year, o.CreatedAt.Month })
                 .Select(g => new
                 {
@@ -49,6 +48,8 @@ namespace ECommerceMVC.Application.Services
                 })
                 .ToListAsync();
 
+
+ 
             var listTotalRevenue = revenueData
                  .GroupBy(g => g.Year)
                  .Select(g => new TotalRevenueChart
@@ -60,7 +61,11 @@ namespace ECommerceMVC.Application.Services
                              .Sum(x => x.TotalRevenue)))
                          .ToList()
                  })
+                 .OrderBy(o => o.Name)
                  .ToList();
+
+
+           
 
             // Lấy dữ liệu doanh thu theo năm
             var yearlyData = await orders
